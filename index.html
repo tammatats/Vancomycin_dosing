@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vancomycin Dosing Assistant</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <p class="eyebrow">Adult Protocol Helper</p>
+        <h1>Vancomycin Initial + TDM Adjustment</h1>
+        <p class="lead">
+          Implements the dosing flow from your diagram: loading/maintenance dose,
+          interval by creatinine clearance, infusion safety limits, and follow-up
+          adjustment using serum vancomycin levels.
+        </p>
+        <p class="warning">
+          Clinical decision support only. Final prescription must be confirmed by
+          physician/pharmacist and local hospital policy.
+        </p>
+      </header>
+
+      <section class="panel">
+        <h2>1) Initial Dosing</h2>
+        <form id="initial-form" class="grid">
+          <label>
+            Actual body weight (kg)
+            <input type="number" id="weight" min="20" max="300" step="0.1" required />
+          </label>
+          <label>
+            CrCl input method
+            <select id="crcl-mode">
+              <option value="auto" selected>Auto-calculate from serum creatinine</option>
+              <option value="manual">Manual CrCl entry</option>
+            </select>
+          </label>
+          <label id="age-wrap">
+            Patient age (years)
+            <input type="number" id="age" min="18" max="120" step="1" />
+          </label>
+          <label id="sex-wrap">
+            Sex for Cockcroft-Gault
+            <select id="sex">
+              <option value="male" selected>Male</option>
+              <option value="female">Female (x0.85 factor)</option>
+            </select>
+          </label>
+          <label id="scr-wrap">
+            Serum creatinine, SCr (mg/dL)
+            <input type="number" id="scr" min="0.1" max="20" step="0.01" />
+          </label>
+          <label id="manual-crcl-wrap" class="hidden">
+            Manual CrCl (mL/min)
+            <input type="number" id="crcl" min="1" max="250" step="1" />
+          </label>
+          <label>
+            Preferred loading dose (mg/kg)
+            <input type="number" id="loading-mgkg" min="20" max="30" step="0.5" value="25" />
+          </label>
+          <label>
+            Preferred maintenance dose (mg/kg/dose)
+            <input type="number" id="maint-mgkg" min="15" max="20" step="0.5" value="17.5" />
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="cap-obese" checked />
+            Apply cap: max 2,000 mg per dose and max 4,000 mg/day
+          </label>
+          <button type="submit">Calculate Initial Regimen</button>
+        </form>
+        <div id="initial-result" class="result"></div>
+        <p class="note">
+          Auto CrCl equation: Cockcroft-Gault = ((140 - age) x weight[kg]) / (72 x SCr), and x0.85 for female.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>2) Adjust by Serum Vancomycin Level</h2>
+        <form id="adjust-form" class="grid">
+          <label>
+            Current dose (mg)
+            <input type="number" id="current-dose" min="250" step="50" required />
+          </label>
+          <label>
+            Current interval (hours)
+            <select id="current-interval">
+              <option value="8">q8h</option>
+              <option value="12" selected>q12h</option>
+              <option value="24">q24h</option>
+              <option value="36">q36h</option>
+              <option value="48">q48h</option>
+            </select>
+          </label>
+          <label>
+            Measured trough Ctrough (mg/L)
+            <input type="number" id="trough" min="0.1" max="100" step="0.1" required />
+          </label>
+          <label>
+            Trough target lower (mg/L)
+            <input type="number" id="target-low" min="5" max="30" step="1" value="10" />
+          </label>
+          <label>
+            Trough target upper (mg/L)
+            <input type="number" id="target-high" min="10" max="40" step="1" value="20" />
+          </label>
+          <label>
+            Optional measured AUC24 (mg·h/L)
+            <input type="number" id="auc" min="0" max="2000" step="1" />
+          </label>
+          <label>
+            Optional MIC (mg/L)
+            <input type="number" id="mic" min="0.125" max="8" step="0.125" value="1" />
+          </label>
+          <button type="submit">Calculate Adjustment</button>
+        </form>
+        <div id="adjust-result" class="result"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Reference Rules from Diagram</h2>
+        <ul class="rules">
+          <li>Loading dose: 20-30 mg/kg (actual body weight).</li>
+          <li>Maintenance dose: 15-20 mg/kg per dose.</li>
+          <li>Interval by CrCl: &gt; 50 mL/min = q8-12h, 30-50 = q24h, &lt; 30 = one dose then TDM.</li>
+          <li>Infusion safety: max rate 10 mg/min, max concentration 5 mg/mL.</li>
+          <li>Steady-state sampling: Cpeak 1 hr after 3rd dose, Ctrough 30 min before 4th dose.</li>
+          <li>Target trough: 10-20 mg/L; MRSA goal AUC/MIC 400-600.</li>
+        </ul>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
