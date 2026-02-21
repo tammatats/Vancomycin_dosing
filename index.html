@@ -57,7 +57,7 @@
           <label>
             <span id="t-loading-mgkg-label">Preferred loading dose (mg/kg)</span>
             <input
-              class="num-input preset-input"
+              class="num-input"
               type="number"
               id="loading-mgkg"
               min="20"
@@ -71,7 +71,7 @@
           <label>
             <span id="t-maint-mgkg-label">Preferred maintenance dose (mg/kg/dose)</span>
             <input
-              class="num-input preset-input"
+              class="num-input"
               type="number"
               id="maint-mgkg"
               min="15"
@@ -103,9 +103,10 @@
           </label>
           <label>
             <span id="t-current-interval-label">Current interval (hours)</span>
-            <select id="current-interval">
+            <select id="current-interval" required>
+              <option id="t-current-interval-placeholder" value="" selected disabled>Select interval</option>
               <option value="8">q8h</option>
-              <option value="12" selected>q12h</option>
+              <option value="12">q12h</option>
               <option value="24">q24h</option>
               <option value="36">q36h</option>
               <option value="48">q48h</option>

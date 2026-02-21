@@ -57,6 +57,7 @@ const I18N = {
     adjustHeading: "2) Adjust by Serum Vancomycin Level",
     currentDoseLabel: "Current dose (mg)",
     currentIntervalLabel: "Current interval (hours)",
+    currentIntervalPlaceholder: "Select interval",
     troughLabel: "Measured trough Ctrough (mg/L)",
     targetLowLabel: "Trough target lower (mg/L)",
     targetHighLabel: "Trough target upper (mg/L)",
@@ -154,6 +155,7 @@ const I18N = {
     adjustHeading: "2) ปรับขนาดยาจากระดับ Vancomycin",
     currentDoseLabel: "ขนาดยาปัจจุบัน (mg)",
     currentIntervalLabel: "ช่วงห่างยาปัจจุบัน (ชั่วโมง)",
+    currentIntervalPlaceholder: "เลือกช่วงห่างยา",
     troughLabel: "ค่า Ctrough ที่วัดได้ (mg/L)",
     targetLowLabel: "ค่าเป้าหมายต่ำสุดของ trough (mg/L)",
     targetHighLabel: "ค่าเป้าหมายสูงสุดของ trough (mg/L)",
@@ -247,6 +249,7 @@ const staticMap = [
   ["t-adjust-heading", "adjustHeading"],
   ["t-current-dose-label", "currentDoseLabel"],
   ["t-current-interval-label", "currentIntervalLabel"],
+  ["t-current-interval-placeholder", "currentIntervalPlaceholder"],
   ["t-trough-label", "troughLabel"],
   ["t-target-low-label", "targetLowLabel"],
   ["t-target-high-label", "targetHighLabel"],
@@ -491,6 +494,15 @@ function inputSupportsDecimal(input) {
   return step.includes(".") || step === "any";
 }
 
+function hasPendingDecimal(input) {
+  return input?.dataset.pendingDecimal === "1";
+}
+
+function setPendingDecimal(input, pending) {
+  if (!input) return;
+  input.dataset.pendingDecimal = pending ? "1" : "0";
+}
+
 function pushNumericKey(key) {
   if (!activeInput) {
     const first = getVisibleNumInputsInForm(getActiveForm())[0];
@@ -500,19 +512,41 @@ function pushNumericKey(key) {
 
   let value = activeInput.value || "";
   if (key === ".") {
-    if (!inputSupportsDecimal(activeInput) || value.includes(".")) return;
-    value = value === "" ? "0." : `${value}.`;
+    if (!inputSupportsDecimal(activeInput) || value.includes(".") || hasPendingDecimal(activeInput)) return;
+    const attempted = value === "" ? "0." : `${value}.`;
+    activeInput.value = attempted;
+
+    if (activeInput.value !== attempted) {
+      const fallback = `${value || "0"}.0`;
+      activeInput.value = fallback;
+      setPendingDecimal(activeInput, true);
+    } else {
+      setPendingDecimal(activeInput, false);
+    }
   } else {
-    value = value === "0" ? key : `${value}${key}`;
+    if (hasPendingDecimal(activeInput) && value.endsWith(".0")) {
+      value = `${value.slice(0, -1)}${key}`;
+      setPendingDecimal(activeInput, false);
+    } else {
+      value = value === "0" ? key : `${value}${key}`;
+      setPendingDecimal(activeInput, false);
+    }
+    activeInput.value = value;
   }
-  activeInput.value = value;
   activeInput.dispatchEvent(new Event("input", { bubbles: true }));
   requestAnimationFrame(() => ensureInputVisible(activeInput));
 }
 
 function backspaceKey() {
   if (!activeInput) return;
-  activeInput.value = (activeInput.value || "").slice(0, -1);
+  const value = activeInput.value || "";
+  if (hasPendingDecimal(activeInput) && value.endsWith(".0")) {
+    activeInput.value = value.slice(0, -2);
+    setPendingDecimal(activeInput, false);
+  } else {
+    activeInput.value = value.slice(0, -1);
+    if (!activeInput.value.includes(".")) setPendingDecimal(activeInput, false);
+  }
   activeInput.dispatchEvent(new Event("input", { bubbles: true }));
   requestAnimationFrame(() => ensureInputVisible(activeInput));
 }
@@ -520,6 +554,7 @@ function backspaceKey() {
 function clearKey() {
   if (!activeInput) return;
   activeInput.value = "";
+  setPendingDecimal(activeInput, false);
   activeInput.dispatchEvent(new Event("input", { bubbles: true }));
   requestAnimationFrame(() => ensureInputVisible(activeInput));
 }
