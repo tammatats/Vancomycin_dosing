@@ -163,16 +163,28 @@ button:hover {
   color: #173036;
 }
 
-.toggle-box.is-auto {
+.toggle-box.mode-auto {
   background: #ccf3df;
   border-color: #3f9d6a;
   color: #0a4f33;
 }
 
-.toggle-box.is-manual {
+.toggle-box.mode-manual {
   background: #e8ecef;
   border-color: #9eaab1;
   color: #3b4b52;
+}
+
+.toggle-box.sex-male {
+  background: #dbeaff;
+  border-color: #3776e5;
+  color: #11408e;
+}
+
+.toggle-box.sex-female {
+  background: #ffe0ea;
+  border-color: #d84d7e;
+  color: #8f1540;
 }
 
 .num-input.active-input {

@@ -285,13 +285,13 @@ function applyStaticTranslation() {
 
 function refreshModeButtons() {
   const isAuto = crclModeInput.value === "auto";
-  crclModeToggle.classList.toggle("is-auto", isAuto);
-  crclModeToggle.classList.toggle("is-manual", !isAuto);
+  crclModeToggle.classList.remove("mode-auto", "mode-manual");
+  crclModeToggle.classList.add(isAuto ? "mode-auto" : "mode-manual");
   crclModeToggle.textContent = isAuto ? tr("modeAutoPill") : tr("modeManualPill");
 
   const isMale = sexInput.value === "male";
-  sexToggle.classList.toggle("is-auto", isMale);
-  sexToggle.classList.toggle("is-manual", !isMale);
+  sexToggle.classList.remove("sex-male", "sex-female");
+  sexToggle.classList.add(isMale ? "sex-male" : "sex-female");
   sexToggle.textContent = isMale ? tr("sexMalePill") : tr("sexFemalePill");
 }
 
@@ -396,15 +396,16 @@ function ensureInputVisible(input, behavior = "smooth") {
   if (!input || !isVisible(input)) return;
 
   const rect = input.getBoundingClientRect();
-  const topBoundary = 12;
-  const bottomBoundary = window.innerHeight - getNumpadHeight() - 14;
+  const usableHeight = window.innerHeight - getNumpadHeight();
+  const preferredTop = Math.max(14, usableHeight * 0.34);
+  const preferredBottom = Math.max(preferredTop + 44, usableHeight * 0.62);
 
-  if (rect.bottom > bottomBoundary) {
-    window.scrollBy({ top: rect.bottom - bottomBoundary, behavior });
+  if (rect.bottom > preferredBottom) {
+    window.scrollBy({ top: rect.bottom - preferredBottom, behavior });
     return;
   }
-  if (rect.top < topBoundary) {
-    window.scrollBy({ top: rect.top - topBoundary, behavior });
+  if (rect.top < preferredTop) {
+    window.scrollBy({ top: rect.top - preferredTop, behavior });
   }
 }
 
@@ -463,18 +464,21 @@ function pushNumericKey(key) {
   }
   activeInput.value = value;
   activeInput.dispatchEvent(new Event("input", { bubbles: true }));
+  requestAnimationFrame(() => ensureInputVisible(activeInput));
 }
 
 function backspaceKey() {
   if (!activeInput) return;
   activeInput.value = (activeInput.value || "").slice(0, -1);
   activeInput.dispatchEvent(new Event("input", { bubbles: true }));
+  requestAnimationFrame(() => ensureInputVisible(activeInput));
 }
 
 function clearKey() {
   if (!activeInput) return;
   activeInput.value = "";
   activeInput.dispatchEvent(new Event("input", { bubbles: true }));
+  requestAnimationFrame(() => ensureInputVisible(activeInput));
 }
 
 function moveInput(delta) {
@@ -770,7 +774,13 @@ function initNumpad() {
   document.addEventListener("pointerdown", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
-    if (target.closest(".num-input") || target.closest("#numpad")) return;
+    if (
+      target.closest(".num-input") ||
+      target.closest("#numpad") ||
+      target.closest("#sex-toggle") ||
+      target.closest("#crcl-mode-toggle")
+    )
+      return;
     hideNumpad();
     clearActiveInput();
   });
@@ -791,6 +801,10 @@ function initModeButtons() {
   sexToggle.addEventListener("click", () => {
     sexInput.value = sexInput.value === "male" ? "female" : "male";
     refreshModeButtons();
+    if (activeInput) {
+      showNumpad();
+      requestAnimationFrame(() => ensureInputVisible(activeInput));
+    }
   });
 }
 
