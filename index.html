@@ -3,87 +3,86 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vancomycin Dosing Assistant</title>
+    <title id="t-doc-title">Vancomycin Dosing Assistant</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <header class="hero">
-        <p class="eyebrow">Adult Protocol Helper</p>
-        <h1>Vancomycin Initial + TDM Adjustment</h1>
-        <p class="lead">
+        <div class="hero-top">
+          <p class="eyebrow" id="t-eyebrow">Adult Protocol Helper</p>
+          <button id="language-toggle" type="button">ไทย</button>
+        </div>
+        <h1 id="t-hero-title">Vancomycin Initial + TDM Adjustment</h1>
+        <p class="lead" id="t-lead">
           Implements the dosing flow from your diagram: loading/maintenance dose,
           interval by creatinine clearance, infusion safety limits, and follow-up
           adjustment using serum vancomycin levels.
         </p>
-        <p class="warning">
+        <p class="warning" id="t-warning">
           Clinical decision support only. Final prescription must be confirmed by
           physician/pharmacist and local hospital policy.
         </p>
       </header>
 
       <section class="panel">
-        <h2>1) Initial Dosing</h2>
+        <h2 id="t-initial-heading">1) Initial Dosing</h2>
         <form id="initial-form" class="grid">
           <label>
-            Actual body weight (kg)
-            <input type="number" id="weight" min="20" max="300" step="0.1" required />
+            <span id="t-weight-label">Actual body weight (kg)</span>
+            <input class="num-input" type="number" id="weight" min="20" max="300" step="0.1" inputmode="none" required />
           </label>
-          <label>
-            CrCl input method
-            <select id="crcl-mode">
-              <option value="auto" selected>Auto-calculate from serum creatinine</option>
-              <option value="manual">Manual CrCl entry</option>
-            </select>
+          <label class="toggle-field">
+            <span id="t-crcl-mode-label">CrCl input method</span>
+            <button type="button" id="crcl-mode-toggle" class="toggle-box"></button>
+            <input type="hidden" id="crcl-mode" value="auto" />
           </label>
           <label id="age-wrap">
-            Patient age (years)
-            <input type="number" id="age" min="18" max="120" step="1" />
+            <span id="t-age-label">Patient age (years)</span>
+            <input class="num-input" type="number" id="age" min="18" max="120" step="1" inputmode="none" />
           </label>
-          <label id="sex-wrap">
-            Sex for Cockcroft-Gault
-            <select id="sex">
-              <option value="male" selected>Male</option>
-              <option value="female">Female (x0.85 factor)</option>
-            </select>
+          <label id="sex-wrap" class="toggle-field">
+            <span id="t-sex-label">Sex for Cockcroft-Gault</span>
+            <button type="button" id="sex-toggle" class="toggle-box"></button>
+            <input type="hidden" id="sex" value="male" />
           </label>
           <label id="scr-wrap">
-            Serum creatinine, SCr (mg/dL)
-            <input type="number" id="scr" min="0.1" max="20" step="0.01" />
+            <span id="t-scr-label">Serum creatinine, SCr (mg/dL)</span>
+            <input class="num-input" type="number" id="scr" min="0.1" max="20" step="0.01" inputmode="none" />
           </label>
           <label id="manual-crcl-wrap" class="hidden">
-            Manual CrCl (mL/min)
-            <input type="number" id="crcl" min="1" max="250" step="1" />
+            <span id="t-manual-crcl-label">Manual CrCl (mL/min)</span>
+            <input class="num-input" type="number" id="crcl" min="1" max="250" step="1" inputmode="none" />
           </label>
           <label>
-            Preferred loading dose (mg/kg)
-            <input type="number" id="loading-mgkg" min="20" max="30" step="0.5" value="25" />
+            <span id="t-loading-mgkg-label">Preferred loading dose (mg/kg)</span>
+            <input class="num-input" type="number" id="loading-mgkg" min="20" max="30" step="0.5" value="25" inputmode="none" />
           </label>
           <label>
-            Preferred maintenance dose (mg/kg/dose)
-            <input type="number" id="maint-mgkg" min="15" max="20" step="0.5" value="17.5" />
+            <span id="t-maint-mgkg-label">Preferred maintenance dose (mg/kg/dose)</span>
+            <input class="num-input" type="number" id="maint-mgkg" min="15" max="20" step="0.5" value="17.5" inputmode="none" />
           </label>
           <label class="checkbox">
             <input type="checkbox" id="cap-obese" checked />
-            Apply cap: max 2,000 mg per dose and max 4,000 mg/day
+            <span id="t-cap-label">Apply cap: max 2,000 mg per dose and max 4,000 mg/day</span>
           </label>
-          <button type="submit">Calculate Initial Regimen</button>
+          <button type="submit" id="t-calc-initial-btn">Calculate Initial Regimen</button>
         </form>
         <div id="initial-result" class="result"></div>
-        <p class="note">
+        <p class="note" id="t-crcl-note">
           Auto CrCl equation: Cockcroft-Gault = ((140 - age) x weight[kg]) / (72 x SCr), and x0.85 for female.
         </p>
       </section>
 
       <section class="panel">
-        <h2>2) Adjust by Serum Vancomycin Level</h2>
+        <h2 id="t-adjust-heading">2) Adjust by Serum Vancomycin Level</h2>
         <form id="adjust-form" class="grid">
           <label>
-            Current dose (mg)
-            <input type="number" id="current-dose" min="250" step="50" required />
+            <span id="t-current-dose-label">Current dose (mg)</span>
+            <input class="num-input" type="number" id="current-dose" min="250" step="50" inputmode="none" required />
           </label>
           <label>
-            Current interval (hours)
+            <span id="t-current-interval-label">Current interval (hours)</span>
             <select id="current-interval">
               <option value="8">q8h</option>
               <option value="12" selected>q12h</option>
@@ -93,42 +92,64 @@
             </select>
           </label>
           <label>
-            Measured trough Ctrough (mg/L)
-            <input type="number" id="trough" min="0.1" max="100" step="0.1" required />
+            <span id="t-trough-label">Measured trough Ctrough (mg/L)</span>
+            <input class="num-input" type="number" id="trough" min="0.1" max="100" step="0.1" inputmode="none" required />
           </label>
           <label>
-            Trough target lower (mg/L)
-            <input type="number" id="target-low" min="5" max="30" step="1" value="10" />
+            <span id="t-target-low-label">Trough target lower (mg/L)</span>
+            <input class="num-input" type="number" id="target-low" min="5" max="30" step="1" value="10" inputmode="none" />
           </label>
           <label>
-            Trough target upper (mg/L)
-            <input type="number" id="target-high" min="10" max="40" step="1" value="20" />
+            <span id="t-target-high-label">Trough target upper (mg/L)</span>
+            <input class="num-input" type="number" id="target-high" min="10" max="40" step="1" value="20" inputmode="none" />
           </label>
           <label>
-            Optional measured AUC24 (mg·h/L)
-            <input type="number" id="auc" min="0" max="2000" step="1" />
+            <span id="t-auc-label">Optional measured AUC24 (mg·h/L)</span>
+            <input class="num-input" type="number" id="auc" min="0" max="2000" step="1" inputmode="none" />
           </label>
           <label>
-            Optional MIC (mg/L)
-            <input type="number" id="mic" min="0.125" max="8" step="0.125" value="1" />
+            <span id="t-mic-label">Optional MIC (mg/L)</span>
+            <input class="num-input" type="number" id="mic" min="0.125" max="8" step="0.125" value="1" inputmode="none" />
           </label>
-          <button type="submit">Calculate Adjustment</button>
+          <button type="submit" id="t-calc-adjust-btn">Calculate Adjustment</button>
         </form>
         <div id="adjust-result" class="result"></div>
       </section>
 
       <section class="panel">
-        <h2>Reference Rules from Diagram</h2>
+        <h2 id="t-rules-heading">Reference Rules from Diagram</h2>
         <ul class="rules">
-          <li>Loading dose: 20-30 mg/kg (actual body weight).</li>
-          <li>Maintenance dose: 15-20 mg/kg per dose.</li>
-          <li>Interval by CrCl: &gt; 50 mL/min = q8-12h, 30-50 = q24h, &lt; 30 = one dose then TDM.</li>
-          <li>Infusion safety: max rate 10 mg/min, max concentration 5 mg/mL.</li>
-          <li>Steady-state sampling: Cpeak 1 hr after 3rd dose, Ctrough 30 min before 4th dose.</li>
-          <li>Target trough: 10-20 mg/L; MRSA goal AUC/MIC 400-600.</li>
+          <li id="t-rule-1">Loading dose: 20-30 mg/kg (actual body weight).</li>
+          <li id="t-rule-2">Maintenance dose: 15-20 mg/kg per dose.</li>
+          <li id="t-rule-3">Interval by CrCl: &gt; 50 mL/min = q8-12h, 30-50 = q24h, &lt; 30 = one dose then TDM.</li>
+          <li id="t-rule-4">Infusion safety: max rate 10 mg/min, max concentration 5 mg/mL.</li>
+          <li id="t-rule-5">Monitoring reminder in this app: q24h maintenance -> trough 30 min before 3rd dose; CrCl &lt; 30 -> level at 48 hr after loading.</li>
+          <li id="t-rule-6">Target trough: 10-20 mg/L; MRSA goal AUC/MIC 400-600.</li>
         </ul>
       </section>
     </main>
+    <div id="numpad" class="numpad hidden">
+      <div class="numpad-toolbar">
+        <button type="button" id="numpad-prev" class="numpad-nav-btn" data-action="prev">Prev</button>
+        <button type="button" id="numpad-next" class="numpad-nav-btn" data-action="next">Next</button>
+        <button type="button" id="numpad-done" class="numpad-done-btn" data-action="done">Done</button>
+      </div>
+      <div class="numpad-grid">
+        <button type="button" data-key="1">1</button>
+        <button type="button" data-key="2">2</button>
+        <button type="button" data-key="3">3</button>
+        <button type="button" data-key="4">4</button>
+        <button type="button" data-key="5">5</button>
+        <button type="button" data-key="6">6</button>
+        <button type="button" data-key="7">7</button>
+        <button type="button" data-key="8">8</button>
+        <button type="button" data-key="9">9</button>
+        <button type="button" data-action="clear">C</button>
+        <button type="button" data-key="0">0</button>
+        <button type="button" data-key=".">.</button>
+      </div>
+      <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
+    </div>
     <script src="app.js"></script>
   </body>
 </html>

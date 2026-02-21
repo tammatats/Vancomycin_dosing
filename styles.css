@@ -25,7 +25,7 @@ body {
 .app-shell {
   max-width: 980px;
   margin: 0 auto;
-  padding: 2.2rem 1rem 4rem;
+  padding: 2.2rem 1rem 10rem;
 }
 
 .hero {
@@ -37,12 +37,33 @@ body {
   animation: fade-up 450ms ease both;
 }
 
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+
 .eyebrow {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.78rem;
   margin: 0 0 0.25rem;
   opacity: 0.85;
+}
+
+#language-toggle {
+  align-self: start;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(0, 0, 0, 0.16);
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+#language-toggle:hover {
+  opacity: 0.92;
 }
 
 h1 {
@@ -126,6 +147,39 @@ button:hover {
   gap: 0.48rem;
 }
 
+.toggle-field {
+  gap: 0.45rem;
+}
+
+.toggle-box {
+  align-self: stretch;
+  text-align: left;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #b8b09f;
+  border-radius: 10px;
+  font-weight: 700;
+  line-height: 1.25;
+  background: #d2dbde;
+  color: #173036;
+}
+
+.toggle-box.is-auto {
+  background: #ccf3df;
+  border-color: #3f9d6a;
+  color: #0a4f33;
+}
+
+.toggle-box.is-manual {
+  background: #e8ecef;
+  border-color: #9eaab1;
+  color: #3b4b52;
+}
+
+.num-input.active-input {
+  outline: 2px solid color-mix(in srgb, var(--accent), white 30%);
+  border-color: var(--accent);
+}
+
 .result {
   margin-top: 0.95rem;
   padding: 0.9rem;
@@ -138,6 +192,53 @@ button:hover {
   color: #082730;
 }
 
+.order-highlight {
+  border: 2px solid #d68a2f;
+  border-radius: 12px;
+  background: linear-gradient(130deg, #fff4d8, #ffe7b8);
+  padding: 0.75rem 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.order-title {
+  margin: 0;
+  font-weight: 700;
+  color: #7d4a0b;
+}
+
+.order-columns {
+  margin-top: 0.55rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.6rem;
+}
+
+.order-column {
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid #e6c48f;
+  border-radius: 10px;
+  padding: 0.55rem 0.6rem;
+}
+
+.order-label {
+  margin: 0;
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #7d4a0b;
+  font-weight: 700;
+}
+
+.order-text {
+  margin: 0.25rem 0 0;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.order-line {
+  margin: 0.2rem 0;
+}
+
 .note {
   color: var(--muted);
   margin: 0.4rem 0 0;
@@ -146,6 +247,69 @@ button:hover {
 
 .hidden {
   display: none;
+}
+
+.numpad {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1200;
+  background: rgba(248, 245, 237, 0.98);
+  border-top: 1px solid #ccbfa8;
+  box-shadow: 0 -10px 28px rgba(21, 35, 33, 0.2);
+  padding: 0.55rem 0.55rem calc(0.7rem + env(safe-area-inset-bottom));
+}
+
+.numpad-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.4rem;
+  margin-bottom: 0.45rem;
+}
+
+.numpad-nav-btn,
+.numpad-done-btn {
+  background: #f2f3f4;
+  color: #223437;
+  border: 1px solid #c6c8ca;
+}
+
+.numpad-done-btn {
+  background: #0b7a75;
+  border-color: #0b7a75;
+  color: #fff;
+}
+
+.numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.numpad button {
+  align-self: auto;
+}
+
+.numpad-grid button {
+  background: #ffffff;
+  color: #1b2d2f;
+  border: 1px solid #d0c5af;
+  padding: 0.75rem 0.5rem;
+  font-size: 1.08rem;
+  border-radius: 10px;
+}
+
+.numpad-backspace {
+  width: 100%;
+  margin-top: 0.45rem;
+  background: #fef2e6;
+  color: #6a3a1c;
+  border: 1px solid #dfb58c;
+}
+
+body.numpad-open .app-shell {
+  padding-bottom: 16.5rem;
 }
 
 .rules {
@@ -180,10 +344,14 @@ button:hover {
 
 @media (max-width: 640px) {
   .app-shell {
-    padding: 1rem 0.7rem 2.4rem;
+    padding: 1rem 0.7rem 10rem;
   }
 
   .hero {
     border-radius: 12px;
+  }
+
+  body.numpad-open .app-shell {
+    padding-bottom: 18rem;
   }
 }
