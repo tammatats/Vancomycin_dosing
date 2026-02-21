@@ -225,6 +225,7 @@ const I18N = {
 
 let currentLang = localStorage.getItem("vanco-lang") === "th" ? "th" : "en";
 let activeInput = null;
+let activeActionButton = null;
 
 const staticMap = [
   ["t-eyebrow", "eyebrow"],
@@ -375,7 +376,24 @@ function isVisible(el) {
 }
 
 function getVisibleNumInputs() {
-  return numInputs.filter((input) => !input.disabled && isVisible(input));
+  return numInputs.filter(
+    (input) => !input.disabled && isVisible(input) && input.dataset.skipNav !== "true"
+  );
+}
+
+function getVisibleNumInputsInForm(form) {
+  return getVisibleNumInputs().filter((input) => input.closest("form") === form);
+}
+
+function getActiveForm() {
+  return activeInput?.closest("form") || activeActionButton?.closest("form") || initialForm;
+}
+
+function getNavigationTargets(form) {
+  const targets = getVisibleNumInputsInForm(form);
+  const submit = form?.querySelector('button[type="submit"]');
+  if (submit && isVisible(submit)) targets.push(submit);
+  return targets;
 }
 
 function showNumpad() {
@@ -411,6 +429,10 @@ function ensureInputVisible(input, behavior = "smooth") {
 
 function setActiveInput(input) {
   if (!input || !isVisible(input)) return;
+  if (activeActionButton) {
+    activeActionButton.classList.remove("nav-target-active");
+    activeActionButton = null;
+  }
   if (activeInput === input) {
     showNumpad();
     requestAnimationFrame(() => ensureInputVisible(activeInput));
@@ -424,10 +446,31 @@ function setActiveInput(input) {
   requestAnimationFrame(() => ensureInputVisible(activeInput));
 }
 
-function clearActiveInput() {
-  if (!activeInput) return;
-  activeInput.classList.remove("active-input");
-  activeInput = null;
+function setActiveActionButton(button) {
+  if (!button || !isVisible(button)) return;
+  if (activeInput) {
+    activeInput.classList.remove("active-input");
+    activeInput = null;
+  }
+  if (activeActionButton) {
+    activeActionButton.classList.remove("nav-target-active");
+  }
+  activeActionButton = button;
+  activeActionButton.classList.add("nav-target-active");
+  activeActionButton.focus({ preventScroll: true });
+  showNumpad();
+  requestAnimationFrame(() => ensureInputVisible(activeActionButton));
+}
+
+function clearActiveTarget() {
+  if (activeInput) {
+    activeInput.classList.remove("active-input");
+    activeInput = null;
+  }
+  if (activeActionButton) {
+    activeActionButton.classList.remove("nav-target-active");
+    activeActionButton = null;
+  }
 }
 
 function syncCrclInputMode() {
@@ -450,7 +493,7 @@ function inputSupportsDecimal(input) {
 
 function pushNumericKey(key) {
   if (!activeInput) {
-    const first = getVisibleNumInputs()[0];
+    const first = getVisibleNumInputsInForm(getActiveForm())[0];
     if (first) setActiveInput(first);
   }
   if (!activeInput) return;
@@ -482,13 +525,20 @@ function clearKey() {
 }
 
 function moveInput(delta) {
-  const inputs = getVisibleNumInputs();
-  if (!inputs.length) return;
+  const targets = getNavigationTargets(getActiveForm());
+  if (!targets.length) return;
 
-  let index = inputs.indexOf(activeInput);
-  if (index < 0) index = 0;
-  const nextIndex = Math.max(0, Math.min(inputs.length - 1, index + delta));
-  setActiveInput(inputs[nextIndex]);
+  const current = activeInput || activeActionButton;
+  let index = targets.indexOf(current);
+  if (index < 0) index = delta > 0 ? -1 : 0;
+
+  const nextIndex = Math.max(0, Math.min(targets.length - 1, index + delta));
+  const nextTarget = targets[nextIndex];
+  if (nextTarget instanceof HTMLButtonElement) {
+    setActiveActionButton(nextTarget);
+    return;
+  }
+  setActiveInput(nextTarget);
 }
 
 function showInitialResult(message) {
@@ -765,9 +815,15 @@ function initNumpad() {
     if (action === "prev") moveInput(-1);
     if (action === "next") moveInput(1);
     if (action === "done") {
+      if (activeActionButton) {
+        activeActionButton.click();
+        hideNumpad();
+        clearActiveTarget();
+        return;
+      }
       hideNumpad();
       if (activeInput) activeInput.blur();
-      clearActiveInput();
+      clearActiveTarget();
     }
   });
 
@@ -778,15 +834,17 @@ function initNumpad() {
       target.closest(".num-input") ||
       target.closest("#numpad") ||
       target.closest("#sex-toggle") ||
-      target.closest("#crcl-mode-toggle")
+      target.closest("#crcl-mode-toggle") ||
+      target.closest('button[type="submit"]')
     )
       return;
     hideNumpad();
-    clearActiveInput();
+    clearActiveTarget();
   });
 
   window.addEventListener("resize", () => {
     if (activeInput) ensureInputVisible(activeInput, "auto");
+    if (activeActionButton) ensureInputVisible(activeActionButton, "auto");
   });
 }
 
