@@ -388,10 +388,31 @@ function hideNumpad() {
   document.body.classList.remove("numpad-open");
 }
 
+function getNumpadHeight() {
+  return numpad.classList.contains("hidden") ? 0 : numpad.getBoundingClientRect().height;
+}
+
+function ensureInputVisible(input, behavior = "smooth") {
+  if (!input || !isVisible(input)) return;
+
+  const rect = input.getBoundingClientRect();
+  const topBoundary = 12;
+  const bottomBoundary = window.innerHeight - getNumpadHeight() - 14;
+
+  if (rect.bottom > bottomBoundary) {
+    window.scrollBy({ top: rect.bottom - bottomBoundary, behavior });
+    return;
+  }
+  if (rect.top < topBoundary) {
+    window.scrollBy({ top: rect.top - topBoundary, behavior });
+  }
+}
+
 function setActiveInput(input) {
   if (!input || !isVisible(input)) return;
   if (activeInput === input) {
     showNumpad();
+    requestAnimationFrame(() => ensureInputVisible(activeInput));
     return;
   }
   if (activeInput) activeInput.classList.remove("active-input");
@@ -399,6 +420,7 @@ function setActiveInput(input) {
   activeInput.classList.add("active-input");
   activeInput.focus({ preventScroll: true });
   showNumpad();
+  requestAnimationFrame(() => ensureInputVisible(activeInput));
 }
 
 function clearActiveInput() {
@@ -751,6 +773,10 @@ function initNumpad() {
     if (target.closest(".num-input") || target.closest("#numpad")) return;
     hideNumpad();
     clearActiveInput();
+  });
+
+  window.addEventListener("resize", () => {
+    if (activeInput) ensureInputVisible(activeInput, "auto");
   });
 }
 

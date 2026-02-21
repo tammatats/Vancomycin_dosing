@@ -180,6 +180,10 @@ button:hover {
   border-color: var(--accent);
 }
 
+.num-input {
+  scroll-margin-bottom: 16rem;
+}
+
 .result {
   margin-top: 0.95rem;
   padding: 0.9rem;
