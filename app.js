@@ -517,15 +517,15 @@ function pushNumericKey(key) {
     activeInput.value = attempted;
 
     if (activeInput.value !== attempted) {
-      const fallback = `${value || "0"}.0`;
-      activeInput.value = fallback;
+      activeInput.value = attempted;
       setPendingDecimal(activeInput, true);
     } else {
       setPendingDecimal(activeInput, false);
     }
   } else {
-    if (hasPendingDecimal(activeInput) && value.endsWith(".0")) {
-      value = `${value.slice(0, -1)}${key}`;
+    if (hasPendingDecimal(activeInput)) {
+      if (!value.includes(".")) value = `${value}.`;
+      value = `${value}${key}`;
       setPendingDecimal(activeInput, false);
     } else {
       value = value === "0" ? key : `${value}${key}`;
@@ -540,8 +540,12 @@ function pushNumericKey(key) {
 function backspaceKey() {
   if (!activeInput) return;
   const value = activeInput.value || "";
-  if (hasPendingDecimal(activeInput) && value.endsWith(".0")) {
-    activeInput.value = value.slice(0, -2);
+  if (hasPendingDecimal(activeInput)) {
+    if (value.endsWith(".")) {
+      activeInput.value = value.slice(0, -1);
+    } else {
+      activeInput.value = value.slice(0, -1);
+    }
     setPendingDecimal(activeInput, false);
   } else {
     activeInput.value = value.slice(0, -1);
@@ -826,6 +830,7 @@ function setLanguage(lang) {
 
 function initNumpad() {
   for (const input of numInputs) {
+    if (input.type !== "text") input.type = "text";
     input.readOnly = true;
     input.addEventListener("focus", () => setActiveInput(input));
     input.addEventListener("pointerdown", () => setActiveInput(input));

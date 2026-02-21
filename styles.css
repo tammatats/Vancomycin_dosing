@@ -196,6 +196,17 @@ button:hover {
   scroll-margin-bottom: 16rem;
 }
 
+.num-input.preset-input {
+  background: #eceff3;
+  border-color: #c8ced6;
+  color: #687584;
+}
+
+#current-interval {
+  background: #fff;
+  color: #132022;
+}
+
 .nav-target-active {
   outline: 3px solid color-mix(in srgb, var(--accent), white 42%);
   outline-offset: 2px;
