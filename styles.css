@@ -94,6 +94,49 @@ h1 {
   animation: fade-up 520ms ease both;
 }
 
+.workflow-chooser {
+  padding: 0.8rem;
+}
+
+.mode-prompt {
+  margin: 0 0 0.55rem;
+  font-weight: 700;
+  color: #20353a;
+}
+
+.workflow-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid #b8b09f;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.workflow-btn {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid #c6c0b1;
+  background: #e5e8ec;
+  color: #3b4b52;
+  padding: 0.75rem 0.52rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.workflow-btn:last-child {
+  border-right: none;
+}
+
+.workflow-btn.active {
+  background: #d9edf4;
+  color: #0f4f66;
+}
+
+.workflow-btn:hover {
+  transform: none;
+}
+
 h2 {
   margin: 0 0 0.8rem;
   font-size: 1.2rem;

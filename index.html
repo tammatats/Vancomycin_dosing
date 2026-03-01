@@ -25,7 +25,19 @@
         </p>
       </header>
 
-      <section class="panel">
+      <section class="panel workflow-chooser" id="workflow-chooser">
+        <p class="mode-prompt" id="t-mode-prompt">Choose calculation mode</p>
+        <div class="workflow-switch">
+          <button type="button" id="mode-initial-btn" class="workflow-btn" data-mode="initial">
+            <span id="t-mode-initial">Initial dose</span>
+          </button>
+          <button type="button" id="mode-adjust-btn" class="workflow-btn" data-mode="adjust">
+            <span id="t-mode-adjust">Adjust vanco level</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="panel hidden" id="initial-panel">
         <h2 id="t-initial-heading">1) Initial Dosing</h2>
         <form id="initial-form" class="grid">
           <label>
@@ -100,7 +112,7 @@
         </p>
       </section>
 
-      <section class="panel">
+      <section class="panel hidden" id="adjust-panel">
         <h2 id="t-adjust-heading">2) Adjust by Serum Vancomycin Level</h2>
         <form id="adjust-form" class="grid">
           <label>
@@ -143,7 +155,7 @@
         <div id="adjust-result" class="result"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel hidden" id="rules-panel">
         <h2 id="t-rules-heading">Reference Rules from Diagram</h2>
         <ul class="rules">
           <li id="t-rule-1">Loading dose: 20-30 mg/kg (actual body weight).</li>

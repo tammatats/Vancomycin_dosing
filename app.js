@@ -3,6 +3,11 @@ const adjustForm = document.getElementById("adjust-form");
 const initialResult = document.getElementById("initial-result");
 const adjustResult = document.getElementById("adjust-result");
 const languageToggle = document.getElementById("language-toggle");
+const initialPanel = document.getElementById("initial-panel");
+const adjustPanel = document.getElementById("adjust-panel");
+const rulesPanel = document.getElementById("rules-panel");
+const modeInitialBtn = document.getElementById("mode-initial-btn");
+const modeAdjustBtn = document.getElementById("mode-adjust-btn");
 
 const crclModeInput = document.getElementById("crcl-mode");
 const crclModeToggle = document.getElementById("crcl-mode-toggle");
@@ -41,6 +46,9 @@ const I18N = {
     lead: "Implements the dosing flow from your diagram: loading/maintenance dose, interval by creatinine clearance, infusion safety limits, and follow-up adjustment using serum vancomycin levels.",
     warning:
       "Clinical decision support only. Final prescription must be confirmed by physician/pharmacist and local hospital policy.",
+    modePrompt: "Choose calculation mode",
+    modeInitial: "Initial dose",
+    modeAdjust: "Adjust vanco level",
     initialHeading: "1) Initial Dosing",
     weightLabel: "Actual body weight (kg)",
     crclModeLabel: "CrCl input method",
@@ -139,6 +147,9 @@ const I18N = {
       "อิงตามแผนภาพที่ให้มา: ขนาดยา loading/maintenance, ช่วงห่างยาตามค่า CrCl, ความปลอดภัยในการให้ยา และการปรับขนาดยาตามระดับ vancomycin ในเลือด",
     warning:
       "ใช้เพื่อช่วยตัดสินใจทางคลินิกเท่านั้น คำสั่งยาสุดท้ายต้องยืนยันโดยแพทย์/เภสัชกร และนโยบายของโรงพยาบาล",
+    modePrompt: "เลือกโหมดการคำนวณ",
+    modeInitial: "ขนาดยาเริ่มต้น",
+    modeAdjust: "ปรับยาตามระดับยา",
     initialHeading: "1) คำนวณขนาดยาเริ่มต้น",
     weightLabel: "น้ำหนักจริงผู้ป่วย (กก.)",
     crclModeLabel: "วิธีระบุค่า CrCl",
@@ -230,6 +241,7 @@ const I18N = {
 };
 
 let currentLang = localStorage.getItem("vanco-lang") === "th" ? "th" : "en";
+let currentWorkflow = localStorage.getItem("vanco-workflow-mode") || "";
 let activeInput = null;
 let activeActionButton = null;
 
@@ -238,6 +250,9 @@ const staticMap = [
   ["t-hero-title", "heroTitle"],
   ["t-lead", "lead"],
   ["t-warning", "warning"],
+  ["t-mode-prompt", "modePrompt"],
+  ["t-mode-initial", "modeInitial"],
+  ["t-mode-adjust", "modeAdjust"],
   ["t-initial-heading", "initialHeading"],
   ["t-weight-label", "weightLabel"],
   ["t-crcl-mode-label", "crclModeLabel"],
@@ -289,6 +304,7 @@ function applyStaticTranslation() {
     if (el) el.textContent = tr(key);
   }
   refreshModeButtons();
+  refreshWorkflowButtons();
 }
 
 function refreshModeButtons() {
@@ -301,6 +317,32 @@ function refreshModeButtons() {
   sexToggle.dataset.active = isMale ? "left" : "right";
   sexLeft.textContent = tr("sexMalePill");
   sexRight.textContent = tr("sexFemalePill");
+}
+
+function refreshWorkflowButtons() {
+  modeInitialBtn.classList.toggle("active", currentWorkflow === "initial");
+  modeAdjustBtn.classList.toggle("active", currentWorkflow === "adjust");
+}
+
+function setWorkflow(mode, { persist = true, focus = true } = {}) {
+  currentWorkflow = mode;
+  if (persist) localStorage.setItem("vanco-workflow-mode", mode);
+
+  const hasSelection = mode === "initial" || mode === "adjust";
+  initialPanel.classList.toggle("hidden", mode !== "initial");
+  adjustPanel.classList.toggle("hidden", mode !== "adjust");
+  rulesPanel.classList.toggle("hidden", !hasSelection);
+  refreshWorkflowButtons();
+
+  if (!hasSelection) {
+    hideNumpad();
+    clearActiveTarget();
+    return;
+  }
+
+  if (!focus) return;
+  const targetInput = mode === "initial" ? document.getElementById("weight") : document.getElementById("current-dose");
+  setActiveInput(targetInput);
 }
 
 function roundToNearest(value, step = 250) {
@@ -393,7 +435,9 @@ function getVisibleNumInputsInForm(form) {
 }
 
 function getActiveForm() {
-  return activeInput?.closest("form") || activeActionButton?.closest("form") || initialForm;
+  if (activeInput?.closest("form")) return activeInput.closest("form");
+  if (activeActionButton?.closest("form")) return activeActionButton.closest("form");
+  return currentWorkflow === "adjust" ? adjustForm : initialForm;
 }
 
 function getNavigationTargets(form) {
@@ -910,6 +954,11 @@ function initModeButtons() {
   });
 }
 
+function initWorkflowButtons() {
+  modeInitialBtn.addEventListener("click", () => setWorkflow("initial"));
+  modeAdjustBtn.addEventListener("click", () => setWorkflow("adjust"));
+}
+
 languageToggle.addEventListener("click", () => {
   setLanguage(currentLang === "en" ? "th" : "en");
 });
@@ -919,9 +968,15 @@ adjustForm.addEventListener("submit", calculateAdjustment);
 
 initNumpad();
 initModeButtons();
+initWorkflowButtons();
 syncCrclInputMode();
 applyStaticTranslation();
+setWorkflow(currentWorkflow, { persist: false, focus: false });
 
-setTimeout(() => {
-  setActiveInput(document.getElementById("weight"));
-}, 80);
+if (currentWorkflow === "initial" || currentWorkflow === "adjust") {
+  setTimeout(() => {
+    const targetInput =
+      currentWorkflow === "initial" ? document.getElementById("weight") : document.getElementById("current-dose");
+    setActiveInput(targetInput);
+  }, 80);
+}
