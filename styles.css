@@ -153,37 +153,57 @@ button:hover {
 
 .toggle-box {
   align-self: stretch;
-  text-align: left;
-  padding: 0.7rem 0.8rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0;
   border: 1px solid #b8b09f;
-  border-radius: 10px;
-  font-weight: 700;
-  line-height: 1.25;
-  background: #d2dbde;
-  color: #173036;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e8ecef;
+  color: #34424b;
 }
 
-.toggle-box.mode-auto {
+.toggle-box::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #bac1c8;
+  transform: translateX(-0.5px);
+  z-index: 2;
+}
+
+.toggle-half {
+  position: relative;
+  z-index: 1;
+  padding: 0.62rem 0.48rem;
+  text-align: center;
+  font-weight: 700;
+  line-height: 1.25;
+  background: #e8ecef;
+  color: #55626d;
+}
+
+#crcl-mode-toggle[data-active="left"] .toggle-left {
   background: #ccf3df;
-  border-color: #3f9d6a;
   color: #0a4f33;
 }
 
-.toggle-box.mode-manual {
-  background: #e8ecef;
-  border-color: #9eaab1;
-  color: #3b4b52;
+#crcl-mode-toggle[data-active="right"] .toggle-right {
+  background: #ccf3df;
+  color: #0a4f33;
 }
 
-.toggle-box.sex-male {
+#sex-toggle[data-active="left"] .toggle-left {
   background: #dbeaff;
-  border-color: #3776e5;
   color: #11408e;
 }
 
-.toggle-box.sex-female {
+#sex-toggle[data-active="right"] .toggle-right {
   background: #ffe0ea;
-  border-color: #d84d7e;
   color: #8f1540;
 }
 

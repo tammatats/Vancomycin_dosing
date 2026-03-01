@@ -6,8 +6,12 @@ const languageToggle = document.getElementById("language-toggle");
 
 const crclModeInput = document.getElementById("crcl-mode");
 const crclModeToggle = document.getElementById("crcl-mode-toggle");
+const crclModeLeft = document.getElementById("crcl-mode-left");
+const crclModeRight = document.getElementById("crcl-mode-right");
 const sexInput = document.getElementById("sex");
 const sexToggle = document.getElementById("sex-toggle");
+const sexLeft = document.getElementById("sex-left");
+const sexRight = document.getElementById("sex-right");
 const ageWrap = document.getElementById("age-wrap");
 const sexWrap = document.getElementById("sex-wrap");
 const scrWrap = document.getElementById("scr-wrap");
@@ -40,12 +44,12 @@ const I18N = {
     initialHeading: "1) Initial Dosing",
     weightLabel: "Actual body weight (kg)",
     crclModeLabel: "CrCl input method",
-    modeAutoPill: "Auto-calculate CrCl",
-    modeManualPill: "Manual CrCl input",
+    modeAutoPill: "Auto-calculate",
+    modeManualPill: "Manual",
     ageLabel: "Patient age (years)",
     sexLabel: "Sex for Cockcroft-Gault",
-    sexMalePill: "Male (tap to switch)",
-    sexFemalePill: "Female x0.85 (tap to switch)",
+    sexMalePill: "Male",
+    sexFemalePill: "Female x0.85",
     scrLabel: "Serum creatinine, SCr (mg/dL)",
     manualCrclLabel: "Manual CrCl (mL/min)",
     loadingMgKgLabel: "Preferred loading dose (mg/kg)",
@@ -138,12 +142,12 @@ const I18N = {
     initialHeading: "1) คำนวณขนาดยาเริ่มต้น",
     weightLabel: "น้ำหนักจริงผู้ป่วย (กก.)",
     crclModeLabel: "วิธีระบุค่า CrCl",
-    modeAutoPill: "คำนวณ CrCl อัตโนมัติ",
-    modeManualPill: "กรอก CrCl เอง",
+    modeAutoPill: "อัตโนมัติ",
+    modeManualPill: "กรอกเอง",
     ageLabel: "อายุผู้ป่วย (ปี)",
     sexLabel: "เพศสำหรับสูตร Cockcroft-Gault",
-    sexMalePill: "ชาย (แตะเพื่อสลับ)",
-    sexFemalePill: "หญิง x0.85 (แตะเพื่อสลับ)",
+    sexMalePill: "ชาย",
+    sexFemalePill: "หญิง x0.85",
     scrLabel: "Serum creatinine, SCr (mg/dL)",
     manualCrclLabel: "ค่า CrCl ที่กรอกเอง (mL/min)",
     loadingMgKgLabel: "ขนาด loading ที่ต้องการ (mg/kg)",
@@ -289,14 +293,14 @@ function applyStaticTranslation() {
 
 function refreshModeButtons() {
   const isAuto = crclModeInput.value === "auto";
-  crclModeToggle.classList.remove("mode-auto", "mode-manual");
-  crclModeToggle.classList.add(isAuto ? "mode-auto" : "mode-manual");
-  crclModeToggle.textContent = isAuto ? tr("modeAutoPill") : tr("modeManualPill");
+  crclModeToggle.dataset.active = isAuto ? "left" : "right";
+  crclModeLeft.textContent = tr("modeAutoPill");
+  crclModeRight.textContent = tr("modeManualPill");
 
   const isMale = sexInput.value === "male";
-  sexToggle.classList.remove("sex-male", "sex-female");
-  sexToggle.classList.add(isMale ? "sex-male" : "sex-female");
-  sexToggle.textContent = isMale ? tr("sexMalePill") : tr("sexFemalePill");
+  sexToggle.dataset.active = isMale ? "left" : "right";
+  sexLeft.textContent = tr("sexMalePill");
+  sexRight.textContent = tr("sexFemalePill");
 }
 
 function roundToNearest(value, step = 250) {

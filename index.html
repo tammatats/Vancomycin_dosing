@@ -34,7 +34,10 @@
           </label>
           <label class="toggle-field">
             <span id="t-crcl-mode-label">CrCl input method</span>
-            <button type="button" id="crcl-mode-toggle" class="toggle-box"></button>
+            <button type="button" id="crcl-mode-toggle" class="toggle-box" data-active="left">
+              <span id="crcl-mode-left" class="toggle-half toggle-left">Auto-calculate</span>
+              <span id="crcl-mode-right" class="toggle-half toggle-right">Manual</span>
+            </button>
             <input type="hidden" id="crcl-mode" value="auto" />
           </label>
           <label id="age-wrap">
@@ -43,7 +46,10 @@
           </label>
           <label id="sex-wrap" class="toggle-field">
             <span id="t-sex-label">Sex for Cockcroft-Gault</span>
-            <button type="button" id="sex-toggle" class="toggle-box"></button>
+            <button type="button" id="sex-toggle" class="toggle-box" data-active="left">
+              <span id="sex-left" class="toggle-half toggle-left">Male</span>
+              <span id="sex-right" class="toggle-half toggle-right">Female x0.85</span>
+            </button>
             <input type="hidden" id="sex" value="male" />
           </label>
           <label id="scr-wrap">
