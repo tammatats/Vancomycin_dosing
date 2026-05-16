@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title id="t-doc-title">Vancomycin Dosing Assistant</title>
+    <title id="t-doc-title">Clinical Calculator Assistant</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -13,11 +13,11 @@
           <p class="eyebrow" id="t-eyebrow">Adult Protocol Helper</p>
           <button id="language-toggle" type="button">ไทย</button>
         </div>
-        <h1 id="t-hero-title">Vancomycin Initial + TDM Adjustment</h1>
+        <h1 id="t-hero-title">Clinical Dosing + Nutrition Calculator</h1>
         <p class="lead" id="t-lead">
-          Implements the dosing flow from your diagram: loading/maintenance dose,
-          interval by creatinine clearance, infusion safety limits, and follow-up
-          adjustment using serum vancomycin levels.
+          Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM,
+          infusion rate conversion, warfarin adjustment, serum osmolality, and
+          nutrition goals.
         </p>
         <p class="warning" id="t-warning">
           Clinical decision support only. Final prescription must be confirmed by
@@ -27,13 +27,21 @@
 
       <section class="panel workflow-chooser" id="workflow-chooser">
         <p class="mode-prompt" id="t-mode-prompt">Choose calculation mode</p>
-        <div class="workflow-switch">
-          <button type="button" id="mode-initial-btn" class="workflow-btn" data-mode="initial">
-            <span id="t-mode-initial">Initial dose</span>
-          </button>
-          <button type="button" id="mode-adjust-btn" class="workflow-btn" data-mode="adjust">
-            <span id="t-mode-adjust">Adjust vanco level</span>
-          </button>
+        <label class="calculator-search-label">
+          <span class="sr-only" id="t-search-label">Search calculators</span>
+          <input id="calculator-search" type="search" autocomplete="off" placeholder="Search: vanco, antibiotic, warfarin, osmo..." />
+        </label>
+        <div id="calculator-results" class="calculator-results"></div>
+        <div id="vanco-submode" class="submode-card hidden">
+          <p class="submode-title" id="t-vanco-subprompt">Choose vancomycin workflow</p>
+          <div class="submode-switch">
+            <button type="button" id="mode-initial-btn" class="submode-btn">
+              <span id="t-mode-initial">Loading + initial regimen</span>
+            </button>
+            <button type="button" id="mode-adjust-btn" class="submode-btn">
+              <span id="t-mode-adjust">Maintenance / TDM adjustment</span>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -153,6 +161,143 @@
           <button type="submit" id="t-calc-adjust-btn">Calculate Adjustment</button>
         </form>
         <div id="adjust-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="infusion-panel">
+        <h2 id="t-infusion-heading">mcg/kg/min to mL/hr</h2>
+        <form id="infusion-form" class="grid">
+          <label>
+            <span id="t-infusion-weight-label">Body weight (kg)</span>
+            <input class="num-input live-input" type="number" id="infusion-weight" min="1" max="300" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-infusion-dose-label">Dose (mcg/kg/min)</span>
+            <input class="num-input live-input" type="number" id="infusion-dose" min="0" max="200" step="0.01" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-infusion-drug-label">Drug amount in bag (mg)</span>
+            <input class="num-input live-input" type="number" id="infusion-drug-mg" min="0" max="10000" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-infusion-volume-label">Final volume (mL)</span>
+            <input class="num-input live-input" type="number" id="infusion-volume-ml" min="1" max="5000" step="1" inputmode="none" />
+          </label>
+        </form>
+        <div id="infusion-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="warfarin-panel">
+        <h2 id="t-warfarin-heading">Warfarin adjustment</h2>
+        <form id="warfarin-form" class="grid">
+          <label>
+            <span id="t-warfarin-inr-label">Current INR</span>
+            <input class="num-input live-input" type="number" id="warfarin-inr" min="0.5" max="20" step="0.01" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-warfarin-weekly-label">Current weekly dose (mg/week)</span>
+            <input class="num-input live-input" type="number" id="warfarin-weekly-dose" min="0" max="200" step="0.5" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-warfarin-target-low-label">Target INR lower</span>
+            <input class="num-input live-input preset-input" type="number" id="warfarin-target-low" min="1" max="5" step="0.1" value="2" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-warfarin-target-high-label">Target INR upper</span>
+            <input class="num-input live-input preset-input" type="number" id="warfarin-target-high" min="1" max="5" step="0.1" value="3" inputmode="none" />
+          </label>
+          <div class="tablet-picker">
+            <p id="t-warfarin-tabs-label">Available tablet strengths</p>
+            <div id="warfarin-tabs" class="tablet-options">
+              <button type="button" class="tablet-option" data-strength="1">1 mg</button>
+              <button type="button" class="tablet-option" data-strength="2">2 mg</button>
+              <button type="button" class="tablet-option" data-strength="3">3 mg</button>
+              <button type="button" class="tablet-option" data-strength="5">5 mg</button>
+            </div>
+          </div>
+        </form>
+        <div id="warfarin-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="osmo-panel">
+        <h2 id="t-osmo-heading">Calculated serum osmolality</h2>
+        <form id="osmo-form" class="grid">
+          <label>
+            <span id="t-osmo-na-label">Sodium, Na (mEq/L)</span>
+            <input class="num-input live-input" type="number" id="osmo-na" min="80" max="200" step="1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-osmo-glucose-label">Glucose (mg/dL)</span>
+            <input class="num-input live-input" type="number" id="osmo-glucose" min="0" max="2000" step="1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-osmo-bun-label">BUN (mg/dL)</span>
+            <input class="num-input live-input" type="number" id="osmo-bun" min="0" max="300" step="1" inputmode="none" />
+          </label>
+        </form>
+        <div id="osmo-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="nutrition-panel">
+        <h2 id="t-nutrition-heading">Nutrition goals</h2>
+        <form id="nutrition-form" class="grid">
+          <label>
+            <span id="t-nutrition-weight-label">Body weight (kg)</span>
+            <input class="num-input live-input" type="number" id="nutrition-weight" min="1" max="300" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-nutrition-height-label">Height (cm)</span>
+            <input class="num-input live-input" type="number" id="nutrition-height" min="50" max="250" step="0.1" inputmode="none" />
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="nutrition-ckd" class="live-input" />
+            <span id="t-nutrition-ckd-label">CKD</span>
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="nutrition-aki" class="live-input" />
+            <span id="t-nutrition-aki-label">AKI</span>
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="nutrition-critical" class="live-input" />
+            <span id="t-nutrition-critical-label">Critical illness</span>
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="nutrition-refeeding" class="live-input" />
+            <span id="t-nutrition-refeeding-label">Risk refeeding</span>
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="nutrition-enteral" class="live-input" checked />
+            <span id="t-nutrition-enteral-label">Enteral/oral feeding</span>
+          </label>
+        </form>
+        <div id="nutrition-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="antibiotic-panel">
+        <h2 id="t-antibiotic-heading">Antibiotic renal dosing</h2>
+        <form id="antibiotic-form" class="grid">
+          <label>
+            <span id="t-antibiotic-drug-label">Antibiotic</span>
+            <input id="antibiotic-drug-search" type="search" autocomplete="off" placeholder="Type antibiotic name..." />
+            <input type="hidden" id="antibiotic-drug" />
+            <div id="antibiotic-drug-results" class="inline-search-results"></div>
+          </label>
+          <label>
+            <span id="t-antibiotic-indication-label">Indication / regimen</span>
+            <select id="antibiotic-indication"></select>
+          </label>
+          <label>
+            <span id="t-antibiotic-renal-mode-label">Renal mode</span>
+            <select id="antibiotic-renal-mode">
+              <option value="crcl">Non-HD: use CrCl</option>
+              <option value="hd">Intermittent hemodialysis</option>
+            </select>
+          </label>
+          <label>
+            <span id="t-antibiotic-crcl-label">CrCl (mL/min)</span>
+            <input class="num-input live-input" type="number" id="antibiotic-crcl" min="1" max="250" step="1" inputmode="none" />
+          </label>
+        </form>
+        <div id="antibiotic-result" class="result"></div>
       </section>
 
       <section class="panel hidden" id="rules-panel">

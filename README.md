@@ -1,16 +1,25 @@
 # Vancomycin Dosing Assistant (Adult)
 
-Small browser app to support:
+Small browser app to support phone and desktop bedside use:
 
 - Initial vancomycin regimen from weight + CrCl using the provided diagram logic
 - Auto CrCl calculation from serum creatinine (Cockcroft-Gault) using age + sex + weight
 - Infusion safety checks (max `10 mg/min`, max concentration `5 mg/mL`)
 - Highlighted "Order Ready" block with 2 columns: One-Day Order + Continued Order
 - Thai/English language toggle for both UI and generated order text
+- Search-based calculator picker instead of a large permanent button grid
+- Grouped Vancomycin dosing entry with a second choice for loading/initial regimen vs maintenance/TDM adjustment
 - Mobile-first input UX: dedicated numpad, auto-focus first field, and Prev/Next field navigation
+- Desktop input UX: no on-screen numpad, normal keyboard typing, wider layout for use beside hospital apps
 - One-tap toggle boxes for CrCl mode (auto/manual) and sex (male/female)
 - Follow-up dose adjustment from serum trough level
 - Optional AUC/MIC target check (`400-600` for MRSA)
+- Additional live calculators:
+  - `mcg/kg/min` to `mL/hr`
+  - Warfarin weekly-dose adjustment estimate with saved available tablet strengths and click-to-copy prescription
+  - Calculated serum osmolality
+  - Nutrition goals for calories, protein, fluid/volume, and example enteral formula plan
+  - Antibiotic renal dosing with click-to-copy ready orders from the provided hospital 2024 renal dosing table
 
 ## Run
 
@@ -33,6 +42,8 @@ Open `index.html` in a browser.
     - `30-50 mL/min`: `q24h`
     - `<30 mL/min`: one dose then TDM-guided redosing
 - Includes optional cap frequently used in obesity (`max 2000 mg/dose`, `max 4000 mg/day`).
+- Nutrition defaults assume no CKD, no AKI, no critical illness, no refeeding risk, and enteral/oral feeding enabled, so weight + height alone immediately produce a starting estimate.
+- Antibiotic renal dosing follows the provided hospital 2024 renal dosing table and includes a non-HD CrCl mode plus intermittent HD mode. Still verify cultures, allergy, indication severity, dialysis/CRRT status, and ID/pharmacy guidance.
 
 ## Safety
 
