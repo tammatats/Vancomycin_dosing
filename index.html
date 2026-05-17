@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title id="t-doc-title">Clinical Calculator Assistant</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260517-ui5" />
   </head>
   <body>
     <main class="app-shell">
@@ -165,23 +165,31 @@
 
       <section class="panel hidden" id="infusion-panel">
         <h2 id="t-infusion-heading">mcg/kg/min to mL/hr</h2>
-        <form id="infusion-form" class="grid">
-          <label>
+        <form id="infusion-form" class="grid infusion-grid">
+          <label class="full-span">
             <span id="t-infusion-weight-label">Body weight (kg)</span>
             <input class="num-input live-input" type="number" id="infusion-weight" min="1" max="300" step="0.1" inputmode="none" />
           </label>
-          <label>
-            <span id="t-infusion-dose-label">Dose (mcg/kg/min)</span>
-            <input class="num-input live-input" type="number" id="infusion-dose" min="0" max="200" step="0.01" inputmode="none" />
-          </label>
-          <label>
-            <span id="t-infusion-drug-label">Drug amount in bag (mg)</span>
-            <input class="num-input live-input" type="number" id="infusion-drug-mg" min="0" max="10000" step="0.1" inputmode="none" />
-          </label>
-          <label>
-            <span id="t-infusion-volume-label">Final volume (mL)</span>
-            <input class="num-input live-input" type="number" id="infusion-volume-ml" min="1" max="5000" step="1" inputmode="none" />
-          </label>
+          <div class="split-row full-span">
+            <label>
+              <span id="t-infusion-drug-label">Drug amount (mg)</span>
+              <input class="num-input live-input" type="number" id="infusion-drug-mg" min="0" max="10000" step="0.1" inputmode="none" />
+            </label>
+            <label>
+              <span id="t-infusion-volume-label">Final volume (mL)</span>
+              <input class="num-input live-input" type="number" id="infusion-volume-ml" min="1" max="5000" step="1" inputmode="none" />
+            </label>
+          </div>
+          <div class="split-row full-span">
+            <label>
+              <span id="t-infusion-rate-mlhr-label">Pump rate (mL/hr)</span>
+              <input class="num-input live-input" type="number" id="infusion-rate-mlhr" min="0" max="2000" step="0.1" inputmode="none" />
+            </label>
+            <label>
+              <span id="t-infusion-dose-label">Dose (mcg/kg/min)</span>
+              <input class="num-input live-input" type="number" id="infusion-dose" min="0" max="200" step="0.01" inputmode="none" />
+            </label>
+          </div>
         </form>
         <div id="infusion-result" class="result"></div>
       </section>
@@ -274,12 +282,11 @@
 
       <section class="panel hidden" id="antibiotic-panel">
         <h2 id="t-antibiotic-heading">Antibiotic renal dosing</h2>
-        <form id="antibiotic-form" class="grid">
+        <form id="antibiotic-form" class="grid antibiotic-grid">
           <label>
             <span id="t-antibiotic-drug-label">Antibiotic</span>
             <input id="antibiotic-drug-search" type="search" autocomplete="off" placeholder="Type antibiotic name..." />
             <input type="hidden" id="antibiotic-drug" />
-            <div id="antibiotic-drug-results" class="inline-search-results"></div>
           </label>
           <label>
             <span id="t-antibiotic-indication-label">Indication / regimen</span>
@@ -296,6 +303,10 @@
             <span id="t-antibiotic-crcl-label">CrCl (mL/min)</span>
             <input class="num-input live-input" type="number" id="antibiotic-crcl" min="1" max="250" step="1" inputmode="none" />
           </label>
+          <div class="antibiotic-picker full-span">
+            <p class="field-hint" id="t-antibiotic-picker-label">Select antibiotic</p>
+            <div id="antibiotic-drug-results" class="inline-search-results antibiotic-options"></div>
+          </div>
         </form>
         <div id="antibiotic-result" class="result"></div>
       </section>
@@ -334,6 +345,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js"></script>
+    <script src="app.js?v=20260517-ui3"></script>
   </body>
 </html>

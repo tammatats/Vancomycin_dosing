@@ -594,6 +594,11 @@ const I18N = {
     numpadNext: "Next",
     numpadDone: "Done",
     orderReady: "Order Ready",
+    orderReadyCopy: "Order Ready - click to copy",
+    orderLineReady: "Order Ready - click each line to copy",
+    orderCopied: "Copied order to clipboard.",
+    orderLineCopied: "Copied order line to clipboard.",
+    orderCopyFailed: "Copy failed. Select and copy manually.",
     oneDayOrder: "One-Day Order",
     continuedOrder: "Continued Order",
     hr: "hr",
@@ -640,16 +645,25 @@ const I18N = {
     currentDailyExposure: "Current daily exposure:",
     doseSame: "Dose suggestion (same interval q{interval}h):",
     doseAlt: "Alternative (q{interval}h):",
+    vancoAdjustOrderReady: "Order Ready - click each line to copy",
+    vancoAdjustCopied: "Copied order line to clipboard.",
+    vancoAdjustCopyFailed: "Copy failed. Select and copy manually.",
+    vancoHoldLine: "Hold vancomycin dose.",
+    vancoHoldFollow: "Follow vancomycin level and reassess before redosing.",
     aucMic: "AUC/MIC:",
     target400600: "(target 400-600)",
     pkApprox: "This adjustment uses proportional PK approximation; use institution protocol/AUC software when available.",
     infusionHeading: "mcg/kg/min to mL/hr",
     infusionWeightLabel: "Body weight (kg)",
     infusionDoseLabel: "Dose (mcg/kg/min)",
-    infusionDrugLabel: "Drug amount in bag (mg)",
+    infusionDrugLabel: "Drug amount (mg)",
     infusionVolumeLabel: "Final volume (mL)",
-    infusionNeed: "Fill weight, dose, drug amount, and final volume.",
-    infusionRate: "Infusion rate:",
+    infusionRateMlHrLabel: "Pump rate (mL/hr)",
+    infusionNeed: "Fill body weight, final volume, drug amount, and either mL/hr or mcg/kg/min.",
+    infusionBaseNeed: "Fill body weight, final volume, and drug amount.",
+    infusionDirectionNeed: "Then fill either mL/hr or infusion rate.",
+    infusionMlHrResult: "Calculated mL/hr:",
+    infusionDoseResult: "Calculated infusion rate:",
     infusionConc: "Concentration:",
     warfarinHeading: "Warfarin adjustment",
     warfarinInrLabel: "Current INR",
@@ -661,8 +675,8 @@ const I18N = {
     warfarinNoTabs: "Select at least one available tablet strength.",
     warfarinInvalidTarget: "Target INR lower must be less than upper.",
     warfarinPlan: "Suggested weekly dose:",
-    warfarinRxTitle: "Prescription Ready - click to copy",
-    warfarinCopied: "Copied prescription to clipboard.",
+    warfarinRxTitle: "Prescription Ready - click each line to copy",
+    warfarinCopied: "Copied prescription line to clipboard.",
     warfarinCopyFailed: "Copy failed. Select and copy manually.",
     warfarinActualWeekly: "Prescription total:",
     warfarinApprox: "Exact tablet-based schedule when feasible; verify against patient-specific plan.",
@@ -694,17 +708,19 @@ const I18N = {
     nutritionProtein: "Total protein:",
     nutritionVolume: "Estimated fluid/volume:",
     nutritionFormula: "Example enteral plan:",
+    nutritionOrderReady: "Feeding Order Ready - click each line to copy",
     nutritionCaution: "Use clinical judgment for fluid restriction, dialysis, electrolytes, glycemic control, and refeeding monitoring.",
     antibioticHeading: "Antibiotic renal dosing",
     antibioticDrugLabel: "Antibiotic",
     antibioticDrugPlaceholder: "Type antibiotic name...",
+    antibioticPickerLabel: "Select antibiotic",
     antibioticNoDrugResults: "No matching antibiotic.",
     antibioticIndicationLabel: "Indication / regimen",
     antibioticRenalModeLabel: "Renal mode",
     antibioticCrclLabel: "CrCl (mL/min)",
     antibioticNeed: "Select antibiotic/regimen and fill CrCl.",
-    antibioticOrderReady: "Order Ready - click to copy",
-    antibioticCopied: "Copied order to clipboard.",
+    antibioticOrderReady: "Order Ready - click each line to copy",
+    antibioticCopied: "Copied order line to clipboard.",
     antibioticCopyFailed: "Copy failed. Select and copy the order manually.",
     antibioticCrclUsed: "CrCl used:",
     antibioticRenalModeCrcl: "Non-HD: use CrCl",
@@ -783,6 +799,11 @@ const I18N = {
     numpadNext: "ถัดไป",
     numpadDone: "เสร็จ",
     orderReady: "คำสั่งยาพร้อมใช้",
+    orderReadyCopy: "คำสั่งยาพร้อมใช้ - คลิกเพื่อคัดลอก",
+    orderLineReady: "คำสั่งยาพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    orderCopied: "คัดลอกคำสั่งยาแล้ว",
+    orderLineCopied: "คัดลอกคำสั่งยาบรรทัดนี้แล้ว",
+    orderCopyFailed: "คัดลอกไม่สำเร็จ กรุณาเลือกและคัดลอกเอง",
     oneDayOrder: "คำสั่งยา 1 วัน",
     continuedOrder: "คำสั่งยาต่อเนื่อง",
     hr: "ชม.",
@@ -827,18 +848,27 @@ const I18N = {
     targetLowerError: "ค่าเป้าหมายต่ำสุดต้องน้อยกว่าค่าเป้าหมายสูงสุด",
     statusLabel: "สถานะ:",
     currentDailyExposure: "การได้รับยารวมต่อวันปัจจุบัน:",
-    doseSame: "ข้อเสนอแนะขนาดยา (ช่วงห่างเดิม q{interval}h):",
+    doseSame: "ข้อเสนอแนะขนาดยา (ความถี่เดิม q{interval}h):",
     doseAlt: "ทางเลือก (q{interval}h):",
+    vancoAdjustOrderReady: "คำสั่งยาพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    vancoAdjustCopied: "คัดลอกคำสั่งยาบรรทัดนี้แล้ว",
+    vancoAdjustCopyFailed: "คัดลอกไม่สำเร็จ กรุณาเลือกและคัดลอกเอง",
+    vancoHoldLine: "งด vancomycin dose ถัดไป",
+    vancoHoldFollow: "ติดตามระดับ vancomycin และประเมินซ้ำก่อนให้ยาครั้งถัดไป",
     aucMic: "ค่า AUC/MIC:",
     target400600: "(เป้าหมาย 400-600)",
     pkApprox: "การคำนวณนี้ใช้การประมาณแบบสัดส่วน PK; หากมี protocol/AUC software ของหน่วยงานให้ใช้อ้างอิงร่วม",
     infusionHeading: "แปลง mcg/kg/min เป็น mL/hr",
     infusionWeightLabel: "น้ำหนักตัว (กก.)",
-    infusionDoseLabel: "ขนาดยา (mcg/kg/min)",
-    infusionDrugLabel: "ปริมาณยาในถุง (mg)",
+    infusionDoseLabel: "Dose (mcg/kg/min)",
+    infusionDrugLabel: "ปริมาณยา (mg)",
     infusionVolumeLabel: "ปริมาตรรวม (mL)",
-    infusionNeed: "กรอกน้ำหนัก, ขนาดยา, ปริมาณยาในถุง และปริมาตรรวม",
-    infusionRate: "อัตราการให้ยา:",
+    infusionRateMlHrLabel: "อัตราปั๊ม (mL/hr)",
+    infusionNeed: "กรอกน้ำหนัก ปริมาตรรวม ปริมาณยาในถุง และกรอก mL/hr หรือ mcg/kg/min อย่างใดอย่างหนึ่ง",
+    infusionBaseNeed: "กรอกน้ำหนัก ปริมาตรรวม และปริมาณยาในถุง",
+    infusionDirectionNeed: "จากนั้นกรอก mL/hr หรืออัตรายาอย่างใดอย่างหนึ่ง",
+    infusionMlHrResult: "mL/hr ที่คำนวณได้:",
+    infusionDoseResult: "อัตรายาที่คำนวณได้:",
     infusionConc: "ความเข้มข้น:",
     warfarinHeading: "ปรับยา Warfarin",
     warfarinInrLabel: "INR ปัจจุบัน",
@@ -850,8 +880,8 @@ const I18N = {
     warfarinNoTabs: "เลือกขนาดเม็ดที่มีอย่างน้อย 1 ขนาด",
     warfarinInvalidTarget: "ค่า INR เป้าหมายต่ำสุดต้องน้อยกว่าค่าสูงสุด",
     warfarinPlan: "ขนาดยาต่อสัปดาห์ที่แนะนำ:",
-    warfarinRxTitle: "คำสั่งยาพร้อมใช้ - คลิกเพื่อคัดลอก",
-    warfarinCopied: "คัดลอกคำสั่งยาแล้ว",
+    warfarinRxTitle: "คำสั่งยาพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    warfarinCopied: "คัดลอกคำสั่งยาบรรทัดนี้แล้ว",
     warfarinCopyFailed: "คัดลอกไม่สำเร็จ กรุณาเลือกและคัดลอกเอง",
     warfarinActualWeekly: "ขนาดยารวมตามคำสั่ง:",
     warfarinApprox: "เป็นตารางยาตามขนาดเม็ดที่เลือก โดยใช้ครึ่งเม็ดได้เมื่อต้องการ ต้องตรวจทานกับแผนเฉพาะผู้ป่วย",
@@ -883,17 +913,19 @@ const I18N = {
     nutritionProtein: "โปรตีนรวม:",
     nutritionVolume: "ปริมาตร/สารน้ำโดยประมาณ:",
     nutritionFormula: "ตัวอย่างสูตร enteral:",
+    nutritionOrderReady: "คำสั่งอาหารพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
     nutritionCaution: "ใช้ดุลยพินิจร่วมกับข้อจำกัดสารน้ำ dialysis electrolyte glycemic control และการเฝ้าระวัง refeeding",
     antibioticHeading: "ปรับขนาด antibiotic ตามไต",
     antibioticDrugLabel: "Antibiotic",
     antibioticDrugPlaceholder: "พิมพ์ชื่อ antibiotic...",
+    antibioticPickerLabel: "เลือก antibiotic",
     antibioticNoDrugResults: "ไม่พบ antibiotic ที่ตรงกัน",
     antibioticIndicationLabel: "Indication / regimen",
     antibioticRenalModeLabel: "Renal mode",
     antibioticCrclLabel: "CrCl (mL/min)",
     antibioticNeed: "เลือกยา/regimen และกรอก CrCl",
-    antibioticOrderReady: "คำสั่งยาพร้อมใช้ - คลิกเพื่อคัดลอก",
-    antibioticCopied: "คัดลอกคำสั่งยาแล้ว",
+    antibioticOrderReady: "คำสั่งยาพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    antibioticCopied: "คัดลอกคำสั่งยาบรรทัดนี้แล้ว",
     antibioticCopyFailed: "คัดลอกไม่สำเร็จ กรุณาเลือกและคัดลอกคำสั่งยาเอง",
     antibioticCrclUsed: "CrCl ที่ใช้:",
     antibioticRenalModeCrcl: "Non-HD: ใช้ CrCl",
@@ -908,6 +940,7 @@ let currentWorkflow = localStorage.getItem("vanco-workflow-mode") || "";
 let currentCalculator = localStorage.getItem("clinical-calculator") || "";
 let activeInput = null;
 let activeActionButton = null;
+let lastInfusionEdited = "";
 
 const staticMap = [
   ["t-eyebrow", "eyebrow"],
@@ -944,6 +977,7 @@ const staticMap = [
   ["t-infusion-heading", "infusionHeading"],
   ["t-infusion-weight-label", "infusionWeightLabel"],
   ["t-infusion-dose-label", "infusionDoseLabel"],
+  ["t-infusion-rate-mlhr-label", "infusionRateMlHrLabel"],
   ["t-infusion-drug-label", "infusionDrugLabel"],
   ["t-infusion-volume-label", "infusionVolumeLabel"],
   ["t-warfarin-heading", "warfarinHeading"],
@@ -966,6 +1000,7 @@ const staticMap = [
   ["t-nutrition-enteral-label", "nutritionEnteralLabel"],
   ["t-antibiotic-heading", "antibioticHeading"],
   ["t-antibiotic-drug-label", "antibioticDrugLabel"],
+  ["t-antibiotic-picker-label", "antibioticPickerLabel"],
   ["t-antibiotic-indication-label", "antibioticIndicationLabel"],
   ["t-antibiotic-renal-mode-label", "antibioticRenalModeLabel"],
   ["t-antibiotic-crcl-label", "antibioticCrclLabel"],
@@ -1181,6 +1216,19 @@ function formatHours(hours) {
   return Number.isInteger(hours) ? `${hours} ${tr("hr")}` : `${hours.toFixed(1)} ${tr("hr")}`;
 }
 
+function formatNumberForInput(value, digits) {
+  if (!Number.isFinite(value)) return "";
+  return Number(value.toFixed(digits)).toString();
+}
+
+function formatMlHrInput(value) {
+  return formatNumberForInput(value, 1);
+}
+
+function formatDoseInput(value) {
+  return formatNumberForInput(value, 2);
+}
+
 function calculateCrClCockcroftGault({ age, weight, scr, sex }) {
   let crcl = ((140 - age) * weight) / (72 * scr);
   if (sex === "female") crcl *= 0.85;
@@ -1203,14 +1251,24 @@ function initialMonitoringText(crcl, intervalHours) {
   return tr("follow4");
 }
 
-function renderOrderLines(lines) {
-  return lines.map((line) => `<p class="order-line">- ${line}</p>`).join("");
+function maintenanceMonitoringText(intervalHours) {
+  return intervalHours >= 24 ? tr("follow3") : tr("follow4");
+}
+
+function renderOrderLines(lines, { copyable = true } = {}) {
+  return lines
+    .map((line) => {
+      if (!copyable) return `<p class="order-line">- ${line}</p>`;
+      return `<button type="button" class="order-line copy-line" data-copy="${encodeURIComponent(line)}">- ${line}</button>`;
+    })
+    .join("");
 }
 
 function renderOrderReady({ oneDayLines, continuedLines }) {
+  const continuedIsCopyable = !continuedLines.includes(tr("noScheduledMaint"));
   return `
-    <div class="order-highlight">
-      <p class="order-title">${tr("orderReady")}</p>
+    <div class="order-highlight vanco-copy-order">
+      <p class="order-title">${tr("orderLineReady")}</p>
       <div class="order-columns">
         <div class="order-column">
           <p class="order-label">${tr("oneDayOrder")}</p>
@@ -1218,11 +1276,41 @@ function renderOrderReady({ oneDayLines, continuedLines }) {
         </div>
         <div class="order-column">
           <p class="order-label">${tr("continuedOrder")}</p>
-          <div class="order-text">${renderOrderLines(continuedLines)}</div>
+          <div class="order-text">${renderOrderLines(continuedLines, { copyable: continuedIsCopyable })}</div>
         </div>
       </div>
     </div>
   `;
+}
+
+function getCopyLineFromEvent(event, container) {
+  const target = event?.target;
+  if (target instanceof HTMLElement) {
+    const line = target.closest(".copy-line");
+    if (line && container.contains(line)) return line;
+  }
+  const activeLine = document.activeElement?.closest?.(".copy-line");
+  if (activeLine && container.contains(activeLine)) return activeLine;
+  return null;
+}
+
+async function copyOrderLine(event, container, copiedKey = "orderLineCopied", failedKey = "orderCopyFailed") {
+  const copyTarget = getCopyLineFromEvent(event, container);
+  if (!copyTarget) return;
+  const orderText = decodeURIComponent(copyTarget.dataset.copy || "");
+  if (!orderText) return;
+  const title = copyTarget.closest(".order-highlight")?.querySelector(".order-title");
+  try {
+    await navigator.clipboard.writeText(orderText);
+    copyTarget.classList.add("copied-line");
+    if (title) title.textContent = tr(copiedKey);
+  } catch {
+    if (title) title.textContent = tr(failedKey);
+  }
+}
+
+async function copyVancoOrder(event) {
+  copyOrderLine(event, initialResult);
 }
 
 function infusionAdvice(doseMg) {
@@ -1453,6 +1541,14 @@ function showInitialResult(message) {
   initialResult.innerHTML = `<p>${message}</p>`;
 }
 
+function showInitialIncomplete(event, message) {
+  if (event?.type === "submit") {
+    showInitialResult(message);
+  } else {
+    initialResult.innerHTML = "";
+  }
+}
+
 function showAdjustResult(message) {
   adjustResult.innerHTML = `<p>${message}</p>`;
 }
@@ -1471,7 +1567,7 @@ function calculateInitial(event) {
   const applyCap = document.getElementById("cap-obese").checked;
 
   if (!weight || !loadingMgKg) {
-    showInitialResult(tr("pleaseComplete"));
+    showInitialIncomplete(event, tr("pleaseComplete"));
     return;
   }
 
@@ -1479,7 +1575,7 @@ function calculateInitial(event) {
   let crclLine;
   if (crclMode === "auto") {
     if (!age || !scr) {
-      showInitialResult(tr("enterAgeScr"));
+      showInitialIncomplete(event, tr("enterAgeScr"));
       return;
     }
     crcl = calculateCrClCockcroftGault({ age, weight, scr, sex });
@@ -1490,7 +1586,7 @@ function calculateInitial(event) {
     crclLine = tr("estimatedCrcl", { value: crcl.toFixed(1) });
   } else {
     if (!manualCrcl) {
-      showInitialResult(tr("enterManualCrcl"));
+      showInitialIncomplete(event, tr("enterManualCrcl"));
       return;
     }
     crcl = manualCrcl;
@@ -1543,7 +1639,7 @@ function calculateInitial(event) {
   }
 
   if (!maintMgKg) {
-    showInitialResult(tr("enterMaintAbove30"));
+    showInitialIncomplete(event, tr("enterMaintAbove30"));
     return;
   }
 
@@ -1646,6 +1742,8 @@ function calculateAdjustment(event) {
   const doseSameInterval = roundToNearest((suggestedDaily * currentInterval) / 24, 250);
   const altInterval = suggestInterval(currentInterval, troughState);
   const doseAltInterval = roundToNearest((suggestedDaily * altInterval) / 24, 250);
+  const recommendedDose = Math.max(250, doseSameInterval);
+  const alternativeDose = Math.max(250, doseAltInterval);
 
   let statusClass = "status-ok";
   let statusText = tr("statusWithin");
@@ -1674,38 +1772,117 @@ function calculateAdjustment(event) {
     )}</p>`;
   }
 
+  const recommendedInfusion = infusionAdvice(recommendedDose);
+  const orderLines =
+    troughState === "very-high"
+      ? [tr("vancoHoldLine"), tr("vancoHoldFollow")]
+      : [
+          tr("maintenanceLine", {
+            dose: recommendedDose,
+            vol: recommendedInfusion.roundedDiluentMl,
+            time: formatHours(recommendedInfusion.roundedTimeHr),
+            interval: `q${currentInterval}h`
+          }),
+          maintenanceMonitoringText(currentInterval)
+        ];
   adjustResult.innerHTML = `
+    <div class="order-highlight vanco-adjust-copy-order">
+      <p class="order-title">${tr("vancoAdjustOrderReady")}</p>
+      <div class="order-text">${renderOrderLines(orderLines)}</div>
+    </div>
     <p><strong>${tr("statusLabel")}</strong> <span class="${statusClass}">${statusText}</span></p>
     <p><strong>${tr("currentDailyExposure")}</strong> ${Math.round(dailyDose)} ${tr("mgDay")}</p>
-    <p><strong>${tr("doseSame", { interval: currentInterval })}</strong> ${Math.max(250, doseSameInterval)} mg</p>
-    <p><strong>${tr("doseAlt", { interval: altInterval })}</strong> ${Math.max(250, doseAltInterval)} mg</p>
+    <p><strong>${tr("doseSame", { interval: currentInterval })}</strong> ${recommendedDose} mg</p>
+    <p><strong>${tr("doseAlt", { interval: altInterval })}</strong> ${alternativeDose} mg</p>
     <p class="note">${extraSafety}</p>
     ${aucLine}
     <p class="note">${tr("pkApprox")}</p>
-  `;
+`;
+}
+
+async function copyVancoAdjustOrder(event) {
+  copyOrderLine(event, adjustResult, "vancoAdjustCopied", "vancoAdjustCopyFailed");
 }
 
 function calculateInfusion(event) {
   event?.preventDefault();
 
-  const weight = Number(document.getElementById("infusion-weight").value);
-  const dose = Number(document.getElementById("infusion-dose").value);
-  const drugMg = Number(document.getElementById("infusion-drug-mg").value);
-  const volumeMl = Number(document.getElementById("infusion-volume-ml").value);
+  const weightInput = document.getElementById("infusion-weight");
+  const rateInput = document.getElementById("infusion-rate-mlhr");
+  const doseInput = document.getElementById("infusion-dose");
+  const drugInput = document.getElementById("infusion-drug-mg");
+  const volumeInput = document.getElementById("infusion-volume-ml");
+  const weight = Number(weightInput.value);
+  const dose = Number(doseInput.value);
+  const rateMlHr = Number(rateInput.value);
+  const drugMg = Number(drugInput.value);
+  const volumeMl = Number(volumeInput.value);
+  const changedId = event?.target?.id;
+  const hasWeight = weightInput.value.trim() !== "";
+  const hasDose = doseInput.value.trim() !== "";
+  const hasRate = rateInput.value.trim() !== "";
+  const hasDrug = drugInput.value.trim() !== "";
+  const hasVolume = volumeInput.value.trim() !== "";
 
-  if (!weight || !dose || !drugMg || !volumeMl) {
-    infusionResult.innerHTML = `<p>${tr("infusionNeed")}</p>`;
+  if (changedId === "infusion-dose") lastInfusionEdited = "dose";
+  if (changedId === "infusion-rate-mlhr") lastInfusionEdited = "mlhr";
+  if (!lastInfusionEdited) {
+    if (hasDose && !hasRate) lastInfusionEdited = "dose";
+    if (hasRate && !hasDose) lastInfusionEdited = "mlhr";
+    if (hasDose && hasRate) lastInfusionEdited = "dose";
+  }
+
+  if (!hasDrug || !hasVolume || !drugMg || !volumeMl) {
+    infusionResult.innerHTML = `<p>${tr("infusionBaseNeed")}</p>`;
     return;
   }
 
   const concentrationMcgMl = (drugMg * 1000) / volumeMl;
-  const rateMlHr = (dose * weight * 60) / concentrationMcgMl;
+  const concentrationLine = `<p><strong>${tr("infusionConc")}</strong> ${concentrationMcgMl.toFixed(1)} mcg/mL (${(
+    drugMg / volumeMl
+  ).toFixed(3)} mg/mL)</p>`;
+
+  if (!hasWeight || !weight) {
+    infusionResult.innerHTML = `
+      ${concentrationLine}
+      <p class="note">${tr("infusionBaseNeed")}</p>
+    `;
+    return;
+  }
+
+  let calculatedMlHr = rateMlHr;
+  let calculatedDose = dose;
+  let solvedLine = "";
+
+  if (lastInfusionEdited === "mlhr") {
+    if (!hasRate || !rateMlHr) {
+      infusionResult.innerHTML = `
+        ${concentrationLine}
+        <p class="note">${tr("infusionDirectionNeed")}</p>
+      `;
+      return;
+    }
+    calculatedDose = (rateMlHr * concentrationMcgMl) / (weight * 60);
+    doseInput.value = formatDoseInput(calculatedDose);
+    setPendingDecimal(doseInput, false);
+    solvedLine = `<p><strong>${tr("infusionDoseResult")}</strong> ${formatDoseInput(calculatedDose)} mcg/kg/min</p>`;
+  } else {
+    if (!hasDose || !dose) {
+      infusionResult.innerHTML = `
+        ${concentrationLine}
+        <p class="note">${tr("infusionDirectionNeed")}</p>
+      `;
+      return;
+    }
+    calculatedMlHr = (dose * weight * 60) / concentrationMcgMl;
+    rateInput.value = formatMlHrInput(calculatedMlHr);
+    setPendingDecimal(rateInput, false);
+    solvedLine = `<p><strong>${tr("infusionMlHrResult")}</strong> ${formatMlHrInput(calculatedMlHr)} mL/hr</p>`;
+  }
 
   infusionResult.innerHTML = `
-    <p><strong>${tr("infusionRate")}</strong> ${rateMlHr.toFixed(1)} mL/hr</p>
-    <p><strong>${tr("infusionConc")}</strong> ${concentrationMcgMl.toFixed(1)} mcg/mL (${(drugMg / volumeMl).toFixed(
-      3
-    )} mg/mL)</p>
+    ${solvedLine}
+    ${concentrationLine}
   `;
 }
 
@@ -1822,7 +1999,7 @@ function makeTabletCombos(strengths) {
   return [...bestByDose.values()].sort((a, b) => a.dose - b.dose);
 }
 
-function buildWarfarinPrescription(targetWeekly, strengths) {
+function buildWarfarinPrescription(targetWeekly, strengths, direction = "nearest") {
   const combos = makeTabletCombos(strengths);
   const maxDailyDose = Math.max(...combos.map((combo) => combo.dose));
   const roundedTarget = clamp(Math.round(targetWeekly * 2) / 2, 0, maxDailyDose * 7);
@@ -1923,7 +2100,13 @@ function buildWarfarinPrescription(targetWeekly, strengths) {
     }
 
     const possibleTotals = [...dp[7].keys()];
-    const bestTotal = possibleTotals.sort((a, b) => Math.abs(a - roundedTarget) - Math.abs(b - roundedTarget) || b - a)[0];
+    const bestTotal = possibleTotals.sort((a, b) => {
+      const distance = Math.abs(a - roundedTarget) - Math.abs(b - roundedTarget);
+      if (distance) return distance;
+      if (direction === "lower") return a - b;
+      if (direction === "higher") return b - a;
+      return b - a;
+    })[0];
     schedules.push({ total: bestTotal, schedule: reorderWarfarinSchedule(dp[7].get(bestTotal).schedule), pattern: "fallback" });
   }
 
@@ -2136,15 +2319,16 @@ function calculateWarfarin(event) {
 
   const suggestedWeekly = factor > 0 ? roundToHalf(weeklyDose * factor) : 0;
   const doseLine = factor > 0 ? `${suggestedWeekly} mg/week` : tr("warfarinHoldReassess");
-  const prescription = buildWarfarinPrescription(suggestedWeekly, strengths);
-  const prescriptionText = `${prescription.lines.join("\n")}\n(total ${prescription.total} mg/wk)`;
+  const doseDirection = factor < 1 ? "lower" : factor > 1 ? "higher" : "nearest";
+  const prescription = buildWarfarinPrescription(suggestedWeekly, strengths, doseDirection);
 
   warfarinResult.innerHTML = `
-    <div class="order-highlight copy-order warfarin-copy-order" role="button" tabindex="0" data-copy="${encodeURIComponent(
-      prescriptionText
-    )}">
+    <div class="order-highlight warfarin-copy-order">
       <p class="order-title">${tr("warfarinRxTitle")}</p>
-      <div class="order-text">${renderOrderLines([...prescription.lines, `(total ${prescription.total} mg/wk)`])}</div>
+      <div class="order-text">
+        ${renderOrderLines(prescription.lines)}
+        ${renderOrderLines([`(total ${prescription.total} mg/wk)`], { copyable: false })}
+      </div>
     </div>
     <p><strong>${tr("statusLabel")}</strong> <span class="${statusClass}">${action}</span></p>
     <p><strong>${tr("warfarinPlan")}</strong> ${doseLine}</p>
@@ -2154,18 +2338,8 @@ function calculateWarfarin(event) {
   `;
 }
 
-async function copyWarfarinOrder() {
-  const copyTarget = warfarinResult.querySelector(".warfarin-copy-order");
-  if (!copyTarget) return;
-  const orderText = decodeURIComponent(copyTarget.dataset.copy || "");
-  if (!orderText) return;
-  try {
-    await navigator.clipboard.writeText(orderText);
-    copyTarget.classList.add("copied");
-    copyTarget.querySelector(".order-title").textContent = tr("warfarinCopied");
-  } catch {
-    copyTarget.querySelector(".order-title").textContent = tr("warfarinCopyFailed");
-  }
+async function copyWarfarinOrder(event) {
+  copyOrderLine(event, warfarinResult, "warfarinCopied", "warfarinCopyFailed");
 }
 
 function calculateOsmo(event) {
@@ -2215,7 +2389,7 @@ function calculateNutrition(event) {
   const protein = Math.round(weight * proteinPerKg);
   const fluid = Math.round(weight * fluidPerKg);
 
-  let formulaLine = "";
+  let formulaBlock = "";
   if (isEnteral) {
     const feedsPerDay = 4;
     const formulaKcalMl = 1.5;
@@ -2223,18 +2397,28 @@ function calculateNutrition(event) {
     const perFeedMl = roundUpToStep(totalFormulaMl / feedsPerDay, 50);
     const actualFormulaMl = perFeedMl * feedsPerDay;
     const waterPerFeedMl = Math.max(0, Math.round(((fluid - actualFormulaMl) / feedsPerDay) / 10) * 10);
-    const refeedingPrefix = riskRefeeding ? "Start ~50% goal, advance as tolerated. " : "";
-    formulaLine = `<p><strong>${tr("nutritionFormula")}</strong> ${refeedingPrefix}BD 1.5:1 ${perFeedMl} mL x ${feedsPerDay} feeds + water ${waterPerFeedMl} mL/feed</p>`;
+    const feedingOrderLines = [`BD 1.5:1 ${perFeedMl} mL x ${feedsPerDay} feeds + water ${waterPerFeedMl} mL/feed`];
+    if (riskRefeeding) feedingOrderLines.unshift("Start enteral feeding at ~50% goal, advance as tolerated.");
+    formulaBlock = `
+      <div class="order-highlight nutrition-copy-order">
+        <p class="order-title">${tr("nutritionOrderReady")}</p>
+        <div class="order-text">${renderOrderLines(feedingOrderLines)}</div>
+      </div>
+    `;
   }
 
   nutritionResult.innerHTML = `
+    ${formulaBlock}
     <p><strong>${tr("nutritionBmi")}</strong> ${bmi.toFixed(1)} kg/m²</p>
     <p><strong>${tr("nutritionEnergy")}</strong> ${calories} kcal/day (${kcalPerKg} kcal/kg/day)</p>
     <p><strong>${tr("nutritionProtein")}</strong> ${protein} g/day (${proteinPerKg.toFixed(1)} g/kg/day)</p>
     <p><strong>${tr("nutritionVolume")}</strong> ${fluid} mL/day (${fluidPerKg} mL/kg/day)</p>
-    ${formulaLine}
     <p class="note">${tr("nutritionCaution")}</p>
   `;
+}
+
+async function copyNutritionOrder(event) {
+  copyOrderLine(event, nutritionResult);
 }
 
 function getSelectedAntibiotic() {
@@ -2272,7 +2456,7 @@ function renderAntibioticDrugResults() {
 function selectAntibioticDrug(drugId) {
   const drug = ANTIBIOTIC_RENAL_DOSING.find((item) => item.id === drugId) || ANTIBIOTIC_RENAL_DOSING[0];
   antibioticDrugInput.value = drug.id;
-  antibioticDrugSearch.value = drug.name;
+  antibioticDrugSearch.value = "";
   renderAntibioticDrugResults();
   populateAntibioticIndications();
   calculateAntibiotic();
@@ -2322,10 +2506,8 @@ function calculateAntibiotic(event) {
     return;
   }
 
-  const orderText = orderLines.join("\n");
-
   antibioticResult.innerHTML = `
-    <div class="order-highlight copy-order" role="button" tabindex="0" data-copy="${encodeURIComponent(orderText)}">
+    <div class="order-highlight antibiotic-copy-order">
       <p class="order-title">${tr("antibioticOrderReady")}</p>
       <div class="order-text">${renderOrderLines(orderLines)}</div>
     </div>
@@ -2334,21 +2516,11 @@ function calculateAntibiotic(event) {
     }</p>
     ${note ? `<p class="note">${note}</p>` : ""}
     <p class="note">${tr("antibioticSourceNote")}</p>
-  `;
+`;
 }
 
-async function copyAntibioticOrder() {
-  const copyTarget = antibioticResult.querySelector(".copy-order");
-  if (!copyTarget) return;
-  const orderText = decodeURIComponent(copyTarget.dataset.copy || "");
-  if (!orderText) return;
-  try {
-    await navigator.clipboard.writeText(orderText);
-    copyTarget.classList.add("copied");
-    copyTarget.querySelector(".order-title").textContent = tr("antibioticCopied");
-  } catch {
-    copyTarget.querySelector(".order-title").textContent = tr("antibioticCopyFailed");
-  }
+async function copyAntibioticOrder(event) {
+  copyOrderLine(event, antibioticResult, "antibioticCopied", "antibioticCopyFailed");
 }
 
 function runCalculatorForMode(mode) {
@@ -2526,7 +2698,7 @@ function initAntibioticDosing() {
   antibioticResult.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      copyAntibioticOrder();
+      copyAntibioticOrder(event);
     }
   });
 }
@@ -2554,7 +2726,7 @@ function initWarfarinTablets() {
   warfarinResult.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      copyWarfarinOrder();
+      copyWarfarinOrder(event);
     }
   });
 }
@@ -2577,6 +2749,30 @@ bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("nutrition-form"), calculateNutrition);
 bindLiveCalculation(document.getElementById("antibiotic-form"), calculateAntibiotic);
 
+initialResult.addEventListener("click", copyVancoOrder);
+initialResult.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    copyVancoOrder(event);
+  }
+});
+
+adjustResult.addEventListener("click", copyVancoAdjustOrder);
+adjustResult.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    copyVancoAdjustOrder(event);
+  }
+});
+
+nutritionResult.addEventListener("click", copyNutritionOrder);
+nutritionResult.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    copyNutritionOrder(event);
+  }
+});
+
 initAntibioticDosing();
 initWarfarinTablets();
 initNumpad();
@@ -2587,11 +2783,12 @@ syncCrclInputMode();
 applyStaticTranslation();
 
 if (Object.prototype.hasOwnProperty.call(WORKFLOWS, currentWorkflow)) {
+  const startupWorkflow = currentWorkflow;
   setWorkflow(currentWorkflow, { persist: false, focus: false });
   setTimeout(() => {
-    const targetInput = document.getElementById(WORKFLOWS[currentWorkflow].firstInputId);
+    const targetInput = document.getElementById(WORKFLOWS[startupWorkflow].firstInputId);
     setActiveInput(targetInput);
-    runCalculatorForMode(currentWorkflow);
+    runCalculatorForMode(startupWorkflow);
   }, 80);
 } else if (currentCalculator) {
   selectCalculator(currentCalculator, { persist: false, focus: false, keepWorkflow: true });
