@@ -2397,7 +2397,10 @@ function calculateNutrition(event) {
     const perFeedMl = roundUpToStep(totalFormulaMl / feedsPerDay, 50);
     const actualFormulaMl = perFeedMl * feedsPerDay;
     const waterPerFeedMl = Math.max(0, Math.round(((fluid - actualFormulaMl) / feedsPerDay) / 10) * 10);
-    const feedingOrderLines = [`BD 1.5:1 ${perFeedMl} mL x ${feedsPerDay} feeds + water ${waterPerFeedMl} mL/feed`];
+    const totalVolume = actualFormulaMl + waterPerFeedMl * feedsPerDay;
+    const feedingOrderLines = [
+      `BD (1.5:1) ${perFeedMl}ml x ${feedsPerDay} feeds + น้ำตาม ${waterPerFeedMl}ml/feed (TC ${calories} TV ${totalVolume} TP ${protein})`
+    ];
     if (riskRefeeding) feedingOrderLines.unshift("Start enteral feeding at ~50% goal, advance as tolerated.");
     formulaBlock = `
       <div class="order-highlight nutrition-copy-order">
