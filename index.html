@@ -29,7 +29,7 @@
         <p class="mode-prompt" id="t-mode-prompt">Choose calculation mode</p>
         <label class="calculator-search-label">
           <span class="sr-only" id="t-search-label">Search calculators</span>
-          <input id="calculator-search" type="search" autocomplete="off" placeholder="Search: vanco, antibiotic, warfarin, osmo..." />
+          <input id="calculator-search" type="search" autocomplete="off" placeholder="Search: vanco, antibiotic, calcium, osmo..." />
         </label>
         <div id="calculator-results" class="calculator-results"></div>
         <div id="vanco-submode" class="submode-card hidden">
@@ -245,6 +245,21 @@
         <div id="osmo-result" class="result"></div>
       </section>
 
+      <section class="panel hidden" id="calcium-panel">
+        <h2 id="t-calcium-heading">Corrected calcium</h2>
+        <form id="calcium-form" class="grid">
+          <label>
+            <span id="t-calcium-measured-label">Measured total calcium (mg/dL)</span>
+            <input class="num-input live-input" type="number" id="calcium-measured" min="0" max="30" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-calcium-albumin-label">Serum albumin (g/dL)</span>
+            <input class="num-input live-input" type="number" id="calcium-albumin" min="0" max="10" step="0.1" inputmode="none" />
+          </label>
+        </form>
+        <div id="calcium-result" class="result"></div>
+      </section>
+
       <section class="panel hidden" id="nutrition-panel">
         <h2 id="t-nutrition-heading">Nutrition goals</h2>
         <form id="nutrition-form" class="grid">
@@ -345,6 +360,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260518-nutrition1"></script>
+    <script src="app.js?v=20260518-calcium1"></script>
   </body>
 </html>

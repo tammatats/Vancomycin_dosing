@@ -5,6 +5,7 @@ const adjustResult = document.getElementById("adjust-result");
 const infusionResult = document.getElementById("infusion-result");
 const warfarinResult = document.getElementById("warfarin-result");
 const osmoResult = document.getElementById("osmo-result");
+const calciumResult = document.getElementById("calcium-result");
 const nutritionResult = document.getElementById("nutrition-result");
 const antibioticResult = document.getElementById("antibiotic-result");
 const languageToggle = document.getElementById("language-toggle");
@@ -13,6 +14,7 @@ const adjustPanel = document.getElementById("adjust-panel");
 const infusionPanel = document.getElementById("infusion-panel");
 const warfarinPanel = document.getElementById("warfarin-panel");
 const osmoPanel = document.getElementById("osmo-panel");
+const calciumPanel = document.getElementById("calcium-panel");
 const nutritionPanel = document.getElementById("nutrition-panel");
 const antibioticPanel = document.getElementById("antibiotic-panel");
 const rulesPanel = document.getElementById("rules-panel");
@@ -87,6 +89,12 @@ const WORKFLOWS = {
     firstInputId: "osmo-na",
     form: document.getElementById("osmo-form"),
     calculator: "osmo"
+  },
+  calcium: {
+    panel: calciumPanel,
+    firstInputId: "calcium-measured",
+    form: document.getElementById("calcium-form"),
+    calculator: "calcium"
   },
   nutrition: {
     panel: nutritionPanel,
@@ -533,7 +541,7 @@ const I18N = {
       "Clinical decision support only. Final prescription must be confirmed by physician/pharmacist and local hospital policy.",
     modePrompt: "Search calculator",
     searchLabel: "Search calculators",
-    searchPlaceholder: "Search: vanco, antibiotic, warfarin, osmo...",
+    searchPlaceholder: "Search: vanco, antibiotic, calcium, osmo...",
     noCalculatorResults: "No matching calculators.",
     openCalculator: "Open",
     vancoCalcName: "Vancomycin dosing",
@@ -544,6 +552,8 @@ const I18N = {
     warfarinCalcDesc: "Estimate weekly dose adjustment from current INR and target range.",
     osmoCalcName: "Serum osmolality",
     osmoCalcDesc: "Calculate serum osmolality from sodium, glucose, and BUN.",
+    calciumCalcName: "Corrected calcium",
+    calciumCalcDesc: "Correct total calcium for low albumin using the standard albumin correction.",
     nutritionCalcName: "Nutrition goals",
     nutritionCalcDesc: "Estimate calories, protein, fluid/volume, and an enteral formula plan.",
     antibioticCalcName: "Antibiotic renal dosing",
@@ -694,6 +704,15 @@ const I18N = {
     osmoBunLabel: "BUN (mg/dL)",
     osmoNeed: "Fill Na, glucose, and BUN.",
     osmoResult: "Calculated serum osmolality:",
+    calciumHeading: "Corrected calcium",
+    calciumMeasuredLabel: "Measured total calcium (mg/dL)",
+    calciumAlbuminLabel: "Serum albumin (g/dL)",
+    calciumNeed: "Fill measured calcium and albumin.",
+    calciumResult: "Corrected calcium:",
+    calciumLow: "Low corrected calcium.",
+    calciumNormal: "Corrected calcium within usual reference range.",
+    calciumHigh: "High corrected calcium.",
+    calciumFormula: "Formula: corrected Ca = measured Ca + 0.8 x (4 - albumin). Usual reference range shown here: 8.5-10.5 mg/dL.",
     nutritionHeading: "Nutrition goals",
     nutritionWeightLabel: "Body weight (kg)",
     nutritionHeightLabel: "Height (cm)",
@@ -739,7 +758,7 @@ const I18N = {
       "ใช้เพื่อช่วยตัดสินใจทางคลินิกเท่านั้น คำสั่งยาสุดท้ายต้องยืนยันโดยแพทย์/เภสัชกร และนโยบายของโรงพยาบาล",
     modePrompt: "ค้นหาเครื่องคำนวณ",
     searchLabel: "ค้นหาเครื่องคำนวณ",
-    searchPlaceholder: "ค้นหา: vanco, antibiotic, warfarin, osmo...",
+    searchPlaceholder: "ค้นหา: vanco, antibiotic, calcium, osmo...",
     noCalculatorResults: "ไม่พบเครื่องคำนวณที่ตรงกัน",
     openCalculator: "เปิด",
     vancoCalcName: "Vancomycin dosing",
@@ -750,6 +769,8 @@ const I18N = {
     warfarinCalcDesc: "ประเมินการปรับขนาดยารวมต่อสัปดาห์จาก INR และช่วงเป้าหมาย",
     osmoCalcName: "Serum osmolality",
     osmoCalcDesc: "คำนวณ serum osmolality จาก sodium, glucose และ BUN",
+    calciumCalcName: "Corrected calcium",
+    calciumCalcDesc: "ปรับค่า total calcium ตาม albumin",
     nutritionCalcName: "เป้าหมายโภชนบำบัด",
     nutritionCalcDesc: "ประเมินพลังงาน โปรตีน ปริมาตร/สารน้ำ และตัวอย่างสูตร enteral",
     antibioticCalcName: "ปรับขนาด antibiotic ตามไต",
@@ -899,6 +920,15 @@ const I18N = {
     osmoBunLabel: "BUN (mg/dL)",
     osmoNeed: "กรอก Na, glucose และ BUN",
     osmoResult: "Calculated serum osmolality:",
+    calciumHeading: "Corrected calcium",
+    calciumMeasuredLabel: "Total calcium ที่วัดได้ (mg/dL)",
+    calciumAlbuminLabel: "Serum albumin (g/dL)",
+    calciumNeed: "กรอกค่า calcium และ albumin",
+    calciumResult: "Corrected calcium:",
+    calciumLow: "Corrected calcium ต่ำ",
+    calciumNormal: "Corrected calcium อยู่ในช่วงอ้างอิงทั่วไป",
+    calciumHigh: "Corrected calcium สูง",
+    calciumFormula: "สูตร: corrected Ca = measured Ca + 0.8 x (4 - albumin). ช่วงอ้างอิงทั่วไปที่ใช้แสดง: 8.5-10.5 mg/dL",
     nutritionHeading: "เป้าหมายโภชนบำบัด",
     nutritionWeightLabel: "น้ำหนักตัว (กก.)",
     nutritionHeightLabel: "ส่วนสูง (ซม.)",
@@ -990,6 +1020,9 @@ const staticMap = [
   ["t-osmo-na-label", "osmoNaLabel"],
   ["t-osmo-glucose-label", "osmoGlucoseLabel"],
   ["t-osmo-bun-label", "osmoBunLabel"],
+  ["t-calcium-heading", "calciumHeading"],
+  ["t-calcium-measured-label", "calciumMeasuredLabel"],
+  ["t-calcium-albumin-label", "calciumAlbuminLabel"],
   ["t-nutrition-heading", "nutritionHeading"],
   ["t-nutrition-weight-label", "nutritionWeightLabel"],
   ["t-nutrition-height-label", "nutritionHeightLabel"],
@@ -1049,6 +1082,13 @@ function getCalculatorOptions() {
       name: tr("osmoCalcName"),
       description: tr("osmoCalcDesc"),
       keywords: "osmo osmolality serum sodium glucose bun osm"
+    },
+    {
+      id: "calcium",
+      workflow: "calcium",
+      name: tr("calciumCalcName"),
+      description: tr("calciumCalcDesc"),
+      keywords: "calcium corrected calcium albumin ca hypocalcemia hypercalcemia"
     },
     {
       id: "nutrition",
@@ -2361,6 +2401,35 @@ function calculateOsmo(event) {
   `;
 }
 
+function calculateCalcium(event) {
+  event?.preventDefault();
+
+  const measuredCalcium = Number(document.getElementById("calcium-measured").value);
+  const albumin = Number(document.getElementById("calcium-albumin").value);
+
+  if (!measuredCalcium || !albumin) {
+    calciumResult.innerHTML = `<p>${tr("calciumNeed")}</p>`;
+    return;
+  }
+
+  const correctedCalcium = measuredCalcium + 0.8 * (4 - albumin);
+  let status = tr("calciumNormal");
+  let statusClass = "status-ok";
+  if (correctedCalcium < 8.5) {
+    status = tr("calciumLow");
+    statusClass = "status-caution";
+  } else if (correctedCalcium > 10.5) {
+    status = tr("calciumHigh");
+    statusClass = "status-high";
+  }
+
+  calciumResult.innerHTML = `
+    <p><strong>${tr("calciumResult")}</strong> ${correctedCalcium.toFixed(1)} mg/dL</p>
+    <p><strong>${tr("statusLabel")}</strong> <span class="${statusClass}">${status}</span></p>
+    <p class="note">${tr("calciumFormula")}</p>
+  `;
+}
+
 function calculateNutrition(event) {
   event?.preventDefault();
 
@@ -2532,6 +2601,7 @@ function runCalculatorForMode(mode) {
   if (mode === "infusion") calculateInfusion();
   if (mode === "warfarin") calculateWarfarin();
   if (mode === "osmo") calculateOsmo();
+  if (mode === "calcium") calculateCalcium();
   if (mode === "nutrition") calculateNutrition();
   if (mode === "antibiotic") calculateAntibiotic();
 }
@@ -2542,6 +2612,7 @@ function recalcIfResultsShown() {
   if (infusionResult.innerHTML.trim()) calculateInfusion();
   if (warfarinResult.innerHTML.trim()) calculateWarfarin();
   if (osmoResult.innerHTML.trim()) calculateOsmo();
+  if (calciumResult.innerHTML.trim()) calculateCalcium();
   if (nutritionResult.innerHTML.trim()) calculateNutrition();
   if (antibioticResult.innerHTML.trim()) calculateAntibiotic();
 }
@@ -2749,6 +2820,7 @@ bindLiveCalculation(adjustForm, calculateAdjustment);
 bindLiveCalculation(document.getElementById("infusion-form"), calculateInfusion);
 bindLiveCalculation(document.getElementById("warfarin-form"), calculateWarfarin);
 bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
+bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
 bindLiveCalculation(document.getElementById("nutrition-form"), calculateNutrition);
 bindLiveCalculation(document.getElementById("antibiotic-form"), calculateAntibiotic);
 
