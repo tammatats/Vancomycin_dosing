@@ -271,6 +271,14 @@
             <span id="t-nutrition-height-label">Height (cm)</span>
             <input class="num-input live-input" type="number" id="nutrition-height" min="50" max="250" step="0.1" inputmode="none" />
           </label>
+          <label class="toggle-field">
+            <span id="t-nutrition-sex-label">Sex for IBW</span>
+            <button type="button" id="nutrition-sex-toggle" class="toggle-box" data-active="left">
+              <span id="nutrition-sex-left" class="toggle-half toggle-left">Male</span>
+              <span id="nutrition-sex-right" class="toggle-half toggle-right">Female</span>
+            </button>
+            <input type="hidden" id="nutrition-sex" value="male" />
+          </label>
           <label class="checkbox">
             <input type="checkbox" id="nutrition-ckd" class="live-input" />
             <span id="t-nutrition-ckd-label">CKD</span>
@@ -360,6 +368,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260518-calcium1"></script>
+    <script src="app.js?v=20260518-nutrition-bw1"></script>
   </body>
 </html>

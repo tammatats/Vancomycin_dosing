@@ -32,6 +32,10 @@ const sexInput = document.getElementById("sex");
 const sexToggle = document.getElementById("sex-toggle");
 const sexLeft = document.getElementById("sex-left");
 const sexRight = document.getElementById("sex-right");
+const nutritionSexInput = document.getElementById("nutrition-sex");
+const nutritionSexToggle = document.getElementById("nutrition-sex-toggle");
+const nutritionSexLeft = document.getElementById("nutrition-sex-left");
+const nutritionSexRight = document.getElementById("nutrition-sex-right");
 const ageWrap = document.getElementById("age-wrap");
 const sexWrap = document.getElementById("sex-wrap");
 const scrWrap = document.getElementById("scr-wrap");
@@ -716,6 +720,9 @@ const I18N = {
     nutritionHeading: "Nutrition goals",
     nutritionWeightLabel: "Body weight (kg)",
     nutritionHeightLabel: "Height (cm)",
+    nutritionSexLabel: "Sex for IBW",
+    nutritionSexMalePill: "Male",
+    nutritionSexFemalePill: "Female",
     nutritionCkdLabel: "CKD",
     nutritionAkiLabel: "AKI",
     nutritionCriticalLabel: "Critical illness",
@@ -723,6 +730,8 @@ const I18N = {
     nutritionEnteralLabel: "Enteral/oral feeding",
     nutritionNeed: "Fill body weight and height.",
     nutritionBmi: "BMI:",
+    nutritionIbw: "IBW:",
+    nutritionAdjustedBw: "Adjusted BW:",
     nutritionEnergy: "Total calories:",
     nutritionProtein: "Total protein:",
     nutritionVolume: "Estimated fluid/volume:",
@@ -932,6 +941,9 @@ const I18N = {
     nutritionHeading: "เป้าหมายโภชนบำบัด",
     nutritionWeightLabel: "น้ำหนักตัว (กก.)",
     nutritionHeightLabel: "ส่วนสูง (ซม.)",
+    nutritionSexLabel: "เพศสำหรับ IBW",
+    nutritionSexMalePill: "ชาย",
+    nutritionSexFemalePill: "หญิง",
     nutritionCkdLabel: "CKD",
     nutritionAkiLabel: "AKI",
     nutritionCriticalLabel: "Critical illness",
@@ -939,6 +951,8 @@ const I18N = {
     nutritionEnteralLabel: "ให้อาหาร enteral/oral",
     nutritionNeed: "กรอกน้ำหนักและส่วนสูง",
     nutritionBmi: "BMI:",
+    nutritionIbw: "IBW:",
+    nutritionAdjustedBw: "Adjusted BW:",
     nutritionEnergy: "พลังงานรวม:",
     nutritionProtein: "โปรตีนรวม:",
     nutritionVolume: "ปริมาตร/สารน้ำโดยประมาณ:",
@@ -1026,6 +1040,7 @@ const staticMap = [
   ["t-nutrition-heading", "nutritionHeading"],
   ["t-nutrition-weight-label", "nutritionWeightLabel"],
   ["t-nutrition-height-label", "nutritionHeightLabel"],
+  ["t-nutrition-sex-label", "nutritionSexLabel"],
   ["t-nutrition-ckd-label", "nutritionCkdLabel"],
   ["t-nutrition-aki-label", "nutritionAkiLabel"],
   ["t-nutrition-critical-label", "nutritionCriticalLabel"],
@@ -1203,6 +1218,11 @@ function refreshModeButtons() {
   sexToggle.dataset.active = isMale ? "left" : "right";
   sexLeft.textContent = tr("sexMalePill");
   sexRight.textContent = tr("sexFemalePill");
+
+  const isNutritionMale = nutritionSexInput.value === "male";
+  nutritionSexToggle.dataset.active = isNutritionMale ? "left" : "right";
+  nutritionSexLeft.textContent = tr("nutritionSexMalePill");
+  nutritionSexRight.textContent = tr("nutritionSexFemalePill");
 }
 
 function refreshWorkflowButtons() {
@@ -1273,6 +1293,18 @@ function calculateCrClCockcroftGault({ age, weight, scr, sex }) {
   let crcl = ((140 - age) * weight) / (72 * scr);
   if (sex === "female") crcl *= 0.85;
   return crcl;
+}
+
+function calculateIdealBodyWeight({ heightCm, sex }) {
+  const heightIn = heightCm / 2.54;
+  const inchesFromFiveFeet = heightIn - 60;
+  const baseWeight = sex === "female" ? 45.5 : 50;
+  return Math.max(0, baseWeight + 2.3 * inchesFromFiveFeet);
+}
+
+function calculateAdjustedBodyWeight({ actualWeight, idealWeight }) {
+  if (actualWeight <= idealWeight) return actualWeight;
+  return idealWeight + 0.4 * (actualWeight - idealWeight);
 }
 
 function intervalPlanFromCrCl(crcl) {
@@ -2435,6 +2467,7 @@ function calculateNutrition(event) {
 
   const weight = Number(document.getElementById("nutrition-weight").value);
   const height = Number(document.getElementById("nutrition-height").value);
+  const nutritionSex = nutritionSexInput.value;
   const hasCkd = document.getElementById("nutrition-ckd").checked;
   const hasAki = document.getElementById("nutrition-aki").checked;
   const isCritical = document.getElementById("nutrition-critical").checked;
@@ -2448,6 +2481,8 @@ function calculateNutrition(event) {
 
   const heightM = height / 100;
   const bmi = weight / (heightM * heightM);
+  const ibw = calculateIdealBodyWeight({ heightCm: height, sex: nutritionSex });
+  const adjustedBw = calculateAdjustedBodyWeight({ actualWeight: weight, idealWeight: ibw });
   const kcalPerKg = riskRefeeding ? 10 : isCritical ? 25 : 25;
   let proteinPerKg = 1;
   if (hasCkd && !hasAki && !isCritical) proteinPerKg = 0.8;
@@ -2482,6 +2517,8 @@ function calculateNutrition(event) {
   nutritionResult.innerHTML = `
     ${formulaBlock}
     <p><strong>${tr("nutritionBmi")}</strong> ${bmi.toFixed(1)} kg/m²</p>
+    <p><strong>${tr("nutritionIbw")}</strong> ${ibw.toFixed(1)} kg</p>
+    <p><strong>${tr("nutritionAdjustedBw")}</strong> ${adjustedBw.toFixed(1)} kg</p>
     <p><strong>${tr("nutritionEnergy")}</strong> ${calories} kcal/day (${kcalPerKg} kcal/kg/day)</p>
     <p><strong>${tr("nutritionProtein")}</strong> ${protein} g/day (${proteinPerKg.toFixed(1)} g/kg/day)</p>
     <p><strong>${tr("nutritionVolume")}</strong> ${fluid} mL/day (${fluidPerKg} mL/kg/day)</p>
@@ -2690,6 +2727,7 @@ function initNumpad() {
       target.closest(".num-input") ||
       target.closest("#numpad") ||
       target.closest("#sex-toggle") ||
+      target.closest("#nutrition-sex-toggle") ||
       target.closest("#crcl-mode-toggle") ||
       target.closest('button[type="submit"]')
     )
@@ -2717,6 +2755,16 @@ function initModeButtons() {
     sexInput.value = sexInput.value === "male" ? "female" : "male";
     refreshModeButtons();
     runCalculatorForMode("initial");
+    if (activeInput) {
+      showNumpad();
+      requestAnimationFrame(() => ensureInputVisible(activeInput));
+    }
+  });
+
+  nutritionSexToggle.addEventListener("click", () => {
+    nutritionSexInput.value = nutritionSexInput.value === "male" ? "female" : "male";
+    refreshModeButtons();
+    runCalculatorForMode("nutrition");
     if (activeInput) {
       showNumpad();
       requestAnimationFrame(() => ensureInputVisible(activeInput));
