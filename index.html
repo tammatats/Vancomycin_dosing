@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title id="t-doc-title">Clinical Calculator Assistant</title>
-    <link rel="stylesheet" href="styles.css?v=20260517-ui5" />
+    <link rel="stylesheet" href="styles.css?v=20260521-ui-search-checkbox1" />
   </head>
   <body>
     <main class="app-shell">
@@ -16,8 +16,8 @@
         <h1 id="t-hero-title">Clinical Dosing + Nutrition Calculator</h1>
         <p class="lead" id="t-lead">
           Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM,
-          infusion rate conversion, warfarin adjustment, serum osmolality, and
-          nutrition goals.
+          infusion rate conversion, warfarin adjustment, serum osmolality, free
+          water deficit, and nutrition goals.
         </p>
         <p class="warning" id="t-warning">
           Clinical decision support only. Final prescription must be confirmed by
@@ -29,7 +29,7 @@
         <p class="mode-prompt" id="t-mode-prompt">Choose calculation mode</p>
         <label class="calculator-search-label">
           <span class="sr-only" id="t-search-label">Search calculators</span>
-          <input id="calculator-search" type="search" autocomplete="off" placeholder="Search: vanco, antibiotic, calcium, osmo..." />
+          <input id="calculator-search" type="search" autocomplete="off" placeholder="Search: vanco, antibiotic, calcium, water..." />
         </label>
         <div id="calculator-results" class="calculator-results"></div>
         <div id="vanco-submode" class="submode-card hidden">
@@ -241,6 +241,10 @@
             <span id="t-osmo-bun-label">BUN (mg/dL)</span>
             <input class="num-input live-input" type="number" id="osmo-bun" min="0" max="300" step="1" inputmode="none" />
           </label>
+          <label>
+            <span id="t-osmo-measured-label">Measured serum osmolality (mOsm/kg)</span>
+            <input class="num-input live-input" type="number" id="osmo-measured" min="200" max="500" step="1" inputmode="none" />
+          </label>
         </form>
         <div id="osmo-result" class="result"></div>
       </section>
@@ -258,6 +262,65 @@
           </label>
         </form>
         <div id="calcium-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="free-water-panel">
+        <h2 id="t-free-water-heading">Free water deficit</h2>
+        <form id="free-water-form" class="grid">
+          <label>
+            <span id="t-free-water-weight-label">Body weight (kg)</span>
+            <input class="num-input live-input" type="number" id="free-water-weight" min="1" max="300" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-free-water-na-label">Current Na (mEq/L)</span>
+            <input class="num-input live-input" type="number" id="free-water-na" min="120" max="200" step="1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-free-water-target-label">Target Na (mEq/L)</span>
+            <input
+              class="num-input live-input preset-input"
+              type="number"
+              id="free-water-target"
+              min="130"
+              max="155"
+              step="1"
+              value="140"
+              inputmode="none"
+              data-skip-nav="true"
+            />
+          </label>
+          <label>
+            <span id="t-free-water-duration-label">Correction duration (hr)</span>
+            <input
+              class="num-input live-input preset-input"
+              type="number"
+              id="free-water-duration"
+              min="1"
+              max="120"
+              step="1"
+              value="48"
+              inputmode="none"
+              data-skip-nav="true"
+            />
+          </label>
+          <label>
+            <span id="t-free-water-tbw-label">TBW factor</span>
+            <select id="free-water-tbw" class="live-input">
+              <option value="0.6">Adult male 0.6</option>
+              <option value="0.5">Adult female / elderly male 0.5</option>
+              <option value="0.45">Elderly female 0.45</option>
+              <option value="0.4">Low lean mass 0.4</option>
+            </select>
+          </label>
+          <label>
+            <span id="t-free-water-route-label">Replacement route</span>
+            <select id="free-water-route" class="live-input">
+              <option value="d5w">D5W IV</option>
+              <option value="enteral">Enteral free water</option>
+            </select>
+          </label>
+        </form>
+        <div id="free-water-result" class="result"></div>
       </section>
 
       <section class="panel hidden" id="nutrition-panel">
@@ -368,6 +431,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260518-nutrition-bw1"></script>
+    <script src="app.js?v=20260521-osmo-gap1"></script>
   </body>
 </html>

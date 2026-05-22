@@ -6,6 +6,7 @@ const infusionResult = document.getElementById("infusion-result");
 const warfarinResult = document.getElementById("warfarin-result");
 const osmoResult = document.getElementById("osmo-result");
 const calciumResult = document.getElementById("calcium-result");
+const freeWaterResult = document.getElementById("free-water-result");
 const nutritionResult = document.getElementById("nutrition-result");
 const antibioticResult = document.getElementById("antibiotic-result");
 const languageToggle = document.getElementById("language-toggle");
@@ -15,6 +16,7 @@ const infusionPanel = document.getElementById("infusion-panel");
 const warfarinPanel = document.getElementById("warfarin-panel");
 const osmoPanel = document.getElementById("osmo-panel");
 const calciumPanel = document.getElementById("calcium-panel");
+const freeWaterPanel = document.getElementById("free-water-panel");
 const nutritionPanel = document.getElementById("nutrition-panel");
 const antibioticPanel = document.getElementById("antibiotic-panel");
 const rulesPanel = document.getElementById("rules-panel");
@@ -100,6 +102,12 @@ const WORKFLOWS = {
     form: document.getElementById("calcium-form"),
     calculator: "calcium"
   },
+  freeWater: {
+    panel: freeWaterPanel,
+    firstInputId: "free-water-weight",
+    form: document.getElementById("free-water-form"),
+    calculator: "freeWater"
+  },
   nutrition: {
     panel: nutritionPanel,
     firstInputId: "nutrition-weight",
@@ -121,6 +129,54 @@ const INFUSION_TABLE = [
   { dose: 1250, timeHours: 2, diluentMl: 250 },
   { dose: 1500, timeHours: 2.5, diluentMl: 300 },
   { dose: 2000, timeHours: 3, diluentMl: 400 }
+];
+
+const ORAL_SUPPLEMENT_REFERENCE = [
+  { no: "1.32", name: "Peptamen สูตรดื่ม", kcalMin: 200, kcalMax: 400, price: 290, code: "T01032" },
+  { no: "1.33", name: "Peptamen สูตรดื่ม", kcalMin: 401, kcalMax: 600, price: 390, code: "T01033" },
+  { no: "1.34", name: "Peptamen สูตรดื่ม", kcalMin: 601, kcalMax: 800, price: 490, code: "T01034" },
+  { no: "1.35", name: "Peptamen สูตรดื่ม", kcalMin: 801, kcalMax: 1000, price: 590, code: "T01035" },
+  { no: "1.36", name: "Aminoleban-oral สูตรดื่ม", kcalMin: 200, kcalMax: 400, price: 270, code: "T01036" },
+  { no: "1.37", name: "Aminoleban-oral สูตรดื่ม", kcalMin: 401, kcalMax: 600, price: 340, code: "T01037" },
+  { no: "1.38", name: "Aminoleban-oral สูตรดื่ม", kcalMin: 601, kcalMax: 800, price: 420, code: "T01038" },
+  { no: "1.39", name: "Aminoleban-oral สูตรดื่ม", kcalMin: 801, kcalMax: 1000, price: 500, code: "T01039" },
+  { no: "1.40", name: "NEO-MUNE vanilla สูตรดื่ม", kcalMin: 200, kcalMax: 400, price: 230, code: "T01040" },
+  { no: "1.41", name: "NEO-MUNE vanilla สูตรดื่ม", kcalMin: 401, kcalMax: 600, price: 300, code: "T01041" },
+  { no: "1.42", name: "NEO-MUNE vanilla สูตรดื่ม", kcalMin: 601, kcalMax: 800, price: 370, code: "T01042" },
+  { no: "1.43", name: "NEO-MUNE vanilla สูตรดื่ม", kcalMin: 801, kcalMax: 1000, price: 440, code: "T01043" },
+  { no: "1.44", name: "NEO-MUNE Japanese rice สูตรดื่ม", kcalMin: 200, kcalMax: 400, price: 230, code: "T01044" },
+  { no: "1.45", name: "NEO-MUNE Japanese rice สูตรดื่ม", kcalMin: 401, kcalMax: 600, price: 300, code: "T01045" },
+  { no: "1.46", name: "NEO-MUNE Japanese rice สูตรดื่ม", kcalMin: 601, kcalMax: 800, price: 370, code: "T01046" },
+  { no: "1.47", name: "NEO-MUNE Japanese rice สูตรดื่ม", kcalMin: 801, kcalMax: 1000, price: 440, code: "T01047" },
+  { no: "1.48", name: "ONCE Dialyze สูตรดื่ม", kcalMin: 200, kcalMax: 400, price: 200, code: "T01048" },
+  { no: "1.49", name: "ONCE Dialyze สูตรดื่ม", kcalMin: 401, kcalMax: 600, price: 270, code: "T01049" },
+  { no: "1.50", name: "ONCE Dialyze สูตรดื่ม", kcalMin: 601, kcalMax: 800, price: 330, code: "T01050" },
+  { no: "1.51", name: "ONCE Dialyze สูตรดื่ม", kcalMin: 801, kcalMax: 1000, price: 400, code: "T01051" },
+  { no: "1.52", name: "Oral Impact สูตรดื่ม", kcalMin: 200, kcalMax: 400, price: 320, code: "T01052" },
+  { no: "1.53", name: "Oral Impact สูตรดื่ม", kcalMin: 401, kcalMax: 600, price: 460, code: "T01053" },
+  { no: "1.54", name: "Oral Impact สูตรดื่ม", kcalMin: 601, kcalMax: 800, price: 590, code: "T01054" },
+  { no: "1.55", name: "Oral Impact สูตรดื่ม", kcalMin: 801, kcalMax: 1000, price: 720, code: "T01055" }
+];
+
+const BD_FORMULA_REFERENCE = [
+  { company: "Abbott", formula: "BD (1:1)", volume: "200 cc x 3 feeds", protein: 22 },
+  { company: "Abbott", formula: "BD DM (1:1)", volume: "200 cc x 3 feeds", protein: 27 },
+  { company: "Abbott", formula: "BD (1.2:1)", volume: "200 cc x 3 feeds", protein: 27 },
+  { company: "Abbott", formula: "BD DM (1.2:1)", volume: "200 cc x 3 feeds", protein: 32 },
+  { company: "Abbott", formula: "BD (1.5:1)", volume: "200 cc x 3 feeds", protein: 33 },
+  { company: "Abbott", formula: "BD DM (1.5:1)", volume: "200 cc x 3 feeds", protein: 41 },
+  { company: "Nestle", formula: "BD (1:1)", volume: "200 cc x 3 feeds", protein: 25 },
+  { company: "Nestle", formula: "BD DM (1:1)", volume: "200 cc x 3 feeds", protein: 28 },
+  { company: "Nestle", formula: "BD (1.2:1)", volume: "200 cc x 3 feeds", protein: 30 },
+  { company: "Nestle", formula: "BD DM (1.2:1)", volume: "200 cc x 3 feeds", protein: 34 },
+  { company: "Nestle", formula: "BD (1.5:1)", volume: "200 cc x 3 feeds", protein: 37 },
+  { company: "Nestle", formula: "BD DM (1.5:1)", volume: "200 cc x 3 feeds", protein: 42 },
+  { company: "Thai Otsuka", formula: "BD (1:1)", volume: "200 cc x 3 feeds", protein: 27 },
+  { company: "Thai Otsuka", formula: "BD DM (1:1)", volume: "200 cc x 3 feeds", protein: 30 },
+  { company: "Thai Otsuka", formula: "BD (1.2:1)", volume: "200 cc x 3 feeds", protein: 27 },
+  { company: "Thai Otsuka", formula: "BD DM (1.2:1)", volume: "200 cc x 3 feeds", protein: 35 },
+  { company: "Thai Otsuka", formula: "BD (1.5:1)", volume: "200 cc x 3 feeds", protein: 40 },
+  { company: "Thai Otsuka", formula: "BD DM (1.5:1)", volume: "200 cc x 3 feeds", protein: 44 }
 ];
 
 const ANTIBIOTIC_RENAL_DOSING = [
@@ -540,12 +596,12 @@ const I18N = {
     langButton: "ไทย",
     eyebrow: "Adult Protocol Helper",
     heroTitle: "Clinical Dosing + Nutrition Calculator",
-    lead: "Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM, infusion rate conversion, warfarin adjustment, serum osmolality, and nutrition goals.",
+    lead: "Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM, infusion rate conversion, warfarin adjustment, serum osmolality, free water deficit, and nutrition goals.",
     warning:
       "Clinical decision support only. Final prescription must be confirmed by physician/pharmacist and local hospital policy.",
     modePrompt: "Search calculator",
     searchLabel: "Search calculators",
-    searchPlaceholder: "Search: vanco, antibiotic, calcium, osmo...",
+    searchPlaceholder: "Search: vanco, antibiotic, calcium, water...",
     noCalculatorResults: "No matching calculators.",
     openCalculator: "Open",
     vancoCalcName: "Vancomycin dosing",
@@ -558,6 +614,8 @@ const I18N = {
     osmoCalcDesc: "Calculate serum osmolality from sodium, glucose, and BUN.",
     calciumCalcName: "Corrected calcium",
     calciumCalcDesc: "Correct total calcium for low albumin using the standard albumin correction.",
+    freeWaterCalcName: "Free water deficit",
+    freeWaterCalcDesc: "Estimate hypernatremia free-water deficit and generate a copy-ready replacement order.",
     nutritionCalcName: "Nutrition goals",
     nutritionCalcDesc: "Estimate calories, protein, fluid/volume, and an enteral formula plan.",
     antibioticCalcName: "Antibiotic renal dosing",
@@ -706,8 +764,19 @@ const I18N = {
     osmoNaLabel: "Sodium, Na (mEq/L)",
     osmoGlucoseLabel: "Glucose (mg/dL)",
     osmoBunLabel: "BUN (mg/dL)",
-    osmoNeed: "Fill Na, glucose, and BUN.",
+    osmoMeasuredLabel: "Measured serum osmolality (mOsm/kg)",
+    osmoNeed: "Fill Na and glucose to calculate effective osmolality.",
+    osmoAddBun: "Add BUN to calculate serum osmolality.",
+    osmoAddMeasured: "Add measured serum osmolality to calculate osmolal gap.",
+    osmoAddBunForGap: "Add BUN to calculate osmolal gap from measured serum osmolality.",
+    osmoEffectiveResult: "Effective osmolality:",
     osmoResult: "Calculated serum osmolality:",
+    osmoGapResult: "Osmolal gap:",
+    osmoGapNormal: "Osmolal gap not elevated by the common >10 cutoff.",
+    osmoGapHigh: "Elevated osmolal gap. Consider unmeasured osmoles/toxic alcohols if clinically relevant.",
+    osmoEffectiveFormula: "Effective osmolality formula: 2 x Na + glucose/18.",
+    osmoSerumFormula: "Calculated serum osmolality formula: 2 x Na + glucose/18 + BUN/2.8.",
+    osmoGapFormula: "Osmolal gap formula: measured serum osmolality - calculated serum osmolality.",
     calciumHeading: "Corrected calcium",
     calciumMeasuredLabel: "Measured total calcium (mg/dL)",
     calciumAlbuminLabel: "Serum albumin (g/dL)",
@@ -717,6 +786,35 @@ const I18N = {
     calciumNormal: "Corrected calcium within usual reference range.",
     calciumHigh: "High corrected calcium.",
     calciumFormula: "Formula: corrected Ca = measured Ca + 0.8 x (4 - albumin). Usual reference range shown here: 8.5-10.5 mg/dL.",
+    freeWaterHeading: "Free water deficit",
+    freeWaterWeightLabel: "Body weight (kg)",
+    freeWaterNaLabel: "Current Na (mEq/L)",
+    freeWaterTargetLabel: "Target Na (mEq/L)",
+    freeWaterDurationLabel: "Correction duration (hr)",
+    freeWaterTbwLabel: "TBW factor",
+    freeWaterRouteLabel: "Replacement route",
+    freeWaterTbwAdultMale: "Adult male 0.6",
+    freeWaterTbwAdultFemale: "Adult female / elderly male 0.5",
+    freeWaterTbwElderlyFemale: "Elderly female 0.45",
+    freeWaterTbwLowLeanMass: "Low lean mass 0.4",
+    freeWaterRouteD5w: "D5W IV",
+    freeWaterRouteEnteral: "Enteral free water",
+    freeWaterNeed: "Fill body weight, current Na, target Na, and correction duration.",
+    freeWaterTargetError: "Target Na must be lower than current Na for free-water deficit correction.",
+    freeWaterResult: "Estimated free water deficit:",
+    freeWaterTbwUsed: "Estimated TBW:",
+    freeWaterRate: "Replacement rate:",
+    freeWaterRateDisplay: "{rate} mL/hr over {duration} hr",
+    freeWaterCorrectionRate: "Planned Na decrease:",
+    freeWaterCorrectionRateDisplay: "{perDay} mEq/L per 24 hr ({perHour} mEq/L/hr)",
+    freeWaterFastWarning: "Warning: planned correction is faster than typical chronic hypernatremia limits.",
+    freeWaterOrderReady: "Order Ready - click each line to copy",
+    freeWaterD5wOrder: "D5W IV drip {rate} mL/hr for {duration} hr (free water deficit {deficit} L; target Na {target})",
+    freeWaterEnteralOrder: "Enteral free water {perDose} mL q{interval}h for {duration} hr (free water deficit {deficit} L; target Na {target})",
+    freeWaterMonitorOrder: "Follow serum Na q4-6h during correction and adjust free water rate",
+    freeWaterCaution:
+      "Formula estimates water deficit only; add ongoing losses and treat hypovolemia first if present. Avoid overly rapid chronic hypernatremia correction.",
+    freeWaterFormula: "Formula: free water deficit = TBW x (current Na / target Na - 1). TBW = weight x selected TBW factor.",
     nutritionHeading: "Nutrition goals",
     nutritionWeightLabel: "Body weight (kg)",
     nutritionHeightLabel: "Height (cm)",
@@ -737,6 +835,12 @@ const I18N = {
     nutritionVolume: "Estimated fluid/volume:",
     nutritionFormula: "Example enteral plan:",
     nutritionOrderReady: "Feeding Order Ready - click each line to copy",
+    nutritionReferenceTitle: "Show reference table",
+    nutritionReferenceVerify: "Reference converted from user-provided images. Verify row-by-row before relying on recommendations.",
+    nutritionSupplementReference: "Oral/enteral supplement order table",
+    nutritionBdReference: "BD formula protein reference",
+    nutritionSupplementRecommendation: "Reference match for calorie goal:",
+    nutritionNoSupplementMatch: "No oral supplement reference row covers this calorie goal; use calculated BD plan or verify with dietitian.",
     nutritionCaution: "Use clinical judgment for fluid restriction, dialysis, electrolytes, glycemic control, and refeeding monitoring.",
     antibioticHeading: "Antibiotic renal dosing",
     antibioticDrugLabel: "Antibiotic",
@@ -762,12 +866,12 @@ const I18N = {
     eyebrow: "ผู้ช่วยแนวทางผู้ป่วยผู้ใหญ่",
     heroTitle: "เครื่องมือคำนวณยาและโภชนบำบัด",
     lead:
-      "รองรับการคำนวณ vancomycin เริ่มต้น/TDM, แปลงอัตราให้ยา, ปรับ warfarin, serum osmolality และเป้าหมายโภชนบำบัด ใช้งานได้ทั้งมือถือและเดสก์ท็อป",
+      "รองรับการคำนวณ vancomycin เริ่มต้น/TDM, แปลงอัตราให้ยา, ปรับ warfarin, serum osmolality, free water deficit และเป้าหมายโภชนบำบัด ใช้งานได้ทั้งมือถือและเดสก์ท็อป",
     warning:
       "ใช้เพื่อช่วยตัดสินใจทางคลินิกเท่านั้น คำสั่งยาสุดท้ายต้องยืนยันโดยแพทย์/เภสัชกร และนโยบายของโรงพยาบาล",
     modePrompt: "ค้นหาเครื่องคำนวณ",
     searchLabel: "ค้นหาเครื่องคำนวณ",
-    searchPlaceholder: "ค้นหา: vanco, antibiotic, calcium, osmo...",
+    searchPlaceholder: "ค้นหา: vanco, antibiotic, calcium, water...",
     noCalculatorResults: "ไม่พบเครื่องคำนวณที่ตรงกัน",
     openCalculator: "เปิด",
     vancoCalcName: "Vancomycin dosing",
@@ -780,6 +884,8 @@ const I18N = {
     osmoCalcDesc: "คำนวณ serum osmolality จาก sodium, glucose และ BUN",
     calciumCalcName: "Corrected calcium",
     calciumCalcDesc: "ปรับค่า total calcium ตาม albumin",
+    freeWaterCalcName: "Free water deficit",
+    freeWaterCalcDesc: "คำนวณ water deficit ใน hypernatremia และสร้างคำสั่งให้สารน้ำพร้อมคัดลอก",
     nutritionCalcName: "เป้าหมายโภชนบำบัด",
     nutritionCalcDesc: "ประเมินพลังงาน โปรตีน ปริมาตร/สารน้ำ และตัวอย่างสูตร enteral",
     antibioticCalcName: "ปรับขนาด antibiotic ตามไต",
@@ -927,8 +1033,19 @@ const I18N = {
     osmoNaLabel: "Sodium, Na (mEq/L)",
     osmoGlucoseLabel: "Glucose (mg/dL)",
     osmoBunLabel: "BUN (mg/dL)",
-    osmoNeed: "กรอก Na, glucose และ BUN",
+    osmoMeasuredLabel: "Measured serum osmolality (mOsm/kg)",
+    osmoNeed: "กรอก Na และ glucose เพื่อคำนวณ effective osmolality",
+    osmoAddBun: "กรอก BUN เพิ่มเพื่อคำนวณ serum osmolality",
+    osmoAddMeasured: "กรอก measured serum osmolality เพิ่มเพื่อคำนวณ osmolal gap",
+    osmoAddBunForGap: "กรอก BUN เพิ่มเพื่อคำนวณ osmolal gap จาก measured serum osmolality",
+    osmoEffectiveResult: "Effective osmolality:",
     osmoResult: "Calculated serum osmolality:",
+    osmoGapResult: "Osmolal gap:",
+    osmoGapNormal: "Osmolal gap ไม่สูงตาม cutoff ทั่วไป >10",
+    osmoGapHigh: "Osmolal gap สูง ควรพิจารณา unmeasured osmoles/toxic alcohols หากเข้ากับอาการทางคลินิก",
+    osmoEffectiveFormula: "สูตร effective osmolality: 2 x Na + glucose/18",
+    osmoSerumFormula: "สูตร calculated serum osmolality: 2 x Na + glucose/18 + BUN/2.8",
+    osmoGapFormula: "สูตร osmolal gap: measured serum osmolality - calculated serum osmolality",
     calciumHeading: "Corrected calcium",
     calciumMeasuredLabel: "Total calcium ที่วัดได้ (mg/dL)",
     calciumAlbuminLabel: "Serum albumin (g/dL)",
@@ -938,6 +1055,35 @@ const I18N = {
     calciumNormal: "Corrected calcium อยู่ในช่วงอ้างอิงทั่วไป",
     calciumHigh: "Corrected calcium สูง",
     calciumFormula: "สูตร: corrected Ca = measured Ca + 0.8 x (4 - albumin). ช่วงอ้างอิงทั่วไปที่ใช้แสดง: 8.5-10.5 mg/dL",
+    freeWaterHeading: "Free water deficit",
+    freeWaterWeightLabel: "น้ำหนักตัว (กก.)",
+    freeWaterNaLabel: "Na ปัจจุบัน (mEq/L)",
+    freeWaterTargetLabel: "Na เป้าหมาย (mEq/L)",
+    freeWaterDurationLabel: "ระยะเวลาปรับแก้ (ชม.)",
+    freeWaterTbwLabel: "TBW factor",
+    freeWaterRouteLabel: "วิธีให้ free water",
+    freeWaterTbwAdultMale: "ผู้ใหญ่ชาย 0.6",
+    freeWaterTbwAdultFemale: "ผู้ใหญ่หญิง / ผู้สูงอายุชาย 0.5",
+    freeWaterTbwElderlyFemale: "ผู้สูงอายุหญิง 0.45",
+    freeWaterTbwLowLeanMass: "มวลกล้ามเนื้อน้อย 0.4",
+    freeWaterRouteD5w: "D5W IV",
+    freeWaterRouteEnteral: "Enteral free water",
+    freeWaterNeed: "กรอกน้ำหนัก Na ปัจจุบัน Na เป้าหมาย และระยะเวลาปรับแก้",
+    freeWaterTargetError: "Na เป้าหมายต้องต่ำกว่า Na ปัจจุบันสำหรับการคำนวณ free-water deficit",
+    freeWaterResult: "Free water deficit โดยประมาณ:",
+    freeWaterTbwUsed: "TBW โดยประมาณ:",
+    freeWaterRate: "อัตราให้สารน้ำ:",
+    freeWaterRateDisplay: "{rate} mL/hr นาน {duration} ชม.",
+    freeWaterCorrectionRate: "อัตราการลด Na ที่วางแผน:",
+    freeWaterCorrectionRateDisplay: "{perDay} mEq/L ต่อ 24 ชม. ({perHour} mEq/L/ชม.)",
+    freeWaterFastWarning: "คำเตือน: แผนนี้ลด Na เร็วกว่าขีดจำกัดทั่วไปสำหรับ chronic hypernatremia",
+    freeWaterOrderReady: "คำสั่งพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    freeWaterD5wOrder: "D5W IV drip {rate} mL/hr นาน {duration} ชม. (free water deficit {deficit} L; target Na {target})",
+    freeWaterEnteralOrder: "Enteral free water {perDose} mL q{interval}h นาน {duration} ชม. (free water deficit {deficit} L; target Na {target})",
+    freeWaterMonitorOrder: "ติดตาม serum Na q4-6h ระหว่างแก้ไข และปรับอัตรา free water ตามผล",
+    freeWaterCaution:
+      "สูตรนี้ประเมินเฉพาะ water deficit ต้องรวม ongoing loss และแก้ hypovolemia ก่อนหากมี ระวังการลด Na เร็วเกินไปใน chronic hypernatremia",
+    freeWaterFormula: "สูตร: free water deficit = TBW x (Na ปัจจุบัน / Na เป้าหมาย - 1). TBW = น้ำหนัก x TBW factor ที่เลือก",
     nutritionHeading: "เป้าหมายโภชนบำบัด",
     nutritionWeightLabel: "น้ำหนักตัว (กก.)",
     nutritionHeightLabel: "ส่วนสูง (ซม.)",
@@ -958,6 +1104,12 @@ const I18N = {
     nutritionVolume: "ปริมาตร/สารน้ำโดยประมาณ:",
     nutritionFormula: "ตัวอย่างสูตร enteral:",
     nutritionOrderReady: "คำสั่งอาหารพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    nutritionReferenceTitle: "แสดงตารางอ้างอิง",
+    nutritionReferenceVerify: "ตารางนี้ถอดจากรูปที่ผู้ใช้ให้มา กรุณาตรวจเทียบทีละแถวก่อนใช้คำแนะนำ",
+    nutritionSupplementReference: "ตารางอาหารเสริม oral/enteral",
+    nutritionBdReference: "ตาราง protein ของสูตร BD",
+    nutritionSupplementRecommendation: "รายการอ้างอิงที่ตรงกับเป้าพลังงาน:",
+    nutritionNoSupplementMatch: "ไม่มีแถว oral supplement ที่ครอบคลุมเป้าพลังงานนี้ ให้ใช้แผน BD ที่คำนวณหรือยืนยันกับนักกำหนดอาหาร",
     nutritionCaution: "ใช้ดุลยพินิจร่วมกับข้อจำกัดสารน้ำ dialysis electrolyte glycemic control และการเฝ้าระวัง refeeding",
     antibioticHeading: "ปรับขนาด antibiotic ตามไต",
     antibioticDrugLabel: "Antibiotic",
@@ -1034,9 +1186,17 @@ const staticMap = [
   ["t-osmo-na-label", "osmoNaLabel"],
   ["t-osmo-glucose-label", "osmoGlucoseLabel"],
   ["t-osmo-bun-label", "osmoBunLabel"],
+  ["t-osmo-measured-label", "osmoMeasuredLabel"],
   ["t-calcium-heading", "calciumHeading"],
   ["t-calcium-measured-label", "calciumMeasuredLabel"],
   ["t-calcium-albumin-label", "calciumAlbuminLabel"],
+  ["t-free-water-heading", "freeWaterHeading"],
+  ["t-free-water-weight-label", "freeWaterWeightLabel"],
+  ["t-free-water-na-label", "freeWaterNaLabel"],
+  ["t-free-water-target-label", "freeWaterTargetLabel"],
+  ["t-free-water-duration-label", "freeWaterDurationLabel"],
+  ["t-free-water-tbw-label", "freeWaterTbwLabel"],
+  ["t-free-water-route-label", "freeWaterRouteLabel"],
   ["t-nutrition-heading", "nutritionHeading"],
   ["t-nutrition-weight-label", "nutritionWeightLabel"],
   ["t-nutrition-height-label", "nutritionHeightLabel"],
@@ -1106,6 +1266,13 @@ function getCalculatorOptions() {
       keywords: "calcium corrected calcium albumin ca hypocalcemia hypercalcemia"
     },
     {
+      id: "freeWater",
+      workflow: "freeWater",
+      name: tr("freeWaterCalcName"),
+      description: tr("freeWaterCalcDesc"),
+      keywords: "free water deficit hypernatremia sodium na d5w enteral water dehydration"
+    },
+    {
       id: "nutrition",
       workflow: "nutrition",
       name: tr("nutritionCalcName"),
@@ -1134,10 +1301,16 @@ function hideWorkflowPanels() {
 
 function renderCalculatorResults() {
   const query = calculatorSearch.value.trim().toLowerCase();
+  calculatorResults.classList.toggle("has-query", Boolean(query));
+  if (!query) {
+    calculatorResults.innerHTML = "";
+    return;
+  }
+
   const options = getCalculatorOptions();
   const filtered = options.filter((option) => {
     const haystack = `${option.name} ${option.description} ${option.keywords}`.toLowerCase();
-    return !query || haystack.includes(query);
+    return haystack.includes(query);
   });
 
   if (!filtered.length) {
@@ -1153,9 +1326,7 @@ function renderCalculatorResults() {
         }" data-calculator="${option.id}">
           <span class="calculator-copy">
             <strong>${option.name}</strong>
-            <span>${option.description}</span>
           </span>
-          <span class="calculator-open">${tr("openCalculator")}</span>
         </button>
       `
     )
@@ -1195,6 +1366,18 @@ function applyStaticTranslation() {
   antibioticDrugSearch.placeholder = tr("antibioticDrugPlaceholder");
   antibioticRenalModeSelect.options[0].textContent = tr("antibioticRenalModeCrcl");
   antibioticRenalModeSelect.options[1].textContent = tr("antibioticRenalModeHd");
+  const freeWaterTbwSelect = document.getElementById("free-water-tbw");
+  const freeWaterRouteSelect = document.getElementById("free-water-route");
+  if (freeWaterTbwSelect) {
+    freeWaterTbwSelect.options[0].textContent = tr("freeWaterTbwAdultMale");
+    freeWaterTbwSelect.options[1].textContent = tr("freeWaterTbwAdultFemale");
+    freeWaterTbwSelect.options[2].textContent = tr("freeWaterTbwElderlyFemale");
+    freeWaterTbwSelect.options[3].textContent = tr("freeWaterTbwLowLeanMass");
+  }
+  if (freeWaterRouteSelect) {
+    freeWaterRouteSelect.options[0].textContent = tr("freeWaterRouteD5w");
+    freeWaterRouteSelect.options[1].textContent = tr("freeWaterRouteEnteral");
+  }
   numpadPrev.textContent = tr("numpadPrev");
   numpadNext.textContent = tr("numpadNext");
   numpadDone.textContent = tr("numpadDone");
@@ -2417,19 +2600,51 @@ async function copyWarfarinOrder(event) {
 function calculateOsmo(event) {
   event?.preventDefault();
 
-  const na = Number(document.getElementById("osmo-na").value);
-  const glucose = Number(document.getElementById("osmo-glucose").value);
-  const bun = Number(document.getElementById("osmo-bun").value);
+  const naValue = document.getElementById("osmo-na").value.trim();
+  const glucoseValue = document.getElementById("osmo-glucose").value.trim();
+  const bunValue = document.getElementById("osmo-bun").value.trim();
+  const measuredValue = document.getElementById("osmo-measured").value.trim();
+  const na = Number(naValue);
+  const glucose = Number(glucoseValue);
+  const bun = Number(bunValue);
+  const measured = Number(measuredValue);
+  const hasNa = naValue !== "" && Number.isFinite(na);
+  const hasGlucose = glucoseValue !== "" && Number.isFinite(glucose);
+  const hasBun = bunValue !== "" && Number.isFinite(bun);
+  const hasMeasured = measuredValue !== "" && Number.isFinite(measured);
 
-  if (!na || !glucose || !bun) {
+  if (!hasNa || !hasGlucose) {
     osmoResult.innerHTML = `<p>${tr("osmoNeed")}</p>`;
     return;
   }
 
-  const osmo = 2 * na + glucose / 18 + bun / 2.8;
+  const effectiveOsmo = 2 * na + glucose / 18;
+  const serumOsmo = hasBun ? effectiveOsmo + bun / 2.8 : null;
+  const osmolalGap = hasBun && hasMeasured ? measured - serumOsmo : null;
+  const osmolalGapBlock =
+    osmolalGap === null
+      ? hasMeasured && !hasBun
+        ? `<p class="note">${tr("osmoAddBunForGap")}</p>`
+        : hasBun
+        ? `<p class="note">${tr("osmoAddMeasured")}</p>`
+        : ""
+      : `
+        <p><strong>${tr("osmoGapResult")}</strong> ${osmolalGap.toFixed(1)} mOsm/kg</p>
+        <p><strong>${tr("statusLabel")}</strong> <span class="${
+          osmolalGap > 10 ? "status-high" : "status-ok"
+        }">${osmolalGap > 10 ? tr("osmoGapHigh") : tr("osmoGapNormal")}</span></p>
+      `;
   osmoResult.innerHTML = `
-    <p><strong>${tr("osmoResult")}</strong> ${osmo.toFixed(1)} mOsm/kg</p>
-    <p class="note">Formula: 2 x Na + glucose/18 + BUN/2.8</p>
+    <p><strong>${tr("osmoEffectiveResult")}</strong> ${effectiveOsmo.toFixed(1)} mOsm/kg</p>
+    ${
+      hasBun
+        ? `<p><strong>${tr("osmoResult")}</strong> ${serumOsmo.toFixed(1)} mOsm/kg</p>`
+        : `<p class="note">${tr("osmoAddBun")}</p>`
+    }
+    ${osmolalGapBlock}
+    <p class="note">${tr("osmoEffectiveFormula")}</p>
+    ${hasBun ? `<p class="note">${tr("osmoSerumFormula")}</p>` : ""}
+    ${hasBun && hasMeasured ? `<p class="note">${tr("osmoGapFormula")}</p>` : ""}
   `;
 }
 
@@ -2459,6 +2674,142 @@ function calculateCalcium(event) {
     <p><strong>${tr("calciumResult")}</strong> ${correctedCalcium.toFixed(1)} mg/dL</p>
     <p><strong>${tr("statusLabel")}</strong> <span class="${statusClass}">${status}</span></p>
     <p class="note">${tr("calciumFormula")}</p>
+  `;
+}
+
+function calculateFreeWater(event) {
+  event?.preventDefault();
+
+  const weight = Number(document.getElementById("free-water-weight").value);
+  const currentNa = Number(document.getElementById("free-water-na").value);
+  const targetNa = Number(document.getElementById("free-water-target").value);
+  const duration = Number(document.getElementById("free-water-duration").value);
+  const tbwFactor = Number(document.getElementById("free-water-tbw").value);
+  const route = document.getElementById("free-water-route").value;
+
+  if (!weight || !currentNa || !targetNa || !duration || !tbwFactor) {
+    freeWaterResult.innerHTML = `<p>${tr("freeWaterNeed")}</p>`;
+    return;
+  }
+
+  if (targetNa >= currentNa) {
+    freeWaterResult.innerHTML = `<p>${tr("freeWaterTargetError")}</p>`;
+    return;
+  }
+
+  const tbw = weight * tbwFactor;
+  const deficitL = Math.max(0, tbw * (currentNa / targetNa - 1));
+  const rateMlHr = Math.round((deficitL * 1000) / duration);
+  const correctionPerDay = ((currentNa - targetNa) / duration) * 24;
+  const correctionPerHour = (currentNa - targetNa) / duration;
+  const correctionWarning =
+    correctionPerDay > 12 || correctionPerHour > 0.5
+      ? `<p><strong>${tr("statusLabel")}</strong> <span class="status-high">${tr("freeWaterFastWarning")}</span></p>`
+      : "";
+  const enteralIntervalHr = 4;
+  const enteralDoses = Math.max(1, Math.ceil(duration / enteralIntervalHr));
+  const enteralPerDose = roundUpToStep((deficitL * 1000) / enteralDoses, 25);
+  const deficitText = deficitL.toFixed(1);
+  const orderLine =
+    route === "enteral"
+      ? tr("freeWaterEnteralOrder", {
+          perDose: enteralPerDose,
+          interval: enteralIntervalHr,
+          duration,
+          deficit: deficitText,
+          target: targetNa
+        })
+      : tr("freeWaterD5wOrder", {
+          rate: rateMlHr,
+          duration,
+          deficit: deficitText,
+          target: targetNa
+        });
+
+  freeWaterResult.innerHTML = `
+    <div class="order-highlight free-water-copy-order">
+      <p class="order-title">${tr("freeWaterOrderReady")}</p>
+      <div class="order-text">${renderOrderLines([orderLine, tr("freeWaterMonitorOrder")])}</div>
+    </div>
+    <p><strong>${tr("freeWaterResult")}</strong> ${deficitText} L</p>
+    <p><strong>${tr("freeWaterTbwUsed")}</strong> ${tbw.toFixed(1)} L (${tbwFactor.toFixed(2)} x ${weight} kg)</p>
+    <p><strong>${tr("freeWaterRate")}</strong> ${tr("freeWaterRateDisplay", { rate: rateMlHr, duration })}</p>
+    <p><strong>${tr("freeWaterCorrectionRate")}</strong> ${tr("freeWaterCorrectionRateDisplay", {
+      perDay: correctionPerDay.toFixed(1),
+      perHour: correctionPerHour.toFixed(2)
+    })}</p>
+    ${correctionWarning}
+    <p class="note">${tr("freeWaterCaution")}</p>
+    <p class="note">${tr("freeWaterFormula")}</p>
+  `;
+}
+
+async function copyFreeWaterOrder(event) {
+  copyOrderLine(event, freeWaterResult);
+}
+
+function findOralSupplementForCalories(calories) {
+  return ORAL_SUPPLEMENT_REFERENCE.filter((item) => calories >= item.kcalMin && calories <= item.kcalMax);
+}
+
+function renderNutritionReferenceTables() {
+  const supplementRows = ORAL_SUPPLEMENT_REFERENCE.map(
+    (item) => `
+      <tr>
+        <td>${item.no}</td>
+        <td>${item.name}</td>
+        <td>${item.kcalMin}-${item.kcalMax}</td>
+        <td>${item.price}</td>
+        <td>${item.code}</td>
+      </tr>
+    `
+  ).join("");
+
+  const bdRows = BD_FORMULA_REFERENCE.map(
+    (item) => `
+      <tr>
+        <td>${item.company}</td>
+        <td>${item.formula}</td>
+        <td>${item.volume}</td>
+        <td>${item.protein}</td>
+      </tr>
+    `
+  ).join("");
+
+  return `
+    <details class="reference-panel">
+      <summary>${tr("nutritionReferenceTitle")}</summary>
+      <p class="note">${tr("nutritionReferenceVerify")}</p>
+      <h3>${tr("nutritionSupplementReference")}</h3>
+      <div class="reference-table-wrap">
+        <table class="reference-table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>รายการ</th>
+              <th>kcal/day</th>
+              <th>บาท/day</th>
+              <th>รหัส รพ.</th>
+            </tr>
+          </thead>
+          <tbody>${supplementRows}</tbody>
+        </table>
+      </div>
+      <h3>${tr("nutritionBdReference")}</h3>
+      <div class="reference-table-wrap">
+        <table class="reference-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Formula</th>
+              <th>Volume</th>
+              <th>Protein g/day</th>
+            </tr>
+          </thead>
+          <tbody>${bdRows}</tbody>
+        </table>
+      </div>
+    </details>
   `;
 }
 
@@ -2494,6 +2845,7 @@ function calculateNutrition(event) {
   const fluid = Math.round(weight * fluidPerKg);
 
   let formulaBlock = "";
+  let supplementRecommendation = "";
   if (isEnteral) {
     const feedsPerDay = 4;
     const formulaKcalMl = 1.5;
@@ -2512,10 +2864,21 @@ function calculateNutrition(event) {
         <div class="order-text">${renderOrderLines(feedingOrderLines)}</div>
       </div>
     `;
+
+    const matchingSupplements = findOralSupplementForCalories(calories);
+    if (matchingSupplements.length) {
+      const supplementLines = matchingSupplements
+        .map((item) => `${item.name} ${item.kcalMin}-${item.kcalMax} kcal/day, ${item.price} บาท/day, ${item.code}`)
+        .join("<br>");
+      supplementRecommendation = `<p><strong>${tr("nutritionSupplementRecommendation")}</strong><br>${supplementLines}</p>`;
+    } else {
+      supplementRecommendation = `<p class="note">${tr("nutritionNoSupplementMatch")}</p>`;
+    }
   }
 
   nutritionResult.innerHTML = `
     ${formulaBlock}
+    ${supplementRecommendation}
     <p><strong>${tr("nutritionBmi")}</strong> ${bmi.toFixed(1)} kg/m²</p>
     <p><strong>${tr("nutritionIbw")}</strong> ${ibw.toFixed(1)} kg</p>
     <p><strong>${tr("nutritionAdjustedBw")}</strong> ${adjustedBw.toFixed(1)} kg</p>
@@ -2523,6 +2886,7 @@ function calculateNutrition(event) {
     <p><strong>${tr("nutritionProtein")}</strong> ${protein} g/day (${proteinPerKg.toFixed(1)} g/kg/day)</p>
     <p><strong>${tr("nutritionVolume")}</strong> ${fluid} mL/day (${fluidPerKg} mL/kg/day)</p>
     <p class="note">${tr("nutritionCaution")}</p>
+    ${renderNutritionReferenceTables()}
   `;
 }
 
@@ -2639,6 +3003,7 @@ function runCalculatorForMode(mode) {
   if (mode === "warfarin") calculateWarfarin();
   if (mode === "osmo") calculateOsmo();
   if (mode === "calcium") calculateCalcium();
+  if (mode === "freeWater") calculateFreeWater();
   if (mode === "nutrition") calculateNutrition();
   if (mode === "antibiotic") calculateAntibiotic();
 }
@@ -2650,6 +3015,7 @@ function recalcIfResultsShown() {
   if (warfarinResult.innerHTML.trim()) calculateWarfarin();
   if (osmoResult.innerHTML.trim()) calculateOsmo();
   if (calciumResult.innerHTML.trim()) calculateCalcium();
+  if (freeWaterResult.innerHTML.trim()) calculateFreeWater();
   if (nutritionResult.innerHTML.trim()) calculateNutrition();
   if (antibioticResult.innerHTML.trim()) calculateAntibiotic();
 }
@@ -2869,6 +3235,7 @@ bindLiveCalculation(document.getElementById("infusion-form"), calculateInfusion)
 bindLiveCalculation(document.getElementById("warfarin-form"), calculateWarfarin);
 bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
+bindLiveCalculation(document.getElementById("free-water-form"), calculateFreeWater);
 bindLiveCalculation(document.getElementById("nutrition-form"), calculateNutrition);
 bindLiveCalculation(document.getElementById("antibiotic-form"), calculateAntibiotic);
 
@@ -2893,6 +3260,14 @@ nutritionResult.addEventListener("keydown", (event) => {
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
     copyNutritionOrder(event);
+  }
+});
+
+freeWaterResult.addEventListener("click", copyFreeWaterOrder);
+freeWaterResult.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    copyFreeWaterOrder(event);
   }
 });
 
