@@ -5,6 +5,7 @@ const adjustResult = document.getElementById("adjust-result");
 const infusionResult = document.getElementById("infusion-result");
 const warfarinResult = document.getElementById("warfarin-result");
 const heparinResult = document.getElementById("heparin-result");
+const renalResult = document.getElementById("renal-result");
 const osmoResult = document.getElementById("osmo-result");
 const calciumResult = document.getElementById("calcium-result");
 const freeWaterResult = document.getElementById("free-water-result");
@@ -16,6 +17,7 @@ const adjustPanel = document.getElementById("adjust-panel");
 const infusionPanel = document.getElementById("infusion-panel");
 const warfarinPanel = document.getElementById("warfarin-panel");
 const heparinPanel = document.getElementById("heparin-panel");
+const renalPanel = document.getElementById("renal-panel");
 const osmoPanel = document.getElementById("osmo-panel");
 const calciumPanel = document.getElementById("calcium-panel");
 const freeWaterPanel = document.getElementById("free-water-panel");
@@ -48,6 +50,11 @@ const warfarinTabs = document.getElementById("warfarin-tabs");
 const heparinIndicationTabs = document.getElementById("heparin-indication-tabs");
 const heparinOtherWrap = document.getElementById("heparin-other-wrap");
 const heparinIndicationSelect = document.getElementById("heparin-indication");
+const renalModeInput = document.getElementById("renal-mode");
+const renalModeTabs = document.getElementById("renal-mode-tabs");
+const renalSexInput = document.getElementById("renal-sex");
+const renalSexTabs = document.getElementById("renal-sex-tabs");
+const renalWeightWrap = document.getElementById("renal-weight-wrap");
 const antibioticDrugSearch = document.getElementById("antibiotic-drug-search");
 const antibioticDrugInput = document.getElementById("antibiotic-drug");
 const antibioticDrugResults = document.getElementById("antibiotic-drug-results");
@@ -161,6 +168,12 @@ const WORKFLOWS = {
     firstInputId: "heparin-weight",
     form: document.getElementById("heparin-form"),
     calculator: "heparin"
+  },
+  renal: {
+    panel: renalPanel,
+    firstInputId: "renal-age",
+    form: document.getElementById("renal-form"),
+    calculator: "renal"
   },
   osmo: {
     panel: osmoPanel,
@@ -684,6 +697,8 @@ const I18N = {
     warfarinCalcDesc: "Estimate weekly dose adjustment from current INR and target range.",
     heparinCalcName: "Heparin bolus + drip",
     heparinCalcDesc: "Estimate adult IV unfractionated heparin bolus, drip rate, and pump mL/hr by indication.",
+    renalCalcName: "GFR / CrCl",
+    renalCalcDesc: "Calculate creatinine-only eGFR or Cockcroft-Gault creatinine clearance.",
     osmoCalcName: "Serum osmolality",
     osmoCalcDesc: "Calculate serum osmolality from sodium, glucose, and BUN.",
     calciumCalcName: "Corrected calcium",
@@ -743,14 +758,14 @@ const I18N = {
     orderReadyCopy: "Order Ready - click to copy",
     orderLineReady: "Order Ready - click each line to copy",
     orderCopied: "Copied order to clipboard.",
-    orderLineCopied: "Copied order line to clipboard.",
+    orderLineCopied: "Copied to clipboard.",
     orderCopyFailed: "Copy failed. Select and copy manually.",
     oneDayOrder: "One-Day Order",
     continuedOrder: "Continued Order",
     hr: "hr",
     follow48: "Follow vancomycin level at 48 hr after loading dose.",
     follow3: "Follow vancomycin level at 30 minutes before 3rd dose.",
-    follow4: "Follow vancomycin level at 30 minutes before 4th dose.",
+    follow4: "Vancomycin level 30 นาทีก่อน dose 4",
     intervalHighCl: "q12h (consider q8h in severe infection/high clearance)",
     intervalDaily: "q24h",
     intervalTdm: "One dose, then TDM-guided redosing",
@@ -874,6 +889,23 @@ const I18N = {
     heparinCopied: "Copied heparin order line to clipboard.",
     heparinAllCopied: "Copied heparin order to clipboard.",
     heparinCopyFailed: "Copy blocked. Text selected - press Cmd+C.",
+    renalHeading: "GFR / CrCl calculator",
+    renalModeLabel: "Calculation",
+    renalModeGfr: "GFR",
+    renalModeCrcl: "CrCl",
+    renalAgeLabel: "Age (years)",
+    renalScrLabel: "Serum creatinine, SCr (mg/dL)",
+    renalWeightLabel: "Body weight (kg)",
+    renalSexLabel: "Sex",
+    renalSexMale: "Male",
+    renalSexFemale: "Female",
+    renalNeedGfr: "Fill age, SCr, and sex to calculate GFR.",
+    renalNeedCrcl: "Fill age, SCr, weight, and sex to calculate CrCl.",
+    renalGfrResult: "eGFR:",
+    renalCrclResult: "CrCl:",
+    renalGfrFormula: "GFR uses the 2021 CKD-EPI creatinine equation without race coefficient.",
+    renalCrclFormula: "CrCl uses Cockcroft-Gault = ((140 - age) x weight) / (72 x SCr), and x0.85 for female.",
+    renalCaution: "Creatinine-based estimates are less reliable with unstable renal function, extremes of muscle mass, pregnancy, amputation, or non-steady-state SCr.",
     osmoHeading: "Calculated serum osmolality",
     osmoNaLabel: "Sodium, Na (mEq/L)",
     osmoGlucoseLabel: "Glucose (mg/dL)",
@@ -996,6 +1028,8 @@ const I18N = {
     warfarinCalcDesc: "ประเมินการปรับขนาดยารวมต่อสัปดาห์จาก INR และช่วงเป้าหมาย",
     heparinCalcName: "Heparin bolus + drip",
     heparinCalcDesc: "ประเมิน heparin IV bolus, อัตรา drip และ mL/hr ตาม indication ในผู้ใหญ่",
+    renalCalcName: "GFR / CrCl",
+    renalCalcDesc: "คำนวณ eGFR จาก creatinine หรือ CrCl แบบ Cockcroft-Gault",
     osmoCalcName: "Serum osmolality",
     osmoCalcDesc: "คำนวณ serum osmolality จาก sodium, glucose และ BUN",
     calciumCalcName: "Corrected calcium",
@@ -1054,14 +1088,14 @@ const I18N = {
     orderReadyCopy: "คำสั่งยาพร้อมใช้ - คลิกเพื่อคัดลอก",
     orderLineReady: "คำสั่งยาพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
     orderCopied: "คัดลอกคำสั่งยาแล้ว",
-    orderLineCopied: "คัดลอกคำสั่งยาบรรทัดนี้แล้ว",
+    orderLineCopied: "คัดลอกแล้ว",
     orderCopyFailed: "คัดลอกไม่สำเร็จ กรุณาเลือกและคัดลอกเอง",
     oneDayOrder: "คำสั่งยา 1 วัน",
     continuedOrder: "คำสั่งยาต่อเนื่อง",
     hr: "ชม.",
     follow48: "ติดตามระดับ vancomycin ที่ 48 ชั่วโมงหลังให้ loading dose",
     follow3: "ติดตามระดับ vancomycin ก่อนเข็มที่ 3 30 นาที",
-    follow4: "ติดตามระดับ vancomycin ก่อนเข็มที่ 4 30 นาที",
+    follow4: "Vancomycin level 30 นาทีก่อน dose 4",
     intervalHighCl: "q12h (พิจารณา q8h หากติดเชื้อรุนแรง/clearance สูง)",
     intervalDaily: "q24h",
     intervalTdm: "ให้ครั้งเดียว แล้วปรับตาม TDM",
@@ -1185,6 +1219,23 @@ const I18N = {
     heparinCopied: "คัดลอกคำสั่ง heparin แล้ว",
     heparinAllCopied: "คัดลอกคำสั่ง heparin แล้ว",
     heparinCopyFailed: "Browser ไม่อนุญาตให้ copy เลือกข้อความให้แล้ว - กด Cmd+C",
+    renalHeading: "GFR / CrCl calculator",
+    renalModeLabel: "วิธีคำนวณ",
+    renalModeGfr: "GFR",
+    renalModeCrcl: "CrCl",
+    renalAgeLabel: "อายุ (ปี)",
+    renalScrLabel: "Serum creatinine, SCr (mg/dL)",
+    renalWeightLabel: "น้ำหนักตัว (กก.)",
+    renalSexLabel: "เพศ",
+    renalSexMale: "ชาย",
+    renalSexFemale: "หญิง",
+    renalNeedGfr: "กรอกอายุ SCr และเพศ เพื่อคำนวณ GFR",
+    renalNeedCrcl: "กรอกอายุ SCr น้ำหนัก และเพศ เพื่อคำนวณ CrCl",
+    renalGfrResult: "eGFR:",
+    renalCrclResult: "CrCl:",
+    renalGfrFormula: "GFR ใช้สมการ 2021 CKD-EPI creatinine โดยไม่มี race coefficient",
+    renalCrclFormula: "CrCl ใช้ Cockcroft-Gault = ((140 - age) x weight) / (72 x SCr), และคูณ 0.85 ในผู้หญิง",
+    renalCaution: "ค่าประมาณจาก creatinine อาจคลาดเคลื่อนเมื่อ renal function ไม่คงที่ มวลกล้ามเนื้อผิดปกติมาก ตั้งครรภ์ amputee หรือ SCr ยังไม่ steady state",
     osmoHeading: "คำนวณ serum osmolality",
     osmoNaLabel: "Sodium, Na (mEq/L)",
     osmoGlucoseLabel: "Glucose (mg/dL)",
@@ -1348,6 +1399,16 @@ const staticMap = [
   ["t-heparin-quick-other", "heparinQuickOther"],
   ["t-heparin-bag-units-label", "heparinBagUnitsLabel"],
   ["t-heparin-bag-volume-label", "heparinBagVolumeLabel"],
+  ["t-renal-heading", "renalHeading"],
+  ["t-renal-mode-label", "renalModeLabel"],
+  ["t-renal-mode-gfr", "renalModeGfr"],
+  ["t-renal-mode-crcl", "renalModeCrcl"],
+  ["t-renal-age-label", "renalAgeLabel"],
+  ["t-renal-scr-label", "renalScrLabel"],
+  ["t-renal-weight-label", "renalWeightLabel"],
+  ["t-renal-sex-label", "renalSexLabel"],
+  ["t-renal-sex-male", "renalSexMale"],
+  ["t-renal-sex-female", "renalSexFemale"],
   ["t-osmo-heading", "osmoHeading"],
   ["t-osmo-na-label", "osmoNaLabel"],
   ["t-osmo-glucose-label", "osmoGlucoseLabel"],
@@ -1423,6 +1484,13 @@ function getCalculatorOptions() {
       name: tr("heparinCalcName"),
       description: tr("heparinCalcDesc"),
       keywords: "heparin unfractionated ufh bolus drip infusion anti xa aptt dvt pe vte acs stemi nstemi af bridge stroke anticoagulation"
+    },
+    {
+      id: "renal",
+      workflow: "renal",
+      name: tr("renalCalcName"),
+      description: tr("renalCalcDesc"),
+      keywords: "gfr egfr crcl creatinine clearance renal kidney ckd epi cockcroft gault scr"
     },
     {
       id: "osmo",
@@ -1586,6 +1654,7 @@ function applyStaticTranslation() {
     if (el) el.textContent = tr(key);
   }
   refreshModeButtons();
+  syncRenalControls();
   refreshWorkflowButtons();
   renderCalculatorResults();
 }
@@ -1685,6 +1754,20 @@ function calculateCrClCockcroftGault({ age, weight, scr, sex }) {
   return crcl;
 }
 
+function calculateCkdEpi2021Creatinine({ age, scr, sex }) {
+  const isFemale = sex === "female";
+  const kappa = isFemale ? 0.7 : 0.9;
+  const alpha = isFemale ? -0.241 : -0.302;
+  const scrRatio = scr / kappa;
+  return (
+    142 *
+    Math.pow(Math.min(scrRatio, 1), alpha) *
+    Math.pow(Math.max(scrRatio, 1), -1.2) *
+    Math.pow(0.9938, age) *
+    (isFemale ? 1.012 : 1)
+  );
+}
+
 function calculateIdealBodyWeight({ heightCm, sex }) {
   const heightIn = heightCm / 2.54;
   const inchesFromFiveFeet = heightIn - 60;
@@ -1726,6 +1809,23 @@ function renderOrderLines(lines, { copyable = true } = {}) {
     .join("");
 }
 
+function cleanCopyLabel(label) {
+  return label.replace(/:$/, "").trim();
+}
+
+function renderCopyResult(label, value, { unit = "", className = "", copyValue = null, copyFull = null } = {}) {
+  const cleanLabel = cleanCopyLabel(label);
+  const valueText = `${value}${unit ? ` ${unit}` : ""}`;
+  const copiedValueText = copyValue || valueText;
+  const fullText = copyFull || `${cleanLabel} = ${copiedValueText}`;
+  return `
+    <div class="copy-result-row ${className}" role="button" tabindex="0" data-copy="${encodeURIComponent(fullText)}">
+      <span class="copy-result-label">${cleanLabel} =</span>
+      <button type="button" class="copy-result-value" data-copy-value="${encodeURIComponent(copiedValueText)}">${valueText}</button>
+    </div>
+  `;
+}
+
 function renderOrderReady({ oneDayLines, continuedLines }) {
   const continuedIsCopyable = !continuedLines.includes(tr("noScheduledMaint"));
   return `
@@ -1748,6 +1848,10 @@ function renderOrderReady({ oneDayLines, continuedLines }) {
 function getCopyLineFromEvent(event, container) {
   const target = event?.target;
   if (target instanceof HTMLElement) {
+    const value = target.closest(".copy-result-value");
+    if (value && container.contains(value)) return value;
+    const row = target.closest(".copy-result-row");
+    if (row && container.contains(row)) return row;
     const line = target.closest(".copy-line");
     if (line && container.contains(line)) return line;
   }
@@ -1835,6 +1939,26 @@ async function writeClipboardText(text) {
 }
 
 function selectCopyText(target) {
+  const exactText =
+    target?.dataset?.copyValue ? decodeURIComponent(target.dataset.copyValue) : target?.dataset?.copy ? decodeURIComponent(target.dataset.copy) : "";
+  if (exactText) {
+    const previous = document.getElementById("copy-fallback-field");
+    if (previous) previous.remove();
+    const textarea = document.createElement("textarea");
+    textarea.id = "copy-fallback-field";
+    textarea.value = exactText;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    textarea.style.top = "0";
+    textarea.style.width = "1px";
+    textarea.style.height = "1px";
+    document.body.appendChild(textarea);
+    textarea.focus({ preventScroll: true });
+    textarea.select();
+    textarea.setSelectionRange(0, textarea.value.length);
+    return;
+  }
   const node = target?.classList?.contains("order-highlight") ? target.querySelector(".order-text") : target;
   if (!node) return;
   const selection = window.getSelection();
@@ -1849,9 +1973,11 @@ async function copyOrderLine(event, container, copiedKey = "orderLineCopied", fa
   const copyBlock = copyTarget ? null : getCopyBlockFromEvent(event, container);
   if (!copyTarget && !copyBlock) return;
   const orderText = copyTarget ? decodeURIComponent(copyTarget.dataset.copy || "") : copyBlock.text;
-  if (!orderText) return;
+  const valueText = copyTarget ? decodeURIComponent(copyTarget.dataset.copyValue || "") : "";
+  const copyText = valueText || orderText;
+  if (!copyText) return;
   const title = (copyTarget || copyBlock.block).closest(".order-highlight")?.querySelector(".order-title");
-  const copied = await writeClipboardText(orderText);
+  const copied = await writeClipboardText(copyText);
   if (copied) {
     if (copyTarget) {
       copyTarget.classList.add("copied-line");
@@ -2148,6 +2274,7 @@ function calculateInitial(event) {
     crcl = manualCrcl;
     crclLine = tr("manualCrclUsed", { value: crcl.toFixed(1) });
   }
+  const crclCopyLabel = crclLine.replace(`${crcl.toFixed(1)} mL/min`, "").replace(/[:\s]+$/, "");
 
   const loadingRange = [20 * weight, 30 * weight];
   const maintRange = [15 * weight, 20 * weight];
@@ -2178,14 +2305,16 @@ function calculateInitial(event) {
 
     initialResult.innerHTML = `
       ${orderReadyBlock}
-      <p><strong>${crclLine}</strong></p>
-      <p><strong>${tr("loadingRange")}</strong> ${Math.round(loadingRange[0])}-${Math.round(loadingRange[1])} mg</p>
-      <p><strong>${tr("suggestedLoading")}</strong> ${selectedLoading} ${tr("mgOnce")}</p>
-      <p><strong>${tr("loadingMinimums")}</strong> ${tr("atLeast", {
+      ${renderCopyResult(crclCopyLabel, crcl.toFixed(1), { unit: "mL/min" })}
+      ${renderCopyResult(tr("loadingRange"), `${Math.round(loadingRange[0])}-${Math.round(loadingRange[1])}`, {
+        unit: "mg"
+      })}
+      ${renderCopyResult(tr("suggestedLoading"), selectedLoading, { unit: tr("mgOnce") })}
+      ${renderCopyResult(tr("loadingMinimums"), tr("atLeast", {
         time: loadingInfusion.minTimeHr.toFixed(2),
         hr: tr("hr"),
         vol: Math.ceil(loadingInfusion.minDiluentMl)
-      })}</p>
+      }))}
       <p class="note">${tr("autoRounded", {
         time: formatHours(loadingInfusion.roundedTimeHr),
         vol: loadingInfusion.roundedDiluentMl
@@ -2220,17 +2349,21 @@ function calculateInitial(event) {
 
   initialResult.innerHTML = `
     ${orderReadyBlock}
-    <p><strong>${crclLine}</strong></p>
-    <p><strong>${tr("loadingRange")}</strong> ${Math.round(loadingRange[0])}-${Math.round(loadingRange[1])} mg</p>
-    <p><strong>${tr("suggestedLoading")}</strong> ${selectedLoading} ${tr("mgOnce")}</p>
-    <p><strong>${tr("maintRange")}</strong> ${Math.round(maintRange[0])}-${Math.round(maintRange[1])} mg/dose</p>
-    <p><strong>${tr("suggestedMaint")}</strong> ${finalMaintDose} mg ${intervalPlan.label}</p>
-    <p><strong>${tr("estimatedDaily")}</strong> ${Math.round(cappedDailyDose)} ${tr("mgDay")}</p>
-    <p><strong>${tr("maintMinimums")}</strong> ${tr("atLeast", {
+    ${renderCopyResult(crclCopyLabel, crcl.toFixed(1), { unit: "mL/min" })}
+    ${renderCopyResult(tr("loadingRange"), `${Math.round(loadingRange[0])}-${Math.round(loadingRange[1])}`, {
+      unit: "mg"
+    })}
+    ${renderCopyResult(tr("suggestedLoading"), selectedLoading, { unit: tr("mgOnce") })}
+    ${renderCopyResult(tr("maintRange"), `${Math.round(maintRange[0])}-${Math.round(maintRange[1])}`, {
+      unit: "mg/dose"
+    })}
+    ${renderCopyResult(tr("suggestedMaint"), finalMaintDose, { unit: `mg ${intervalPlan.label}` })}
+    ${renderCopyResult(tr("estimatedDaily"), Math.round(cappedDailyDose), { unit: tr("mgDay") })}
+    ${renderCopyResult(tr("maintMinimums"), tr("atLeast", {
       time: infusion.minTimeHr.toFixed(2),
       hr: tr("hr"),
       vol: Math.ceil(infusion.minDiluentMl)
-    })}</p>
+    }))}
     <p class="note">${tr("autoRounded", {
       time: formatHours(infusion.roundedTimeHr),
       vol: infusion.roundedDiluentMl
@@ -2322,10 +2455,10 @@ function calculateAdjustment(event) {
   let aucLine = "";
   if (auc && mic) {
     const aucMic = auc / mic;
-    const aucClass = aucMic >= 400 && aucMic <= 600 ? "status-ok" : "status-caution";
-    aucLine = `<p><strong>${tr("aucMic")}</strong> <span class="${aucClass}">${aucMic.toFixed(1)}</span> ${tr(
-      "target400600"
-    )}</p>`;
+    aucLine = `
+      ${renderCopyResult(tr("aucMic"), aucMic.toFixed(1))}
+      <p class="note">${tr("target400600")}</p>
+    `;
   }
 
   const recommendedInfusion = infusionAdvice(recommendedDose);
@@ -2347,9 +2480,9 @@ function calculateAdjustment(event) {
       <div class="order-text">${renderOrderLines(orderLines)}</div>
     </div>
     <p><strong>${tr("statusLabel")}</strong> <span class="${statusClass}">${statusText}</span></p>
-    <p><strong>${tr("currentDailyExposure")}</strong> ${Math.round(dailyDose)} ${tr("mgDay")}</p>
-    <p><strong>${tr("doseSame", { interval: currentInterval })}</strong> ${recommendedDose} mg</p>
-    <p><strong>${tr("doseAlt", { interval: altInterval })}</strong> ${alternativeDose} mg</p>
+    ${renderCopyResult(tr("currentDailyExposure"), Math.round(dailyDose), { unit: tr("mgDay") })}
+    ${renderCopyResult(tr("doseSame", { interval: currentInterval }), recommendedDose, { unit: "mg" })}
+    ${renderCopyResult(tr("doseAlt", { interval: altInterval }), alternativeDose, { unit: "mg" })}
     <p class="note">${extraSafety}</p>
     ${aucLine}
     <p class="note">${tr("pkApprox")}</p>
@@ -2394,9 +2527,9 @@ function calculateInfusion(event) {
   }
 
   const concentrationMcgMl = (drugMg * 1000) / volumeMl;
-  const concentrationLine = `<p><strong>${tr("infusionConc")}</strong> ${concentrationMcgMl.toFixed(1)} mcg/mL (${(
-    drugMg / volumeMl
-  ).toFixed(3)} mg/mL)</p>`;
+  const concentrationLine = renderCopyResult(tr("infusionConc"), concentrationMcgMl.toFixed(1), {
+    unit: `mcg/mL (${(drugMg / volumeMl).toFixed(3)} mg/mL)`
+  });
 
   if (!hasWeight || !weight) {
     infusionResult.innerHTML = `
@@ -2421,7 +2554,7 @@ function calculateInfusion(event) {
     calculatedDose = (rateMlHr * concentrationMcgMl) / (weight * 60);
     doseInput.value = formatDoseInput(calculatedDose);
     setPendingDecimal(doseInput, false);
-    solvedLine = `<p><strong>${tr("infusionDoseResult")}</strong> ${formatDoseInput(calculatedDose)} mcg/kg/min</p>`;
+    solvedLine = renderCopyResult(tr("infusionDoseResult"), formatDoseInput(calculatedDose), { unit: "mcg/kg/min" });
   } else {
     if (!hasDose || !dose) {
       infusionResult.innerHTML = `
@@ -2433,7 +2566,7 @@ function calculateInfusion(event) {
     calculatedMlHr = (dose * weight * 60) / concentrationMcgMl;
     rateInput.value = formatMlHrInput(calculatedMlHr);
     setPendingDecimal(rateInput, false);
-    solvedLine = `<p><strong>${tr("infusionMlHrResult")}</strong> ${formatMlHrInput(calculatedMlHr)} mL/hr</p>`;
+    solvedLine = renderCopyResult(tr("infusionMlHrResult"), formatMlHrInput(calculatedMlHr), { unit: "mL/hr" });
   }
 
   infusionResult.innerHTML = `
@@ -2887,8 +3020,8 @@ function calculateWarfarin(event) {
       </div>
     </div>
     <p><strong>${tr("statusLabel")}</strong> <span class="${statusClass}">${action}</span></p>
-    <p><strong>${tr("warfarinPlan")}</strong> ${doseLine}</p>
-    <p><strong>${tr("warfarinActualWeekly")}</strong> ${prescription.total} mg/week</p>
+    ${renderCopyResult(tr("warfarinPlan"), doseLine)}
+    ${renderCopyResult(tr("warfarinActualWeekly"), prescription.total, { unit: "mg/week" })}
     <p class="note">${tr("warfarinApprox")}</p>
     <p class="note">${tr("warfarinNote")}</p>
   `;
@@ -3023,15 +3156,19 @@ function calculateHeparin(event) {
         <p class="order-line copy-line-static">${tr("heparinMonitorLine")}</p>
       </div>
     </button>
-    <p><strong>${tr("heparinTargetResult")}</strong> ${tr("heparinMonitorLine")}</p>
-    <p><strong>${tr("heparinBolusResult")}</strong> ${
-      bolusDose ? `${bolusDose} units (${protocol.bolusUnitsKg} units/kg${bolusCapApplied ? `, ${tr("heparinCapApplied")}` : ""})` : tr("heparinNoBolus")
-    }</p>
-    <p><strong>${tr("heparinInfusionResult")}</strong> ${infusionUnitsHr} units/hr (${protocol.infusionUnitsKgHr} units/kg/hr${
-      infusionCapApplied ? `, ${tr("heparinCapApplied")}` : ""
-    })</p>
-    <p><strong>${tr("heparinPumpRateResult")}</strong> ${pumpRateText} mL/hr</p>
-    <p><strong>${tr("heparinConcentrationResult")}</strong> ${concentrationText} units/mL</p>
+    ${renderCopyResult(tr("heparinTargetResult"), tr("heparinMonitorLine"))}
+    ${renderCopyResult(
+      tr("heparinBolusResult"),
+      bolusDose
+        ? `${bolusDose} units (${protocol.bolusUnitsKg} units/kg${bolusCapApplied ? `, ${tr("heparinCapApplied")}` : ""})`
+        : tr("heparinNoBolus")
+    )}
+    ${renderCopyResult(
+      tr("heparinInfusionResult"),
+      `${infusionUnitsHr} units/hr (${protocol.infusionUnitsKgHr} units/kg/hr${infusionCapApplied ? `, ${tr("heparinCapApplied")}` : ""})`
+    )}
+    ${renderCopyResult(tr("heparinPumpRateResult"), pumpRateText, { unit: "mL/hr" })}
+    ${renderCopyResult(tr("heparinConcentrationResult"), concentrationText, { unit: "units/mL" })}
     <p><strong>${tr("statusLabel")}</strong> ${protocol.antiXaGoal}</p>
     <p class="note">${describeHeparinProtocol(protocol)}</p>
     ${capNotes.length ? `<p class="note">${capNotes.join("; ")}</p>` : ""}
@@ -3042,6 +3179,57 @@ function calculateHeparin(event) {
 
 async function copyHeparinOrder(event) {
   copyOrderLine(event, heparinResult, "heparinAllCopied", "heparinCopyFailed");
+}
+
+function syncRenalControls() {
+  const mode = renalModeInput.value;
+  const sex = renalSexInput.value;
+  for (const button of renalModeTabs.querySelectorAll(".choice-option")) {
+    button.classList.toggle("active", button.dataset.renalMode === mode);
+  }
+  for (const button of renalSexTabs.querySelectorAll(".choice-option")) {
+    button.classList.toggle("active", button.dataset.renalSex === sex);
+  }
+  renalWeightWrap.classList.toggle("hidden", mode !== "crcl");
+}
+
+function calculateRenal(event) {
+  event?.preventDefault();
+
+  const mode = renalModeInput.value;
+  const sex = renalSexInput.value;
+  const age = Number(document.getElementById("renal-age").value);
+  const scr = Number(document.getElementById("renal-scr").value);
+  const weight = Number(document.getElementById("renal-weight").value);
+
+  if (mode === "crcl") {
+    if (!age || !scr || !weight) {
+      renalResult.innerHTML = `<p>${tr("renalNeedCrcl")}</p>`;
+      return;
+    }
+    const crcl = calculateCrClCockcroftGault({ age, weight, scr, sex });
+    renalResult.innerHTML = `
+      ${renderCopyResult("CrCl", crcl.toFixed(1), { unit: "mL/min" })}
+      <p class="note">${tr("renalCrclFormula")}</p>
+      <p class="note">${tr("renalCaution")}</p>
+    `;
+    return;
+  }
+
+  if (!age || !scr) {
+    renalResult.innerHTML = `<p>${tr("renalNeedGfr")}</p>`;
+    return;
+  }
+
+  const egfr = calculateCkdEpi2021Creatinine({ age, scr, sex });
+  renalResult.innerHTML = `
+    ${renderCopyResult("eGFR", egfr.toFixed(1), {
+      unit: "mL/min/1.73 m²",
+      copyValue: egfr.toFixed(1)
+    })}
+    <p class="note">${tr("renalGfrFormula")}</p>
+    <p class="note">${tr("renalCaution")}</p>
+  `;
 }
 
 function calculateOsmo(event) {
@@ -3076,16 +3264,16 @@ function calculateOsmo(event) {
         ? `<p class="note">${tr("osmoAddMeasured")}</p>`
         : ""
       : `
-        <p><strong>${tr("osmoGapResult")}</strong> ${osmolalGap.toFixed(1)} mOsm/kg</p>
+        ${renderCopyResult(tr("osmoGapResult"), osmolalGap.toFixed(1), { unit: "mOsm/kg" })}
         <p><strong>${tr("statusLabel")}</strong> <span class="${
           osmolalGap > 10 ? "status-high" : "status-ok"
         }">${osmolalGap > 10 ? tr("osmoGapHigh") : tr("osmoGapNormal")}</span></p>
       `;
   osmoResult.innerHTML = `
-    <p><strong>${tr("osmoEffectiveResult")}</strong> ${effectiveOsmo.toFixed(1)} mOsm/kg</p>
+    ${renderCopyResult(tr("osmoEffectiveResult"), effectiveOsmo.toFixed(1), { unit: "mOsm/kg" })}
     ${
       hasBun
-        ? `<p><strong>${tr("osmoResult")}</strong> ${serumOsmo.toFixed(1)} mOsm/kg</p>`
+        ? renderCopyResult(tr("osmoResult"), serumOsmo.toFixed(1), { unit: "mOsm/kg" })
         : `<p class="note">${tr("osmoAddBun")}</p>`
     }
     ${osmolalGapBlock}
@@ -3118,7 +3306,11 @@ function calculateCalcium(event) {
   }
 
   calciumResult.innerHTML = `
-    <p><strong>${tr("calciumResult")}</strong> ${correctedCalcium.toFixed(1)} mg/dL</p>
+    ${renderCopyResult(tr("calciumResult"), correctedCalcium.toFixed(1), {
+      unit: "mg/dL",
+      copyValue: correctedCalcium.toFixed(1),
+      copyFull: `cCa = ${correctedCalcium.toFixed(1)}`
+    })}
     <p><strong>${tr("statusLabel")}</strong> <span class="${statusClass}">${status}</span></p>
     <p class="note">${tr("calciumFormula")}</p>
   `;
@@ -3178,13 +3370,13 @@ function calculateFreeWater(event) {
       <p class="order-title">${tr("freeWaterOrderReady")}</p>
       <div class="order-text">${renderOrderLines([orderLine, tr("freeWaterMonitorOrder")])}</div>
     </div>
-    <p><strong>${tr("freeWaterResult")}</strong> ${deficitText} L</p>
-    <p><strong>${tr("freeWaterTbwUsed")}</strong> ${tbw.toFixed(1)} L (${tbwFactor.toFixed(2)} x ${weight} kg)</p>
-    <p><strong>${tr("freeWaterRate")}</strong> ${tr("freeWaterRateDisplay", { rate: rateMlHr, duration })}</p>
-    <p><strong>${tr("freeWaterCorrectionRate")}</strong> ${tr("freeWaterCorrectionRateDisplay", {
+    ${renderCopyResult(tr("freeWaterResult"), deficitText, { unit: "L" })}
+    ${renderCopyResult(tr("freeWaterTbwUsed"), tbw.toFixed(1), { unit: `L (${tbwFactor.toFixed(2)} x ${weight} kg)` })}
+    ${renderCopyResult(tr("freeWaterRate"), tr("freeWaterRateDisplay", { rate: rateMlHr, duration }))}
+    ${renderCopyResult(tr("freeWaterCorrectionRate"), tr("freeWaterCorrectionRateDisplay", {
       perDay: correctionPerDay.toFixed(1),
       perHour: correctionPerHour.toFixed(2)
-    })}</p>
+    }))}
     ${correctionWarning}
     <p class="note">${tr("freeWaterCaution")}</p>
     <p class="note">${tr("freeWaterFormula")}</p>
@@ -3326,12 +3518,12 @@ function calculateNutrition(event) {
   nutritionResult.innerHTML = `
     ${formulaBlock}
     ${supplementRecommendation}
-    <p><strong>${tr("nutritionBmi")}</strong> ${bmi.toFixed(1)} kg/m²</p>
-    <p><strong>${tr("nutritionIbw")}</strong> ${ibw.toFixed(1)} kg</p>
-    <p><strong>${tr("nutritionAdjustedBw")}</strong> ${adjustedBw.toFixed(1)} kg</p>
-    <p><strong>${tr("nutritionEnergy")}</strong> ${calories} kcal/day (${kcalPerKg} kcal/kg/day)</p>
-    <p><strong>${tr("nutritionProtein")}</strong> ${protein} g/day (${proteinPerKg.toFixed(1)} g/kg/day)</p>
-    <p><strong>${tr("nutritionVolume")}</strong> ${fluid} mL/day (${fluidPerKg} mL/kg/day)</p>
+    ${renderCopyResult(tr("nutritionBmi"), bmi.toFixed(1), { unit: "kg/m²" })}
+    ${renderCopyResult(tr("nutritionIbw"), ibw.toFixed(1), { unit: "kg" })}
+    ${renderCopyResult(tr("nutritionAdjustedBw"), adjustedBw.toFixed(1), { unit: "kg" })}
+    ${renderCopyResult(tr("nutritionEnergy"), calories, { unit: `kcal/day (${kcalPerKg} kcal/kg/day)` })}
+    ${renderCopyResult(tr("nutritionProtein"), protein, { unit: `g/day (${proteinPerKg.toFixed(1)} g/kg/day)` })}
+    ${renderCopyResult(tr("nutritionVolume"), fluid, { unit: `mL/day (${fluidPerKg} mL/kg/day)` })}
     <p class="note">${tr("nutritionCaution")}</p>
     ${renderNutritionReferenceTables()}
   `;
@@ -3431,9 +3623,11 @@ function calculateAntibiotic(event) {
       <p class="order-title">${tr("antibioticOrderReady")}</p>
       <div class="order-text">${renderOrderLines(orderLines)}</div>
     </div>
-    <p><strong>${renalMode === "hd" ? tr("antibioticHdMode") : tr("antibioticCrclUsed")}</strong> ${
-      renalMode === "hd" ? "" : `${crcl.toFixed(0)} mL/min`
-    }</p>
+    ${
+      renalMode === "hd"
+        ? `<p><strong>${tr("antibioticHdMode")}</strong></p>`
+        : renderCopyResult(tr("antibioticCrclUsed"), crcl.toFixed(0), { unit: "mL/min" })
+    }
     ${note ? `<p class="note">${note}</p>` : ""}
     <p class="note">${tr("antibioticSourceNote")}</p>
 `;
@@ -3449,6 +3643,7 @@ function runCalculatorForMode(mode) {
   if (mode === "infusion") calculateInfusion();
   if (mode === "warfarin") calculateWarfarin();
   if (mode === "heparin") calculateHeparin();
+  if (mode === "renal") calculateRenal();
   if (mode === "osmo") calculateOsmo();
   if (mode === "calcium") calculateCalcium();
   if (mode === "freeWater") calculateFreeWater();
@@ -3462,6 +3657,7 @@ function recalcIfResultsShown() {
   if (infusionResult.innerHTML.trim()) calculateInfusion();
   if (warfarinResult.innerHTML.trim()) calculateWarfarin();
   if (heparinResult.innerHTML.trim()) calculateHeparin();
+  if (renalResult.innerHTML.trim()) calculateRenal();
   if (osmoResult.innerHTML.trim()) calculateOsmo();
   if (calciumResult.innerHTML.trim()) calculateCalcium();
   if (freeWaterResult.innerHTML.trim()) calculateFreeWater();
@@ -3631,13 +3827,7 @@ function initAntibioticDosing() {
   });
   antibioticRenalModeSelect.addEventListener("change", calculateAntibiotic);
   antibioticIndicationSelect.addEventListener("change", calculateAntibiotic);
-  antibioticResult.addEventListener("click", copyAntibioticOrder);
-  antibioticResult.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      copyAntibioticOrder(event);
-    }
-  });
+  bindCopyInteractions(antibioticResult, copyAntibioticOrder);
 }
 
 function initHeparinDosing() {
@@ -3655,12 +3845,28 @@ function initHeparinDosing() {
     syncHeparinIndicationControls();
     calculateHeparin();
   });
-  heparinResult.addEventListener("click", copyHeparinOrder);
-  heparinResult.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      copyHeparinOrder(event);
-    }
+  bindCopyInteractions(heparinResult, copyHeparinOrder);
+}
+
+function initRenalCalculator() {
+  syncRenalControls();
+  renalModeTabs.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const button = target.closest(".choice-option");
+    if (!button) return;
+    renalModeInput.value = button.dataset.renalMode;
+    syncRenalControls();
+    calculateRenal();
+  });
+  renalSexTabs.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const button = target.closest(".choice-option");
+    if (!button) return;
+    renalSexInput.value = button.dataset.renalSex;
+    syncRenalControls();
+    calculateRenal();
   });
 }
 
@@ -3683,19 +3889,45 @@ function initWarfarinTablets() {
     refreshWarfarinTabletButtons();
     calculateWarfarin();
   });
-  warfarinResult.addEventListener("click", copyWarfarinOrder);
-  warfarinResult.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      copyWarfarinOrder(event);
-    }
-  });
+  bindCopyInteractions(warfarinResult, copyWarfarinOrder);
 }
 
 function bindLiveCalculation(form, calculateFn) {
   form.addEventListener("submit", calculateFn);
   form.addEventListener("input", calculateFn);
   form.addEventListener("change", calculateFn);
+}
+
+function bindCopyInteractions(container, handler) {
+  let skipNextClick = false;
+  container.addEventListener("pointerup", (event) => {
+    const target = getCopyLineFromEvent(event, container);
+    if (!target?.classList?.contains("copy-result-value")) return;
+    skipNextClick = true;
+    event.preventDefault();
+    event.stopPropagation();
+    handler(event);
+    setTimeout(() => {
+      skipNextClick = false;
+    }, 0);
+  });
+  container.addEventListener("click", (event) => {
+    if (skipNextClick) {
+      skipNextClick = false;
+      return;
+    }
+    handler(event);
+  });
+  container.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handler(event);
+    }
+  });
+}
+
+function bindResultCopy(container, copiedKey = "orderLineCopied", failedKey = "orderCopyFailed") {
+  bindCopyInteractions(container, (event) => copyOrderLine(event, container, copiedKey, failedKey));
 }
 
 languageToggle.addEventListener("click", () => {
@@ -3707,45 +3939,25 @@ bindLiveCalculation(adjustForm, calculateAdjustment);
 bindLiveCalculation(document.getElementById("infusion-form"), calculateInfusion);
 bindLiveCalculation(document.getElementById("warfarin-form"), calculateWarfarin);
 bindLiveCalculation(document.getElementById("heparin-form"), calculateHeparin);
+bindLiveCalculation(document.getElementById("renal-form"), calculateRenal);
 bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
 bindLiveCalculation(document.getElementById("free-water-form"), calculateFreeWater);
 bindLiveCalculation(document.getElementById("nutrition-form"), calculateNutrition);
 bindLiveCalculation(document.getElementById("antibiotic-form"), calculateAntibiotic);
 
-initialResult.addEventListener("click", copyVancoOrder);
-initialResult.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    copyVancoOrder(event);
-  }
-});
+bindResultCopy(infusionResult);
+bindResultCopy(renalResult);
+bindResultCopy(osmoResult);
+bindResultCopy(calciumResult);
 
-adjustResult.addEventListener("click", copyVancoAdjustOrder);
-adjustResult.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    copyVancoAdjustOrder(event);
-  }
-});
-
-nutritionResult.addEventListener("click", copyNutritionOrder);
-nutritionResult.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    copyNutritionOrder(event);
-  }
-});
-
-freeWaterResult.addEventListener("click", copyFreeWaterOrder);
-freeWaterResult.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    copyFreeWaterOrder(event);
-  }
-});
+bindCopyInteractions(initialResult, copyVancoOrder);
+bindCopyInteractions(adjustResult, copyVancoAdjustOrder);
+bindCopyInteractions(nutritionResult, copyNutritionOrder);
+bindCopyInteractions(freeWaterResult, copyFreeWaterOrder);
 
 initHeparinDosing();
+initRenalCalculator();
 initAntibioticDosing();
 initWarfarinTablets();
 initNumpad();

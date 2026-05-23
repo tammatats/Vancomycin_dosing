@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title id="t-doc-title">Clinical Calculator Assistant</title>
-    <link rel="stylesheet" href="styles.css?v=20260523-heparin-indication1" />
+    <link rel="stylesheet" href="styles.css?v=20260523-copy-results1" />
   </head>
   <body>
     <main class="app-shell">
@@ -283,6 +283,41 @@
         <div id="heparin-result" class="result"></div>
       </section>
 
+      <section class="panel hidden" id="renal-panel">
+        <h2 id="t-renal-heading">GFR / CrCl calculator</h2>
+        <form id="renal-form" class="grid">
+          <div class="choice-field full-span">
+            <span id="t-renal-mode-label">Calculation</span>
+            <div id="renal-mode-tabs" class="choice-options">
+              <button type="button" class="choice-option" data-renal-mode="gfr" id="t-renal-mode-gfr">GFR</button>
+              <button type="button" class="choice-option" data-renal-mode="crcl" id="t-renal-mode-crcl">CrCl</button>
+            </div>
+            <input type="hidden" id="renal-mode" value="gfr" />
+          </div>
+          <label>
+            <span id="t-renal-age-label">Age (years)</span>
+            <input class="num-input live-input" type="number" id="renal-age" min="18" max="120" step="1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-renal-scr-label">Serum creatinine, SCr (mg/dL)</span>
+            <input class="num-input live-input" type="number" id="renal-scr" min="0.1" max="20" step="0.01" inputmode="none" />
+          </label>
+          <label id="renal-weight-wrap">
+            <span id="t-renal-weight-label">Body weight (kg)</span>
+            <input class="num-input live-input" type="number" id="renal-weight" min="1" max="300" step="0.1" inputmode="none" />
+          </label>
+          <div class="choice-field full-span">
+            <span id="t-renal-sex-label">Sex</span>
+            <div id="renal-sex-tabs" class="choice-options two-options">
+              <button type="button" class="choice-option" data-renal-sex="male" id="t-renal-sex-male">Male</button>
+              <button type="button" class="choice-option" data-renal-sex="female" id="t-renal-sex-female">Female</button>
+            </div>
+            <input type="hidden" id="renal-sex" value="male" />
+          </div>
+        </form>
+        <div id="renal-result" class="result"></div>
+      </section>
+
       <section class="panel hidden" id="osmo-panel">
         <h2 id="t-osmo-heading">Calculated serum osmolality</h2>
         <form id="osmo-form" class="grid">
@@ -488,6 +523,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260523-heparin-indication1"></script>
+    <script src="app.js?v=20260523-copy-results1"></script>
   </body>
 </html>

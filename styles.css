@@ -346,14 +346,20 @@ h1 {
   gap: 0.5rem;
 }
 
+.choice-field,
 .heparin-indication-field {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
 }
 
+.choice-field > span,
 .heparin-indication-field > span {
   font-size: 0.95rem;
+}
+
+.choice-options.two-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .tablet-option,
@@ -720,6 +726,62 @@ button:hover {
   content: "copied";
   color: #0d6842;
   opacity: 1;
+}
+
+.copy-result-row {
+  align-self: stretch;
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.32rem 0;
+  padding: 0.52rem 0.65rem;
+  border: 1px solid rgba(11, 122, 117, 0.18);
+  border-radius: 10px;
+  background: #f8fbfa;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+
+.copy-result-row:hover,
+.copy-result-row:focus-visible {
+  transform: translateY(-1px);
+  border-color: #0b7a75;
+  outline: 2px solid color-mix(in srgb, var(--accent), white 34%);
+  outline-offset: 1px;
+}
+
+.copy-result-label {
+  color: #082730;
+  font-weight: 800;
+}
+
+.copy-result-value {
+  flex: 0 1 auto;
+  align-self: center;
+  width: auto;
+  min-height: 0;
+  max-width: 65%;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.22rem 0.42rem;
+  background: #e5f5f1;
+  color: #074b47;
+  font: inherit;
+  font-weight: 800;
+  text-align: right;
+  overflow-wrap: anywhere;
+  cursor: copy;
+}
+
+.copy-result-value:hover,
+.copy-result-value:focus-visible {
+  background: #cdece5;
+  outline: 2px solid color-mix(in srgb, var(--accent), white 20%);
+  outline-offset: 1px;
 }
 
 .copy-order {
