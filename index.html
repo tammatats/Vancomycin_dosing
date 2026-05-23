@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title id="t-doc-title">Clinical Calculator Assistant</title>
-    <link rel="stylesheet" href="styles.css?v=20260521-ui-search-checkbox1" />
+    <link rel="stylesheet" href="styles.css?v=20260523-heparin-indication1" />
   </head>
   <body>
     <main class="app-shell">
@@ -16,8 +16,8 @@
         <h1 id="t-hero-title">Clinical Dosing + Nutrition Calculator</h1>
         <p class="lead" id="t-lead">
           Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM,
-          infusion rate conversion, warfarin adjustment, serum osmolality, free
-          water deficit, and nutrition goals.
+          heparin bolus/drip estimates, infusion rate conversion, warfarin
+          adjustment, serum osmolality, free water deficit, and nutrition goals.
         </p>
         <p class="warning" id="t-warning">
           Clinical decision support only. Final prescription must be confirmed by
@@ -226,6 +226,63 @@
         <div id="warfarin-result" class="result"></div>
       </section>
 
+      <section class="panel hidden" id="heparin-panel">
+        <h2 id="t-heparin-heading">Heparin bolus + drip</h2>
+        <form id="heparin-form" class="grid">
+          <label>
+            <span id="t-heparin-weight-label">Body weight (kg)</span>
+            <input class="num-input live-input" type="number" id="heparin-weight" min="1" max="300" step="0.1" inputmode="none" />
+          </label>
+          <div class="heparin-indication-field full-span">
+            <span id="t-heparin-indication-label">Indication / protocol</span>
+            <div id="heparin-indication-tabs" class="choice-options">
+              <button type="button" class="choice-option" data-heparin-protocol="acute-thrombosis" id="t-heparin-quick-acute">
+                Acute thrombosis
+              </button>
+              <button type="button" class="choice-option" data-heparin-protocol="acs" id="t-heparin-quick-acs">
+                ACS / STEMI
+              </button>
+              <button type="button" class="choice-option" data-heparin-protocol="other" id="t-heparin-quick-other">
+                Others
+              </button>
+            </div>
+          </div>
+          <label id="heparin-other-wrap" class="hidden">
+            <span id="t-heparin-other-label">Other protocol</span>
+            <select id="heparin-indication" class="live-input"></select>
+          </label>
+          <label>
+            <span id="t-heparin-bag-units-label">Bag units</span>
+            <input
+              class="num-input live-input preset-input"
+              type="number"
+              id="heparin-bag-units"
+              min="1000"
+              max="100000"
+              step="1000"
+              value="10000"
+              inputmode="none"
+              data-skip-nav="true"
+            />
+          </label>
+          <label>
+            <span id="t-heparin-bag-volume-label">Bag volume (mL)</span>
+            <input
+              class="num-input live-input preset-input"
+              type="number"
+              id="heparin-bag-volume"
+              min="1"
+              max="1000"
+              step="1"
+              value="100"
+              inputmode="none"
+              data-skip-nav="true"
+            />
+          </label>
+        </form>
+        <div id="heparin-result" class="result"></div>
+      </section>
+
       <section class="panel hidden" id="osmo-panel">
         <h2 id="t-osmo-heading">Calculated serum osmolality</h2>
         <form id="osmo-form" class="grid">
@@ -431,6 +488,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260521-osmo-gap1"></script>
+    <script src="app.js?v=20260523-heparin-indication1"></script>
   </body>
 </html>

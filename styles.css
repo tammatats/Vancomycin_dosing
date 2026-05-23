@@ -340,7 +340,24 @@ h1 {
   gap: 0.45rem;
 }
 
-.tablet-option {
+.choice-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.heparin-indication-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.heparin-indication-field > span {
+  font-size: 0.95rem;
+}
+
+.tablet-option,
+.choice-option {
   align-self: stretch;
   padding: 0.62rem 0.45rem;
   border-radius: 12px;
@@ -350,7 +367,8 @@ h1 {
   font-weight: 800;
 }
 
-.tablet-option.active {
+.tablet-option.active,
+.choice-option.active {
   background: #ffe6b8;
   border-color: #d68a2f;
   color: #704306;
@@ -617,6 +635,46 @@ button:hover {
 
 .order-line {
   margin: 0.2rem 0;
+}
+
+.copy-block {
+  align-self: stretch;
+  display: block;
+  width: 100%;
+  min-height: 0;
+  cursor: pointer;
+  color: var(--ink) !important;
+  text-align: left;
+  font: inherit;
+  transition: transform 140ms ease, border-color 140ms ease;
+}
+
+.copy-block * {
+  color: var(--ink) !important;
+}
+
+.copy-block .order-title {
+  color: #7d4a0b !important;
+}
+
+.copy-block:hover,
+.copy-block:focus-visible {
+  transform: translateY(-1px);
+  border-color: #0b7a75;
+  outline: 2px solid color-mix(in srgb, var(--accent), white 30%);
+  outline-offset: 2px;
+}
+
+.copy-line-static {
+  display: block;
+  width: 100%;
+  border: 1px solid rgba(11, 122, 117, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.46);
+  font-weight: 700;
+  color: var(--ink) !important;
+  line-height: 1.35;
+  padding: 0.48rem 0.58rem 0.48rem 1.05rem;
 }
 
 .copy-line {

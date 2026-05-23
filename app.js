@@ -4,6 +4,7 @@ const initialResult = document.getElementById("initial-result");
 const adjustResult = document.getElementById("adjust-result");
 const infusionResult = document.getElementById("infusion-result");
 const warfarinResult = document.getElementById("warfarin-result");
+const heparinResult = document.getElementById("heparin-result");
 const osmoResult = document.getElementById("osmo-result");
 const calciumResult = document.getElementById("calcium-result");
 const freeWaterResult = document.getElementById("free-water-result");
@@ -14,6 +15,7 @@ const initialPanel = document.getElementById("initial-panel");
 const adjustPanel = document.getElementById("adjust-panel");
 const infusionPanel = document.getElementById("infusion-panel");
 const warfarinPanel = document.getElementById("warfarin-panel");
+const heparinPanel = document.getElementById("heparin-panel");
 const osmoPanel = document.getElementById("osmo-panel");
 const calciumPanel = document.getElementById("calcium-panel");
 const freeWaterPanel = document.getElementById("free-water-panel");
@@ -43,6 +45,9 @@ const sexWrap = document.getElementById("sex-wrap");
 const scrWrap = document.getElementById("scr-wrap");
 const manualCrclWrap = document.getElementById("manual-crcl-wrap");
 const warfarinTabs = document.getElementById("warfarin-tabs");
+const heparinIndicationTabs = document.getElementById("heparin-indication-tabs");
+const heparinOtherWrap = document.getElementById("heparin-other-wrap");
+const heparinIndicationSelect = document.getElementById("heparin-indication");
 const antibioticDrugSearch = document.getElementById("antibiotic-drug-search");
 const antibioticDrugInput = document.getElementById("antibiotic-drug");
 const antibioticDrugResults = document.getElementById("antibiotic-drug-results");
@@ -62,6 +67,67 @@ const isDesktopInput = !isMobileTouchDevice;
 const WARFARIN_TABLET_STRENGTHS = [1, 2, 3, 5];
 const THAI_WEEKDAYS = ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"];
 const WARFARIN_TABLET_STORAGE_KEY = "warfarin-available-tablets";
+const HEPARIN_PROTOCOLS = [
+  {
+    id: "acute-thrombosis",
+    labelKey: "heparinProtocolAcuteThrombosis",
+    bolusUnitsKg: 80,
+    bolusMax: 10000,
+    infusionUnitsKgHr: 18,
+    antiXaGoal: "aPTT ratio 1.5-2.5",
+    sourceKey: "heparinSourceUw",
+    cautionKey: "heparinCautionAcuteThrombosis"
+  },
+  {
+    id: "af-bridge",
+    labelKey: "heparinProtocolAfBridge",
+    bolusUnitsKg: 70,
+    bolusMax: 10000,
+    infusionUnitsKgHr: 15,
+    antiXaGoal: "aPTT ratio 1.5-2.5",
+    sourceKey: "heparinSourceUw",
+    cautionKey: "heparinCautionLocal"
+  },
+  {
+    id: "acs",
+    labelKey: "heparinProtocolAcs",
+    bolusUnitsKg: 60,
+    bolusMax: 4000,
+    infusionUnitsKgHr: 12,
+    infusionMax: 1000,
+    antiXaGoal: "aPTT ratio 1.5-2.5",
+    sourceKey: "heparinSourceAcs",
+    cautionKey: "heparinCautionAcs"
+  },
+  {
+    id: "mechanical-support",
+    labelKey: "heparinProtocolMechanicalSupport",
+    bolusUnitsKg: 0,
+    infusionUnitsKgHr: 15,
+    antiXaGoal: "aPTT ratio 1.5-2.5",
+    sourceKey: "heparinSourceUw",
+    cautionKey: "heparinCautionLocal"
+  },
+  {
+    id: "acute-ischemic-stroke",
+    labelKey: "heparinProtocolStroke",
+    bolusUnitsKg: 0,
+    infusionUnitsKgHr: 12,
+    antiXaGoal: "aPTT ratio 1.5-2.5",
+    sourceKey: "heparinSourceUw",
+    cautionKey: "heparinCautionStroke"
+  },
+  {
+    id: "ultra-low",
+    labelKey: "heparinProtocolUltraLow",
+    bolusUnitsKg: 0,
+    infusionUnitsKgHr: 8,
+    antiXaGoal: "aPTT ratio 1.5-2.5",
+    sourceKey: "heparinSourceUw",
+    cautionKey: "heparinCautionLocal"
+  }
+];
+const HEPARIN_PRIMARY_PROTOCOL_IDS = ["acute-thrombosis", "acs"];
 
 const WORKFLOWS = {
   initial: {
@@ -89,6 +155,12 @@ const WORKFLOWS = {
     firstInputId: "warfarin-inr",
     form: document.getElementById("warfarin-form"),
     calculator: "warfarin"
+  },
+  heparin: {
+    panel: heparinPanel,
+    firstInputId: "heparin-weight",
+    form: document.getElementById("heparin-form"),
+    calculator: "heparin"
   },
   osmo: {
     panel: osmoPanel,
@@ -596,12 +668,12 @@ const I18N = {
     langButton: "ไทย",
     eyebrow: "Adult Protocol Helper",
     heroTitle: "Clinical Dosing + Nutrition Calculator",
-    lead: "Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM, infusion rate conversion, warfarin adjustment, serum osmolality, free water deficit, and nutrition goals.",
+    lead: "Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM, heparin bolus/drip estimates, infusion rate conversion, warfarin adjustment, serum osmolality, free water deficit, and nutrition goals.",
     warning:
       "Clinical decision support only. Final prescription must be confirmed by physician/pharmacist and local hospital policy.",
     modePrompt: "Search calculator",
     searchLabel: "Search calculators",
-    searchPlaceholder: "Search: vanco, antibiotic, calcium, water...",
+    searchPlaceholder: "Search: vanco, heparin, antibiotic, calcium, water...",
     noCalculatorResults: "No matching calculators.",
     openCalculator: "Open",
     vancoCalcName: "Vancomycin dosing",
@@ -610,6 +682,8 @@ const I18N = {
     infusionCalcDesc: "Convert mcg/kg/min to mL/hr from body weight, drug amount, and final volume.",
     warfarinCalcName: "Warfarin adjustment",
     warfarinCalcDesc: "Estimate weekly dose adjustment from current INR and target range.",
+    heparinCalcName: "Heparin bolus + drip",
+    heparinCalcDesc: "Estimate adult IV unfractionated heparin bolus, drip rate, and pump mL/hr by indication.",
     osmoCalcName: "Serum osmolality",
     osmoCalcDesc: "Calculate serum osmolality from sodium, glucose, and BUN.",
     calciumCalcName: "Corrected calcium",
@@ -760,6 +834,46 @@ const I18N = {
     warfarinIncrease: "Increase weekly dose by about 10%.",
     warfarinHoldReassess: "hold / reassess",
     warfarinNote: "Protocol-style estimate only. Check bleeding, missed doses, interactions, diet change, and local anticoagulation policy.",
+    heparinHeading: "Heparin bolus + drip",
+    heparinWeightLabel: "Body weight (kg)",
+    heparinIndicationLabel: "Indication / protocol",
+    heparinOtherLabel: "Other protocol",
+    heparinQuickAcute: "Acute thrombosis",
+    heparinQuickAcs: "ACS / STEMI",
+    heparinQuickOther: "Others",
+    heparinBagUnitsLabel: "Bag units",
+    heparinBagVolumeLabel: "Bag volume (mL)",
+    heparinProtocolAcuteThrombosis: "Acute thrombosis: DVT / PE",
+    heparinProtocolAfBridge: "AF / valve replacement / peri-procedural bridge",
+    heparinProtocolAcs: "ACS / STEMI fibrinolysis (capped)",
+    heparinProtocolMechanicalSupport: "Mechanical circulatory support",
+    heparinProtocolStroke: "Acute ischemic stroke protocol",
+    heparinProtocolUltraLow: "Ultra-low intensity",
+    heparinNeed: "Fill body weight, bag units, and bag volume.",
+    heparinBadBag: "Bag concentration must be greater than zero.",
+    heparinOrderReady: "Ready to paste - click box to copy all",
+    heparinPrepLine: "Heparin {bagUnits}u + NSS {bagVolume}ml IV",
+    heparinBolusLine: "Heparin {dose} u IV bolus then",
+    heparinNoBolusLine: "No heparin IV bolus then",
+    heparinInfusionLine: "Heparin IV drip rate {mlHr} ml/hr ({unitsHr} u/hr)",
+    heparinMonitorLine: "aPTT ratio q6hr (keep 1.5-2.5)",
+    heparinBolusResult: "Bolus:",
+    heparinInfusionResult: "Initial infusion:",
+    heparinPumpRateResult: "Pump rate:",
+    heparinConcentrationResult: "Concentration:",
+    heparinTargetResult: "Monitoring target:",
+    heparinCapApplied: "cap applied",
+    heparinNoBolus: "none",
+    heparinSourceLabel: "Reference:",
+    heparinSourceUw: "UW Medicine adult UFH initiation table.",
+    heparinSourceAcs: "ACS dosing uses the capped ACC/AHA UA/NSTEMI UFH dosing table; Merck Manual Professional gives similar ACS/STEMI dosing.",
+    heparinCautionAcuteThrombosis: "Therapeutic VTE/acute thrombosis protocols commonly use 80 units/kg bolus and 18 units/kg/hr infusion; local maximum infusion rates vary.",
+    heparinCautionAcs: "ACS/STEMI UFH dosing is capped to reduce excess initial dosing; verify concurrent fibrinolytic/PCI plan and antiplatelet regimen.",
+    heparinCautionStroke: "UFH is not routine for most acute ischemic stroke patients; use only when explicitly indicated by stroke/neurology protocol.",
+    heparinCautionLocal: "Initial UFH intensity, bolus use, monitoring assay, and caps vary by institution. Confirm bleeding risk, platelet count/HIT history, procedures, and local policy.",
+    heparinCopied: "Copied heparin order line to clipboard.",
+    heparinAllCopied: "Copied heparin order to clipboard.",
+    heparinCopyFailed: "Copy blocked. Text selected - press Cmd+C.",
     osmoHeading: "Calculated serum osmolality",
     osmoNaLabel: "Sodium, Na (mEq/L)",
     osmoGlucoseLabel: "Glucose (mg/dL)",
@@ -866,12 +980,12 @@ const I18N = {
     eyebrow: "ผู้ช่วยแนวทางผู้ป่วยผู้ใหญ่",
     heroTitle: "เครื่องมือคำนวณยาและโภชนบำบัด",
     lead:
-      "รองรับการคำนวณ vancomycin เริ่มต้น/TDM, แปลงอัตราให้ยา, ปรับ warfarin, serum osmolality, free water deficit และเป้าหมายโภชนบำบัด ใช้งานได้ทั้งมือถือและเดสก์ท็อป",
+      "รองรับการคำนวณ vancomycin เริ่มต้น/TDM, heparin bolus/drip, แปลงอัตราให้ยา, ปรับ warfarin, serum osmolality, free water deficit และเป้าหมายโภชนบำบัด ใช้งานได้ทั้งมือถือและเดสก์ท็อป",
     warning:
       "ใช้เพื่อช่วยตัดสินใจทางคลินิกเท่านั้น คำสั่งยาสุดท้ายต้องยืนยันโดยแพทย์/เภสัชกร และนโยบายของโรงพยาบาล",
     modePrompt: "ค้นหาเครื่องคำนวณ",
     searchLabel: "ค้นหาเครื่องคำนวณ",
-    searchPlaceholder: "ค้นหา: vanco, antibiotic, calcium, water...",
+    searchPlaceholder: "ค้นหา: vanco, heparin, antibiotic, calcium, water...",
     noCalculatorResults: "ไม่พบเครื่องคำนวณที่ตรงกัน",
     openCalculator: "เปิด",
     vancoCalcName: "Vancomycin dosing",
@@ -880,6 +994,8 @@ const I18N = {
     infusionCalcDesc: "แปลง mcg/kg/min เป็น mL/hr จากน้ำหนัก ปริมาณยา และปริมาตรรวม",
     warfarinCalcName: "ปรับยา Warfarin",
     warfarinCalcDesc: "ประเมินการปรับขนาดยารวมต่อสัปดาห์จาก INR และช่วงเป้าหมาย",
+    heparinCalcName: "Heparin bolus + drip",
+    heparinCalcDesc: "ประเมิน heparin IV bolus, อัตรา drip และ mL/hr ตาม indication ในผู้ใหญ่",
     osmoCalcName: "Serum osmolality",
     osmoCalcDesc: "คำนวณ serum osmolality จาก sodium, glucose และ BUN",
     calciumCalcName: "Corrected calcium",
@@ -1029,6 +1145,46 @@ const I18N = {
     warfarinIncrease: "เพิ่มขนาดยารวมต่อสัปดาห์ประมาณ 10%",
     warfarinHoldReassess: "งดยา / ประเมินซ้ำ",
     warfarinNote: "เป็นการประเมินตาม protocol เท่านั้น ต้องประเมินเลือดออก ลืมยา interaction อาหาร และแนวทางของหน่วยงานร่วมด้วย",
+    heparinHeading: "Heparin bolus + drip",
+    heparinWeightLabel: "น้ำหนักตัว (กก.)",
+    heparinIndicationLabel: "Indication / protocol",
+    heparinOtherLabel: "Other protocol",
+    heparinQuickAcute: "Acute thrombosis",
+    heparinQuickAcs: "ACS / STEMI",
+    heparinQuickOther: "Others",
+    heparinBagUnitsLabel: "จำนวน units ในถุง",
+    heparinBagVolumeLabel: "ปริมาตรถุง (mL)",
+    heparinProtocolAcuteThrombosis: "Acute thrombosis: DVT / PE",
+    heparinProtocolAfBridge: "AF / valve replacement / peri-procedural bridge",
+    heparinProtocolAcs: "ACS / STEMI fibrinolysis (มี cap)",
+    heparinProtocolMechanicalSupport: "Mechanical circulatory support",
+    heparinProtocolStroke: "Acute ischemic stroke protocol",
+    heparinProtocolUltraLow: "Ultra-low intensity",
+    heparinNeed: "กรอกน้ำหนัก จำนวน units ในถุง และปริมาตรถุง",
+    heparinBadBag: "ความเข้มข้นในถุงต้องมากกว่า 0",
+    heparinOrderReady: "พร้อมวาง - คลิกในกล่องเพื่อคัดลอกทั้งหมด",
+    heparinPrepLine: "Heparin {bagUnits}u + NSS {bagVolume}ml IV",
+    heparinBolusLine: "Heparin {dose} u IV bolus then",
+    heparinNoBolusLine: "No heparin IV bolus then",
+    heparinInfusionLine: "Heparin IV drip rate {mlHr} ml/hr ({unitsHr} u/hr)",
+    heparinMonitorLine: "aPTT ratio q6hr (keep 1.5-2.5)",
+    heparinBolusResult: "Bolus:",
+    heparinInfusionResult: "Initial infusion:",
+    heparinPumpRateResult: "อัตราปั๊ม:",
+    heparinConcentrationResult: "ความเข้มข้น:",
+    heparinTargetResult: "เป้าหมายการติดตาม:",
+    heparinCapApplied: "ใช้ cap",
+    heparinNoBolus: "ไม่มี",
+    heparinSourceLabel: "อ้างอิง:",
+    heparinSourceUw: "ตารางเริ่ม UFH ในผู้ใหญ่ของ UW Medicine",
+    heparinSourceAcs: "ACS ใช้ขนาด UFH แบบ capped ตามตาราง ACC/AHA UA/NSTEMI และ Merck Manual Professional สรุปขนาด ACS/STEMI ใกล้เคียงกัน",
+    heparinCautionAcuteThrombosis: "Protocol สำหรับ VTE/acute thrombosis มักใช้ bolus 80 units/kg และ infusion 18 units/kg/hr; maximum infusion rate แตกต่างตามแต่ละโรงพยาบาล",
+    heparinCautionAcs: "ACS/STEMI UFH มี cap เพื่อลดความเสี่ยงการให้ยาเริ่มต้นเกิน ควรตรวจแผน fibrinolytic/PCI และ antiplatelet ร่วมด้วย",
+    heparinCautionStroke: "UFH ไม่ใช่การรักษาประจำสำหรับ acute ischemic stroke ส่วนใหญ่ ใช้เฉพาะเมื่อมีข้อบ่งชี้ตาม stroke/neurology protocol",
+    heparinCautionLocal: "Intensity, bolus, monitoring assay และ cap ของ UFH แตกต่างตามหน่วยงาน ต้องประเมิน bleeding risk, platelet/HIT history, procedure และ policy โรงพยาบาล",
+    heparinCopied: "คัดลอกคำสั่ง heparin แล้ว",
+    heparinAllCopied: "คัดลอกคำสั่ง heparin แล้ว",
+    heparinCopyFailed: "Browser ไม่อนุญาตให้ copy เลือกข้อความให้แล้ว - กด Cmd+C",
     osmoHeading: "คำนวณ serum osmolality",
     osmoNaLabel: "Sodium, Na (mEq/L)",
     osmoGlucoseLabel: "Glucose (mg/dL)",
@@ -1134,6 +1290,7 @@ const I18N = {
 let currentLang = localStorage.getItem("vanco-lang") === "th" ? "th" : "en";
 let currentWorkflow = localStorage.getItem("vanco-workflow-mode") || "";
 let currentCalculator = localStorage.getItem("clinical-calculator") || "";
+let currentHeparinProtocol = "acute-thrombosis";
 let activeInput = null;
 let activeActionButton = null;
 let lastInfusionEdited = "";
@@ -1182,6 +1339,15 @@ const staticMap = [
   ["t-warfarin-target-low-label", "warfarinTargetLowLabel"],
   ["t-warfarin-target-high-label", "warfarinTargetHighLabel"],
   ["t-warfarin-tabs-label", "warfarinTabsLabel"],
+  ["t-heparin-heading", "heparinHeading"],
+  ["t-heparin-weight-label", "heparinWeightLabel"],
+  ["t-heparin-indication-label", "heparinIndicationLabel"],
+  ["t-heparin-other-label", "heparinOtherLabel"],
+  ["t-heparin-quick-acute", "heparinQuickAcute"],
+  ["t-heparin-quick-acs", "heparinQuickAcs"],
+  ["t-heparin-quick-other", "heparinQuickOther"],
+  ["t-heparin-bag-units-label", "heparinBagUnitsLabel"],
+  ["t-heparin-bag-volume-label", "heparinBagVolumeLabel"],
   ["t-osmo-heading", "osmoHeading"],
   ["t-osmo-na-label", "osmoNaLabel"],
   ["t-osmo-glucose-label", "osmoGlucoseLabel"],
@@ -1252,6 +1418,13 @@ function getCalculatorOptions() {
       keywords: "warfarin inr anticoagulation weekly dose adjust"
     },
     {
+      id: "heparin",
+      workflow: "heparin",
+      name: tr("heparinCalcName"),
+      description: tr("heparinCalcDesc"),
+      keywords: "heparin unfractionated ufh bolus drip infusion anti xa aptt dvt pe vte acs stemi nstemi af bridge stroke anticoagulation"
+    },
+    {
       id: "osmo",
       workflow: "osmo",
       name: tr("osmoCalcName"),
@@ -1299,6 +1472,25 @@ function hideWorkflowPanels() {
   clearActiveTarget();
 }
 
+function calculatorSearchScore(option, query) {
+  const name = option.name.toLowerCase();
+  const description = option.description.toLowerCase();
+  const keywords = option.keywords.toLowerCase();
+  const nameWords = name.split(/\s+/);
+  const keywordWords = keywords.split(/\s+/);
+  const descriptionWords = description.split(/\s+/);
+
+  if (name.startsWith(query)) return 100;
+  if (nameWords.some((word) => word.startsWith(query))) return 90;
+  if (name.includes(query)) return 80;
+  if (keywordWords.some((word) => word === query)) return 75;
+  if (keywordWords.some((word) => word.startsWith(query))) return 70;
+  if (keywords.includes(query)) return 60;
+  if (descriptionWords.some((word) => word.startsWith(query))) return 20;
+  if (description.includes(query)) return 10;
+  return 0;
+}
+
 function renderCalculatorResults() {
   const query = calculatorSearch.value.trim().toLowerCase();
   calculatorResults.classList.toggle("has-query", Boolean(query));
@@ -1308,10 +1500,15 @@ function renderCalculatorResults() {
   }
 
   const options = getCalculatorOptions();
-  const filtered = options.filter((option) => {
-    const haystack = `${option.name} ${option.description} ${option.keywords}`.toLowerCase();
-    return haystack.includes(query);
-  });
+  const filtered = options
+    .map((option, index) => ({
+      option,
+      index,
+      score: calculatorSearchScore(option, query)
+    }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map((item) => item.option);
 
   if (!filtered.length) {
     calculatorResults.innerHTML = `<p class="empty-results">${tr("noCalculatorResults")}</p>`;
@@ -1363,6 +1560,8 @@ function applyStaticTranslation() {
   document.title = tr("docTitle");
   languageToggle.textContent = tr("langButton");
   calculatorSearch.placeholder = tr("searchPlaceholder");
+  populateHeparinIndications();
+  syncHeparinIndicationControls();
   antibioticDrugSearch.placeholder = tr("antibioticDrugPlaceholder");
   antibioticRenalModeSelect.options[0].textContent = tr("antibioticRenalModeCrcl");
   antibioticRenalModeSelect.options[1].textContent = tr("antibioticRenalModeHd");
@@ -1447,6 +1646,10 @@ function roundToNearest(value, step = 250) {
   return Math.round(value / step) * step;
 }
 
+function roundToStep(value, step) {
+  return Math.round(value / step) * step;
+}
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
@@ -1470,6 +1673,10 @@ function formatMlHrInput(value) {
 
 function formatDoseInput(value) {
   return formatNumberForInput(value, 2);
+}
+
+function formatHalfStep(value) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
 function calculateCrClCockcroftGault({ age, weight, scr, sex }) {
@@ -1549,17 +1756,111 @@ function getCopyLineFromEvent(event, container) {
   return null;
 }
 
+function getCopyBlockFromEvent(event, container) {
+  const target = event?.target;
+  if (!(target instanceof HTMLElement)) return null;
+  const block = target.closest(".order-highlight");
+  if (!block || !container.contains(block)) return null;
+  if (block.dataset.copy) {
+    return { block, text: decodeURIComponent(block.dataset.copy) };
+  }
+  const lines = Array.from(block.querySelectorAll(".copy-line"))
+    .map((line) => decodeURIComponent(line.dataset.copy || ""))
+    .filter(Boolean);
+  if (!lines.length) return null;
+  return { block, text: lines.join("\n") };
+}
+
+async function writeClipboardText(text) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "0";
+  textarea.style.left = "0";
+  textarea.style.width = "2px";
+  textarea.style.height = "2px";
+  textarea.style.padding = "0";
+  textarea.style.border = "0";
+  textarea.style.clipPath = "inset(50%)";
+  document.body.appendChild(textarea);
+  textarea.focus({ preventScroll: true });
+  textarea.select();
+  textarea.setSelectionRange(0, textarea.value.length);
+
+  let copied = false;
+  try {
+    copied = document.execCommand("copy");
+  } catch {
+    copied = false;
+  }
+  textarea.remove();
+  if (copied) return true;
+
+  const copyNode = document.createElement("pre");
+  copyNode.textContent = text;
+  copyNode.style.position = "fixed";
+  copyNode.style.top = "0";
+  copyNode.style.left = "0";
+  copyNode.style.width = "2px";
+  copyNode.style.height = "2px";
+  copyNode.style.overflow = "hidden";
+  copyNode.style.whiteSpace = "pre";
+  copyNode.style.userSelect = "text";
+  document.body.appendChild(copyNode);
+
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(copyNode);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  try {
+    copied = document.execCommand("copy");
+  } catch {
+    copied = false;
+  }
+  selection.removeAllRanges();
+  copyNode.remove();
+  if (copied) return true;
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+function selectCopyText(target) {
+  const node = target?.classList?.contains("order-highlight") ? target.querySelector(".order-text") : target;
+  if (!node) return;
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(node);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
 async function copyOrderLine(event, container, copiedKey = "orderLineCopied", failedKey = "orderCopyFailed") {
   const copyTarget = getCopyLineFromEvent(event, container);
-  if (!copyTarget) return;
-  const orderText = decodeURIComponent(copyTarget.dataset.copy || "");
+  const copyBlock = copyTarget ? null : getCopyBlockFromEvent(event, container);
+  if (!copyTarget && !copyBlock) return;
+  const orderText = copyTarget ? decodeURIComponent(copyTarget.dataset.copy || "") : copyBlock.text;
   if (!orderText) return;
-  const title = copyTarget.closest(".order-highlight")?.querySelector(".order-title");
-  try {
-    await navigator.clipboard.writeText(orderText);
-    copyTarget.classList.add("copied-line");
+  const title = (copyTarget || copyBlock.block).closest(".order-highlight")?.querySelector(".order-title");
+  const copied = await writeClipboardText(orderText);
+  if (copied) {
+    if (copyTarget) {
+      copyTarget.classList.add("copied-line");
+    } else {
+      for (const line of copyBlock.block.querySelectorAll(".copy-line")) line.classList.add("copied-line");
+    }
     if (title) title.textContent = tr(copiedKey);
-  } catch {
+  } else {
+    selectCopyText(copyTarget || copyBlock.block);
     if (title) title.textContent = tr(failedKey);
   }
 }
@@ -2597,6 +2898,152 @@ async function copyWarfarinOrder(event) {
   copyOrderLine(event, warfarinResult, "warfarinCopied", "warfarinCopyFailed");
 }
 
+function populateHeparinIndications() {
+  const otherProtocols = HEPARIN_PROTOCOLS.filter((protocol) => !HEPARIN_PRIMARY_PROTOCOL_IDS.includes(protocol.id));
+  heparinIndicationSelect.innerHTML = otherProtocols
+    .map((protocol) => `<option value="${protocol.id}">${tr(protocol.labelKey)}</option>`)
+    .join("");
+  if (otherProtocols.some((protocol) => protocol.id === currentHeparinProtocol)) {
+    heparinIndicationSelect.value = currentHeparinProtocol;
+  } else if (!heparinIndicationSelect.value) {
+    heparinIndicationSelect.value = otherProtocols[0]?.id || "";
+  }
+}
+
+function syncHeparinIndicationControls(activeProtocolId = currentHeparinProtocol) {
+  const isPrimary = HEPARIN_PRIMARY_PROTOCOL_IDS.includes(activeProtocolId);
+  const activeCategory = isPrimary ? activeProtocolId : "other";
+  for (const button of heparinIndicationTabs.querySelectorAll(".choice-option")) {
+    button.classList.toggle("active", button.dataset.heparinProtocol === activeCategory);
+  }
+  heparinOtherWrap.classList.toggle("hidden", isPrimary);
+}
+
+function setHeparinProtocol(protocolId) {
+  if (protocolId === "other") {
+    if (HEPARIN_PRIMARY_PROTOCOL_IDS.includes(currentHeparinProtocol)) {
+      const fallback = HEPARIN_PROTOCOLS.find((protocol) => !HEPARIN_PRIMARY_PROTOCOL_IDS.includes(protocol.id));
+      currentHeparinProtocol = fallback?.id || "";
+      heparinIndicationSelect.value = currentHeparinProtocol;
+    } else {
+      currentHeparinProtocol = heparinIndicationSelect.value || currentHeparinProtocol;
+    }
+  } else {
+    currentHeparinProtocol = protocolId;
+  }
+  syncHeparinIndicationControls();
+  calculateHeparin();
+}
+
+function getHeparinProtocolOptionsForDisplay() {
+  return HEPARIN_PROTOCOLS.map(
+    (protocol) => `<option value="${protocol.id}">${tr(protocol.labelKey)}</option>`
+  ).join("");
+}
+
+function getSelectedHeparinProtocol() {
+  return HEPARIN_PROTOCOLS.find((protocol) => protocol.id === currentHeparinProtocol) || HEPARIN_PROTOCOLS[0];
+}
+
+function describeHeparinProtocol(protocol) {
+  const bolusText = protocol.bolusUnitsKg
+    ? `${protocol.bolusUnitsKg} units/kg${protocol.bolusMax ? `; max ${protocol.bolusMax} units` : ""}`
+    : tr("heparinNoBolus");
+  const infusionText = `${protocol.infusionUnitsKgHr} units/kg/hr${
+    protocol.infusionMax ? `; max ${protocol.infusionMax} units/hr` : ""
+  }`;
+  return `${bolusText} + ${infusionText}`;
+}
+
+function calculateHeparin(event) {
+  event?.preventDefault();
+
+  const weight = Number(document.getElementById("heparin-weight").value);
+  const bagUnits = Number(document.getElementById("heparin-bag-units").value);
+  const bagVolume = Number(document.getElementById("heparin-bag-volume").value);
+  const protocol = getSelectedHeparinProtocol();
+
+  if (!weight || !bagUnits || !bagVolume) {
+    heparinResult.innerHTML = `<p>${tr("heparinNeed")}</p>`;
+    return;
+  }
+
+  const concentration = bagUnits / bagVolume;
+  if (!Number.isFinite(concentration) || concentration <= 0) {
+    heparinResult.innerHTML = `<p>${tr("heparinBadBag")}</p>`;
+    return;
+  }
+
+  const rawBolus = protocol.bolusUnitsKg * weight;
+  const cappedBolus = protocol.bolusMax ? Math.min(rawBolus, protocol.bolusMax) : rawBolus;
+  const bolusDose = protocol.bolusUnitsKg ? roundToNearest(cappedBolus, 100) : 0;
+  const bolusCapApplied = Boolean(protocol.bolusMax && rawBolus > protocol.bolusMax);
+  const rawInfusion = protocol.infusionUnitsKgHr * weight;
+  const cappedInfusion = protocol.infusionMax ? Math.min(rawInfusion, protocol.infusionMax) : rawInfusion;
+  const infusionUnitsHr = Math.round(cappedInfusion);
+  const infusionCapApplied = Boolean(protocol.infusionMax && rawInfusion > protocol.infusionMax);
+  const pumpRate = infusionUnitsHr / concentration;
+  const roundedPumpRate = roundToStep(pumpRate, 0.5);
+  const deliveredUnitsHr = Math.round(roundedPumpRate * concentration);
+  const pumpRateText = formatHalfStep(roundedPumpRate);
+  const concentrationText = concentration.toFixed(concentration >= 10 ? 0 : 1);
+  const bolusLine = bolusDose
+    ? tr("heparinBolusLine", { dose: bolusDose })
+    : tr("heparinNoBolusLine");
+  const prepLine = tr("heparinPrepLine", {
+    bagUnits,
+    bagVolume,
+    concentration: concentrationText
+  });
+  const infusionLine = tr("heparinInfusionLine", {
+    unitsHr: deliveredUnitsHr,
+    mlHr: pumpRateText,
+    concentration: concentrationText
+  });
+  const capNotes = [
+    bolusCapApplied ? `${tr("heparinBolusResult")} ${tr("heparinCapApplied")}` : "",
+    infusionCapApplied ? `${tr("heparinInfusionResult")} ${tr("heparinCapApplied")}` : ""
+  ].filter(Boolean);
+  const heparinOrderLines = [prepLine, bolusLine, infusionLine];
+
+  heparinResult.innerHTML = `
+    <button type="button" class="order-highlight copy-block heparin-copy-order" data-copy="${encodeURIComponent(
+      heparinOrderLines.join("\n")
+    )}">
+      <p class="order-title">${tr("heparinOrderReady")}</p>
+      <div class="order-text">
+        ${heparinOrderLines.map((line) => `<p class="order-line copy-line-static">${line}</p>`).join("")}
+      </div>
+    </button>
+    <button type="button" class="order-highlight copy-block heparin-monitor-copy-order" data-copy="${encodeURIComponent(
+      tr("heparinMonitorLine")
+    )}">
+      <p class="order-title">${tr("heparinOrderReady")}</p>
+      <div class="order-text">
+        <p class="order-line copy-line-static">${tr("heparinMonitorLine")}</p>
+      </div>
+    </button>
+    <p><strong>${tr("heparinTargetResult")}</strong> ${tr("heparinMonitorLine")}</p>
+    <p><strong>${tr("heparinBolusResult")}</strong> ${
+      bolusDose ? `${bolusDose} units (${protocol.bolusUnitsKg} units/kg${bolusCapApplied ? `, ${tr("heparinCapApplied")}` : ""})` : tr("heparinNoBolus")
+    }</p>
+    <p><strong>${tr("heparinInfusionResult")}</strong> ${infusionUnitsHr} units/hr (${protocol.infusionUnitsKgHr} units/kg/hr${
+      infusionCapApplied ? `, ${tr("heparinCapApplied")}` : ""
+    })</p>
+    <p><strong>${tr("heparinPumpRateResult")}</strong> ${pumpRateText} mL/hr</p>
+    <p><strong>${tr("heparinConcentrationResult")}</strong> ${concentrationText} units/mL</p>
+    <p><strong>${tr("statusLabel")}</strong> ${protocol.antiXaGoal}</p>
+    <p class="note">${describeHeparinProtocol(protocol)}</p>
+    ${capNotes.length ? `<p class="note">${capNotes.join("; ")}</p>` : ""}
+    <p class="note"><strong>${tr("heparinSourceLabel")}</strong> ${tr(protocol.sourceKey)}</p>
+    <p class="note">${tr(protocol.cautionKey)}</p>
+  `;
+}
+
+async function copyHeparinOrder(event) {
+  copyOrderLine(event, heparinResult, "heparinAllCopied", "heparinCopyFailed");
+}
+
 function calculateOsmo(event) {
   event?.preventDefault();
 
@@ -3001,6 +3448,7 @@ function runCalculatorForMode(mode) {
   if (mode === "adjust") calculateAdjustment();
   if (mode === "infusion") calculateInfusion();
   if (mode === "warfarin") calculateWarfarin();
+  if (mode === "heparin") calculateHeparin();
   if (mode === "osmo") calculateOsmo();
   if (mode === "calcium") calculateCalcium();
   if (mode === "freeWater") calculateFreeWater();
@@ -3013,6 +3461,7 @@ function recalcIfResultsShown() {
   if (adjustResult.innerHTML.trim()) calculateAdjustment();
   if (infusionResult.innerHTML.trim()) calculateInfusion();
   if (warfarinResult.innerHTML.trim()) calculateWarfarin();
+  if (heparinResult.innerHTML.trim()) calculateHeparin();
   if (osmoResult.innerHTML.trim()) calculateOsmo();
   if (calciumResult.innerHTML.trim()) calculateCalcium();
   if (freeWaterResult.innerHTML.trim()) calculateFreeWater();
@@ -3191,6 +3640,30 @@ function initAntibioticDosing() {
   });
 }
 
+function initHeparinDosing() {
+  populateHeparinIndications();
+  syncHeparinIndicationControls();
+  heparinIndicationTabs.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const button = target.closest(".choice-option");
+    if (!button) return;
+    setHeparinProtocol(button.dataset.heparinProtocol);
+  });
+  heparinIndicationSelect.addEventListener("change", () => {
+    currentHeparinProtocol = heparinIndicationSelect.value;
+    syncHeparinIndicationControls();
+    calculateHeparin();
+  });
+  heparinResult.addEventListener("click", copyHeparinOrder);
+  heparinResult.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      copyHeparinOrder(event);
+    }
+  });
+}
+
 function initWarfarinTablets() {
   refreshWarfarinTabletButtons();
   warfarinTabs.addEventListener("click", (event) => {
@@ -3233,6 +3706,7 @@ bindLiveCalculation(initialForm, calculateInitial);
 bindLiveCalculation(adjustForm, calculateAdjustment);
 bindLiveCalculation(document.getElementById("infusion-form"), calculateInfusion);
 bindLiveCalculation(document.getElementById("warfarin-form"), calculateWarfarin);
+bindLiveCalculation(document.getElementById("heparin-form"), calculateHeparin);
 bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
 bindLiveCalculation(document.getElementById("free-water-form"), calculateFreeWater);
@@ -3271,6 +3745,7 @@ freeWaterResult.addEventListener("keydown", (event) => {
   }
 });
 
+initHeparinDosing();
 initAntibioticDosing();
 initWarfarinTablets();
 initNumpad();
