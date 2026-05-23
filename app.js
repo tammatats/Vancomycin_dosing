@@ -243,6 +243,37 @@ const ORAL_SUPPLEMENT_REFERENCE = [
   { no: "1.55", name: "Oral Impact สูตรดื่ม", kcalMin: 801, kcalMax: 1000, price: 720, code: "T01055" }
 ];
 
+const HOSPITAL_DIET_REFERENCE = [
+  { diet: "ธรรมดา (Regular diet) Size L", ward: "สามัญ/พิเศษ", cpf: "50:20:30%", calories: 1800 },
+  { diet: "ธรรมดา (Regular diet) Size M", ward: "สามัญ/พิเศษ", cpf: "50:20:30%", calories: 1500 },
+  { diet: "ธรรมดา (Regular diet) Size S", ward: "สามัญ/พิเศษ", cpf: "50:20:30%", calories: 1200 },
+  { diet: "ธรรมดา มุสลิม", ward: "สามัญ/พิเศษ", cpf: "55:15:30%", calories: 1500 },
+  { diet: "ธรรมดา มุสลิม", ward: "สามัญ/พิเศษ", cpf: "55:15:30%", calories: 1800 },
+  { diet: "อ่อน (Soft diet)", ward: "สามัญ/พิเศษ", cpf: "50:20:30%", calories: 1500 },
+  { diet: "ธรรมดา ไทย A", ward: "พิเศษ (VVIP)", cpf: "50:20:30%", calories: 1800 },
+  { diet: "อ่อน ไทย B", ward: "พิเศษ (VVIP)", cpf: "50:20:30%", calories: 1500 },
+  { diet: "อาหารฝรั่ง", ward: "พิเศษ (VVIP)", cpf: "50:20:30%", calories: 2500 },
+  { diet: "อาหารเหลวใส (ธรรมดา)", ward: "สามัญ/พิเศษ", cpf: "C 100%", calories: 600 },
+  { diet: "อาหารเหลวใส (เบาหวาน)", ward: "สามัญ/พิเศษ", cpf: "C 100%", calories: 600 },
+  { diet: "อาหารเหลวข้น (ธรรมดา)", ward: "สามัญ/พิเศษ", cpf: "50:20:30%", calories: 1100 },
+  { diet: "อาหารเหลวข้น (เบาหวาน)", ward: "สามัญ/พิเศษ", cpf: "50:20:30%", calories: 1100 },
+  { diet: "โจ๊ก", ward: "สามัญ", cpf: "55:18:27%", calories: 1000 },
+  { diet: "โจ๊ก", ward: "พิเศษ", cpf: "52:21:27%", calories: 1300 },
+  { diet: "โจ๊ก ถ้วยเล็ก", ward: "พิเศษ", cpf: "46:19:35%", calories: 950 },
+  { diet: "โจ๊ก ถ้วยเล็ก", ward: "สามัญ", cpf: "51:18:31%", calories: 650 },
+  { diet: "โจ๊ก Stroke ถ้วยใหญ่", ward: "", cpf: "55:18:27%", calories: 1000 },
+  { diet: "โจ๊ก Stroke ถ้วยเล็ก", ward: "", cpf: "51:18:31%", calories: 650 },
+  { diet: "โจ๊ก (เคมีบำบัด)", ward: "พิเศษ", cpf: "45:20:35%", calories: 1300 },
+  { diet: "โจ๊ก (เคมีบำบัด)", ward: "สามัญ", cpf: "45:20:35%", calories: 1000 }
+];
+
+const HOSPITAL_DIET_ADDON_REFERENCE = [
+  { item: "ซุปข้นโปรตีนสูง", detail: "500 kcal, protein 25 g" },
+  { item: "น้ำสมุนไพรโปรตีนสูง", detail: "115 kcal, protein 10 g" },
+  { item: "ไอศกรีมโปรตีนสูง", detail: "150 kcal/scoop, protein 9 g/scoop" },
+  { item: "น้ำหวาน 120 cc", detail: "1 carb, carbohydrate 15 g" }
+];
+
 const BD_FORMULA_REFERENCE = [
   { company: "Abbott", formula: "BD (1:1)", volume: "200 cc x 3 feeds", protein: 22 },
   { company: "Abbott", formula: "BD DM (1:1)", volume: "200 cc x 3 feeds", protein: 27 },
@@ -982,7 +1013,8 @@ const I18N = {
     nutritionFormula: "Example enteral plan:",
     nutritionOrderReady: "Feeding Order Ready - click each line to copy",
     nutritionReferenceTitle: "Show reference table",
-    nutritionReferenceVerify: "Reference converted from user-provided images. Verify row-by-row before relying on recommendations.",
+    nutritionReferenceVerify: "Verify diet-size calories against the local hospital/dietitian table before relying on recommendations.",
+    nutritionHospitalDietReference: "Hospital oral diet calorie table",
     nutritionSupplementReference: "Oral/enteral supplement order table",
     nutritionBdReference: "BD formula protein reference",
     nutritionSupplementRecommendation: "Reference match for calorie goal:",
@@ -1312,7 +1344,8 @@ const I18N = {
     nutritionFormula: "ตัวอย่างสูตร enteral:",
     nutritionOrderReady: "คำสั่งอาหารพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
     nutritionReferenceTitle: "แสดงตารางอ้างอิง",
-    nutritionReferenceVerify: "ตารางนี้ถอดจากรูปที่ผู้ใช้ให้มา กรุณาตรวจเทียบทีละแถวก่อนใช้คำแนะนำ",
+    nutritionReferenceVerify: "ตรวจสอบ calories ของ diet size กับตารางของโรงพยาบาล/นักกำหนดอาหารก่อนใช้จริง",
+    nutritionHospitalDietReference: "ตาราง calories อาหารโรงพยาบาล",
     nutritionSupplementReference: "ตารางอาหารเสริม oral/enteral",
     nutritionBdReference: "ตาราง protein ของสูตร BD",
     nutritionSupplementRecommendation: "รายการอ้างอิงที่ตรงกับเป้าพลังงาน:",
@@ -3392,6 +3425,26 @@ function findOralSupplementForCalories(calories) {
 }
 
 function renderNutritionReferenceTables() {
+  const dietRows = HOSPITAL_DIET_REFERENCE.map(
+    (item) => `
+      <tr>
+        <td>${item.diet}</td>
+        <td>${item.ward}</td>
+        <td>${item.cpf}</td>
+        <td>${item.calories}</td>
+      </tr>
+    `
+  ).join("");
+
+  const dietAddonRows = HOSPITAL_DIET_ADDON_REFERENCE.map(
+    (item) => `
+      <tr>
+        <td>${item.item}</td>
+        <td>${item.detail}</td>
+      </tr>
+    `
+  ).join("");
+
   const supplementRows = ORAL_SUPPLEMENT_REFERENCE.map(
     (item) => `
       <tr>
@@ -3419,6 +3472,31 @@ function renderNutritionReferenceTables() {
     <details class="reference-panel">
       <summary>${tr("nutritionReferenceTitle")}</summary>
       <p class="note">${tr("nutritionReferenceVerify")}</p>
+      <h3>${tr("nutritionHospitalDietReference")}</h3>
+      <div class="reference-table-wrap">
+        <table class="reference-table">
+          <thead>
+            <tr>
+              <th>Diet</th>
+              <th>Ward</th>
+              <th>C:P:F</th>
+              <th>Total kcal/day</th>
+            </tr>
+          </thead>
+          <tbody>${dietRows}</tbody>
+        </table>
+      </div>
+      <div class="reference-table-wrap">
+        <table class="reference-table">
+          <thead>
+            <tr>
+              <th>Add-on</th>
+              <th>Energy / protein</th>
+            </tr>
+          </thead>
+          <tbody>${dietAddonRows}</tbody>
+        </table>
+      </div>
       <h3>${tr("nutritionSupplementReference")}</h3>
       <div class="reference-table-wrap">
         <table class="reference-table">
@@ -3465,7 +3543,10 @@ function calculateNutrition(event) {
   const isEnteral = document.getElementById("nutrition-enteral").checked;
 
   if (!weight || !height) {
-    nutritionResult.innerHTML = `<p>${tr("nutritionNeed")}</p>`;
+    nutritionResult.innerHTML = `
+      <p>${tr("nutritionNeed")}</p>
+      ${renderNutritionReferenceTables()}
+    `;
     return;
   }
 
