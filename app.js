@@ -274,6 +274,329 @@ const HOSPITAL_DIET_ADDON_REFERENCE = [
   { item: "น้ำหวาน 120 cc", detail: "1 carb, carbohydrate 15 g" }
 ];
 
+const PARENTERAL_NUTRITION_REFERENCE = [
+  {
+    route: "Peripheral PN",
+    product: "Nutriflex peri",
+    volume: 1250,
+    energy: 955,
+    osmole: 840,
+    glucose: 80,
+    amino: 40,
+    lipid: 50,
+    na: 50,
+    k: 30,
+    mg: 3,
+    ca: 3,
+    po4: 7.5,
+    cl: 48
+  },
+  {
+    route: "Peripheral PN",
+    product: "Nutriflex peri",
+    volume: 1875,
+    energy: 1435,
+    osmole: 840,
+    glucose: 120,
+    amino: 60,
+    lipid: 75,
+    na: 75,
+    k: 45,
+    mg: 4.5,
+    ca: 4.5,
+    po4: 11.3,
+    cl: 72
+  },
+  {
+    route: "Peripheral PN",
+    product: "Oliclinomel N4",
+    volume: 1500,
+    energy: 910,
+    osmole: 750,
+    glucose: 120,
+    amino: 33,
+    lipid: 30,
+    na: 32,
+    k: 24,
+    mg: 3.3,
+    ca: 3,
+    po4: 10.5,
+    cl: 50
+  },
+  {
+    route: "Peripheral PN",
+    product: "Oliclinomel N4",
+    volume: 2000,
+    energy: 1215,
+    osmole: 750,
+    glucose: 160,
+    amino: 44,
+    lipid: 40,
+    na: 42,
+    k: 32,
+    mg: 4.4,
+    ca: 4,
+    po4: 14,
+    cl: 66
+  },
+  {
+    route: "Peripheral PN",
+    product: "SMOF kabiven peri",
+    volume: 1448,
+    energy: 1000,
+    osmole: 850,
+    glucose: 103,
+    amino: 46,
+    lipid: 41,
+    na: 36,
+    k: 28,
+    mg: 4.6,
+    ca: 2.3,
+    po4: 11.9,
+    cl: 32
+  },
+  {
+    route: "Peripheral PN",
+    product: "SMOF kabiven peri",
+    volume: 1904,
+    energy: 1300,
+    osmole: 850,
+    glucose: 135,
+    amino: 60,
+    lipid: 54,
+    na: 48,
+    k: 36,
+    mg: 6,
+    ca: 3,
+    po4: 15.6,
+    cl: 42
+  },
+  {
+    route: "Peripheral PN",
+    product: "Kabiven peri",
+    volume: 1440,
+    energy: 1000,
+    osmole: 850,
+    glucose: 97,
+    amino: 34,
+    lipid: 51,
+    na: 32,
+    k: 24,
+    mg: 4,
+    ca: 2,
+    po4: 11,
+    cl: 47
+  },
+  {
+    route: "Peripheral PN",
+    product: "Kabiven peri",
+    volume: 1920,
+    energy: 1400,
+    osmole: 850,
+    glucose: 130,
+    amino: 45,
+    lipid: 68,
+    na: 43,
+    k: 32,
+    mg: 5.3,
+    ca: 2.7,
+    po4: 14,
+    cl: 62
+  },
+  {
+    route: "Peripheral PN",
+    product: "B-fluid",
+    volume: 1000,
+    energy: 420,
+    osmole: 858,
+    glucose: 75,
+    amino: 30,
+    lipid: 0,
+    na: 35,
+    k: 20,
+    mg: 5,
+    ca: 5,
+    po4: 10,
+    cl: 35
+  },
+  {
+    route: "Central PN",
+    product: "Nutriflex Central",
+    volume: 625,
+    energy: 740,
+    osmole: 1545,
+    glucose: 90,
+    amino: 36,
+    lipid: 25,
+    na: 33.5,
+    k: 23.5,
+    mg: 2.65,
+    ca: 2.65,
+    po4: 10,
+    cl: 30
+  },
+  {
+    route: "Central PN",
+    product: "Nutriflex Central",
+    volume: 1250,
+    energy: 1475,
+    osmole: 1545,
+    glucose: 180,
+    amino: 72,
+    lipid: 50,
+    na: 67,
+    k: 47,
+    mg: 5.3,
+    ca: 5.3,
+    po4: 20,
+    cl: 60
+  },
+  {
+    route: "Central PN",
+    product: "Oliclinomel N7",
+    volume: 1000,
+    energy: 1200,
+    osmole: 1450,
+    glucose: 160,
+    amino: 40,
+    lipid: 40,
+    na: 32,
+    k: 24,
+    mg: 2.2,
+    ca: 2,
+    po4: 7,
+    cl: 48
+  },
+  {
+    route: "Central PN",
+    product: "Oliclinomel N7",
+    volume: 1500,
+    energy: 1800,
+    osmole: 1450,
+    glucose: 240,
+    amino: 60,
+    lipid: 60,
+    na: 48,
+    k: 36,
+    mg: 3.3,
+    ca: 3,
+    po4: 10.5,
+    cl: 72
+  },
+  {
+    route: "Central PN",
+    product: "Oliclinomel N7",
+    volume: 2000,
+    energy: 2400,
+    osmole: 1450,
+    glucose: 320,
+    amino: 80,
+    lipid: 80,
+    na: 64,
+    k: 48,
+    mg: 4.4,
+    ca: 4,
+    po4: 14,
+    cl: 96
+  },
+  {
+    route: "Central PN",
+    product: "Olimel N12",
+    volume: 650,
+    energy: 620,
+    osmole: 1270,
+    glucose: 47.7,
+    amino: 49.4,
+    lipid: 22.8,
+    na: 22.8,
+    k: 19.5,
+    mg: 2.6,
+    ca: 2.3,
+    po4: 9.5,
+    cl: 30
+  },
+  {
+    route: "Central PN",
+    product: "Olimel N12",
+    volume: 1000,
+    energy: 950,
+    osmole: 1270,
+    glucose: 73.3,
+    amino: 75.9,
+    lipid: 35,
+    na: 35,
+    k: 30,
+    mg: 4,
+    ca: 3.5,
+    po4: 15,
+    cl: 45
+  },
+  {
+    route: "Central PN",
+    product: "Olimel N12",
+    volume: 1500,
+    energy: 1420,
+    osmole: 1270,
+    glucose: 110,
+    amino: 113.9,
+    lipid: 52.5,
+    na: 52.5,
+    k: 45,
+    mg: 6,
+    ca: 5.3,
+    po4: 21.9,
+    cl: 68
+  },
+  {
+    route: "Central PN",
+    product: "SMOF kabiven central",
+    volume: 986,
+    energy: 1100,
+    osmole: 1500,
+    glucose: 125,
+    amino: 50,
+    lipid: 38,
+    na: 40,
+    k: 30,
+    mg: 5,
+    ca: 2.5,
+    po4: 12,
+    cl: 35
+  },
+  {
+    route: "Central PN",
+    product: "SMOF kabiven central",
+    volume: 1477,
+    energy: 1600,
+    osmole: 1500,
+    glucose: 187,
+    amino: 75,
+    lipid: 56,
+    na: 60,
+    k: 45,
+    mg: 7.5,
+    ca: 3.8,
+    po4: 19,
+    cl: 52
+  },
+  {
+    route: "Central PN",
+    product: "SMOF kabiven central",
+    volume: 1970,
+    energy: 2200,
+    osmole: 1500,
+    glucose: 250,
+    amino: 100,
+    lipid: 75,
+    na: 80,
+    k: 60,
+    mg: 10,
+    ca: 5,
+    po4: 25,
+    cl: 70
+  }
+];
+
 const BD_FORMULA_REFERENCE = [
   { company: "Abbott", formula: "BD (1:1)", volume: "200 cc x 3 feeds", protein: 22 },
   { company: "Abbott", formula: "BD DM (1:1)", volume: "200 cc x 3 feeds", protein: 27 },
@@ -1003,6 +1326,11 @@ const I18N = {
     nutritionCriticalLabel: "Critical illness",
     nutritionRefeedingLabel: "Risk refeeding",
     nutritionEnteralLabel: "Enteral/oral feeding",
+    nutritionPnEnabledLabel: "TPN/PPN order",
+    nutritionPnRouteLabel: "PN route",
+    nutritionPnHoursLabel: "PN infusion hours",
+    nutritionPnFluidLabel: "PN fluid limit (mL/day, optional)",
+    nutritionPnAdditivesLabel: "Add Soluvit/Vitalipid/Addamel",
     nutritionNeed: "Fill body weight and height.",
     nutritionBmi: "BMI:",
     nutritionIbw: "IBW:",
@@ -1012,9 +1340,16 @@ const I18N = {
     nutritionVolume: "Estimated fluid/volume:",
     nutritionFormula: "Example enteral plan:",
     nutritionOrderReady: "Feeding Order Ready - click each line to copy",
+    nutritionPnOrderReady: "PN Order Ready - click box to copy all",
+    nutritionPnMonitorReady: "PN Monitoring Ready - click box to copy all",
+    nutritionPnRecommendation: "Best premixed PN match:",
+    nutritionPnAlternatives: "Other available PN bags:",
+    nutritionPnNoMatch: "No PN formulation matches the selected route.",
+    nutritionPnCaution: "Confirm central/peripheral access, electrolyte replacement, micronutrient compatibility, glycemic control, fluid status, and pharmacy aseptic preparation before prescribing.",
     nutritionReferenceTitle: "Show reference table",
     nutritionReferenceVerify: "Verify diet-size calories against the local hospital/dietitian table before relying on recommendations.",
     nutritionHospitalDietReference: "Hospital oral diet calorie table",
+    nutritionPnReference: "Parenteral nutrition composition table",
     nutritionSupplementReference: "Oral/enteral supplement order table",
     nutritionBdReference: "BD formula protein reference",
     nutritionSupplementRecommendation: "Reference match for calorie goal:",
@@ -1334,6 +1669,11 @@ const I18N = {
     nutritionCriticalLabel: "Critical illness",
     nutritionRefeedingLabel: "เสี่ยง refeeding",
     nutritionEnteralLabel: "ให้อาหาร enteral/oral",
+    nutritionPnEnabledLabel: "คำสั่ง TPN/PPN",
+    nutritionPnRouteLabel: "เส้นทาง PN",
+    nutritionPnHoursLabel: "ชั่วโมงให้ PN",
+    nutritionPnFluidLabel: "จำกัดปริมาตร PN (mL/day, optional)",
+    nutritionPnAdditivesLabel: "ใส่ Soluvit/Vitalipid/Addamel",
     nutritionNeed: "กรอกน้ำหนักและส่วนสูง",
     nutritionBmi: "BMI:",
     nutritionIbw: "IBW:",
@@ -1343,9 +1683,16 @@ const I18N = {
     nutritionVolume: "ปริมาตร/สารน้ำโดยประมาณ:",
     nutritionFormula: "ตัวอย่างสูตร enteral:",
     nutritionOrderReady: "คำสั่งอาหารพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    nutritionPnOrderReady: "คำสั่ง PN พร้อมใช้ - คลิกกล่องเพื่อคัดลอกทั้งหมด",
+    nutritionPnMonitorReady: "คำสั่งติดตาม PN พร้อมใช้ - คลิกกล่องเพื่อคัดลอกทั้งหมด",
+    nutritionPnRecommendation: "ถุง PN premixed ที่เหมาะที่สุด:",
+    nutritionPnAlternatives: "ถุง PN อื่นที่มี:",
+    nutritionPnNoMatch: "ไม่มีสูตร PN ที่ตรงกับ route ที่เลือก",
+    nutritionPnCaution: "ยืนยัน central/peripheral access, การแก้ electrolyte, compatibility ของ micronutrient, glycemic control, fluid status และการเตรียมแบบ aseptic โดย pharmacy ก่อนสั่งใช้",
     nutritionReferenceTitle: "แสดงตารางอ้างอิง",
     nutritionReferenceVerify: "ตรวจสอบ calories ของ diet size กับตารางของโรงพยาบาล/นักกำหนดอาหารก่อนใช้จริง",
     nutritionHospitalDietReference: "ตาราง calories อาหารโรงพยาบาล",
+    nutritionPnReference: "ตารางส่วนประกอบ parenteral nutrition",
     nutritionSupplementReference: "ตารางอาหารเสริม oral/enteral",
     nutritionBdReference: "ตาราง protein ของสูตร BD",
     nutritionSupplementRecommendation: "รายการอ้างอิงที่ตรงกับเป้าพลังงาน:",
@@ -1466,6 +1813,11 @@ const staticMap = [
   ["t-nutrition-critical-label", "nutritionCriticalLabel"],
   ["t-nutrition-refeeding-label", "nutritionRefeedingLabel"],
   ["t-nutrition-enteral-label", "nutritionEnteralLabel"],
+  ["t-nutrition-pn-enabled-label", "nutritionPnEnabledLabel"],
+  ["t-nutrition-pn-route-label", "nutritionPnRouteLabel"],
+  ["t-nutrition-pn-hours-label", "nutritionPnHoursLabel"],
+  ["t-nutrition-pn-fluid-label", "nutritionPnFluidLabel"],
+  ["t-nutrition-pn-additives-label", "nutritionPnAdditivesLabel"],
   ["t-antibiotic-heading", "antibioticHeading"],
   ["t-antibiotic-drug-label", "antibioticDrugLabel"],
   ["t-antibiotic-picker-label", "antibioticPickerLabel"],
@@ -3424,6 +3776,100 @@ function findOralSupplementForCalories(calories) {
   return ORAL_SUPPLEMENT_REFERENCE.filter((item) => calories >= item.kcalMin && calories <= item.kcalMax);
 }
 
+function formatPnNumber(value) {
+  if (!Number.isFinite(value)) return "";
+  return Number(value.toFixed(1)).toString();
+}
+
+function getNutritionPnMatches({ routeMode, calories, protein, fluidLimit }) {
+  const routeFiltered = PARENTERAL_NUTRITION_REFERENCE.filter((item) => {
+    if (routeMode === "ppn") return item.route === "Peripheral PN";
+    if (routeMode === "tpn") return item.route === "Central PN";
+    return true;
+  });
+
+  return routeFiltered
+    .map((item) => {
+      const calorieGap = Math.abs(item.energy - calories);
+      const proteinGap = Math.abs(item.amino - protein);
+      const proteinDeficit = Math.max(0, protein - item.amino);
+      const fluidExcess = fluidLimit ? Math.max(0, item.volume - fluidLimit) : 0;
+      const score =
+        (calorieGap / Math.max(calories, 1)) * 55 +
+        (proteinGap / Math.max(protein, 1)) * 20 +
+        (proteinDeficit / Math.max(protein, 1)) * 18 +
+        (fluidExcess ? 90 + fluidExcess / 30 : 0);
+      return { ...item, calorieGap, proteinGap, proteinDeficit, fluidExcess, score };
+    })
+    .sort((a, b) => a.score - b.score || a.fluidExcess - b.fluidExcess || a.volume - b.volume);
+}
+
+function renderNutritionPnOrder({ calories, protein, fluid, riskRefeeding }) {
+  const pnEnabled = document.getElementById("nutrition-pn-enabled").checked;
+  if (!pnEnabled) return "";
+
+  const routeMode = document.getElementById("nutrition-pn-route").value;
+  const infusionHours = clamp(Number(document.getElementById("nutrition-pn-hours").value) || 24, 1, 24);
+  const fluidLimitInput = Number(document.getElementById("nutrition-pn-fluid").value);
+  const fluidLimit = fluidLimitInput > 0 ? fluidLimitInput : fluid;
+  const includeAdditives = document.getElementById("nutrition-pn-additives").checked;
+  const matches = getNutritionPnMatches({ routeMode, calories, protein, fluidLimit });
+  if (!matches.length) return `<p class="note">${tr("nutritionPnNoMatch")}</p>`;
+
+  const selected = matches[0];
+  const pnType = selected.route === "Central PN" ? "TPN" : "PPN";
+  const access = selected.route === "Central PN" ? "central line/PICC" : "peripheral line";
+  const rate = formatPnNumber(roundToStep(selected.volume / infusionHours, 0.5));
+  const additiveLine = "Add Soluvit N 1 vial + Vitalipid N Adult 10 ml + Addamel N 10 ml into PN bag";
+  const pnOrderLines = [
+    `${pnType}: ${selected.product} ${selected.volume} ml IV via ${access} over ${formatPnNumber(infusionHours)} hr`,
+    `Rate ${rate} ml/hr`
+  ];
+  if (includeAdditives) pnOrderLines.push(additiveLine);
+  pnOrderLines.push("Prepare under aseptic condition by pharmacy");
+  pnOrderLines.push(
+    `Provides ${selected.energy} kcal/day, amino acid ${selected.amino} g/day, glucose ${selected.glucose} g/day, lipid ${selected.lipid} g/day`
+  );
+
+  const monitorLines = [
+    selected.route === "Peripheral PN" ? "Monitor peripheral IV site for phlebitis/infiltration" : "Use dedicated central line/PICC lumen for PN",
+    "DTX q6hr",
+    "Na/K/Mg/PO4/Ca/Cr daily until stable",
+    "LFT/TG weekly"
+  ];
+  if (riskRefeeding) {
+    monitorLines.unshift("Thiamine 100 mg IV/PO before PN then daily");
+    monitorLines.push("High refeeding risk: replace K/Mg/PO4 before advancing PN");
+  }
+
+  const alternatives = matches
+    .slice(1, 4)
+    .map(
+      (item) =>
+        `${item.route === "Central PN" ? "TPN" : "PPN"} ${item.product} ${item.volume} ml: ${item.energy} kcal, AA ${item.amino} g, rate ${formatPnNumber(roundToStep(item.volume / infusionHours, 0.5))} ml/hr`
+    )
+    .join("<br>");
+  const fluidWarning =
+    selected.fluidExcess > 0
+      ? `<p class="note">Selected bag exceeds PN fluid limit by ${formatPnNumber(selected.fluidExcess)} ml/day; choose smaller bag or adjust fluid plan.</p>`
+      : "";
+
+  return `
+    <button type="button" class="order-highlight copy-block nutrition-pn-copy-order" data-copy="${encodeURIComponent(pnOrderLines.join("\n"))}">
+      <p class="order-title">${tr("nutritionPnOrderReady")}</p>
+      <div class="order-text">${pnOrderLines.map((line) => `<p class="order-line copy-line-static">${line}</p>`).join("")}</div>
+    </button>
+    <button type="button" class="order-highlight copy-block nutrition-pn-monitor-copy-order" data-copy="${encodeURIComponent(monitorLines.join("\n"))}">
+      <p class="order-title">${tr("nutritionPnMonitorReady")}</p>
+      <div class="order-text">${monitorLines.map((line) => `<p class="order-line copy-line-static">${line}</p>`).join("")}</div>
+    </button>
+    <p><strong>${tr("nutritionPnRecommendation")}</strong><br>${pnType} ${selected.product} ${selected.volume} ml: ${selected.energy}/${calories} kcal, AA ${selected.amino}/${protein} g, volume ${selected.volume}/${fluidLimit} ml</p>
+    ${alternatives ? `<p><strong>${tr("nutritionPnAlternatives")}</strong><br>${alternatives}</p>` : ""}
+    ${fluidWarning}
+    <p class="note">${tr("nutritionPnCaution")}</p>
+  `;
+}
+
 function renderNutritionReferenceTables() {
   const dietRows = HOSPITAL_DIET_REFERENCE.map(
     (item) => `
@@ -3441,6 +3887,27 @@ function renderNutritionReferenceTables() {
       <tr>
         <td>${item.item}</td>
         <td>${item.detail}</td>
+      </tr>
+    `
+  ).join("");
+
+  const pnRows = PARENTERAL_NUTRITION_REFERENCE.map(
+    (item) => `
+      <tr>
+        <td>${item.route}</td>
+        <td>${item.product}</td>
+        <td>${item.volume}</td>
+        <td>${item.energy}</td>
+        <td>${item.osmole}</td>
+        <td>${item.glucose}</td>
+        <td>${item.amino}</td>
+        <td>${item.lipid}</td>
+        <td>${item.na}</td>
+        <td>${item.k}</td>
+        <td>${item.mg}</td>
+        <td>${item.ca}</td>
+        <td>${item.po4}</td>
+        <td>${item.cl}</td>
       </tr>
     `
   ).join("");
@@ -3497,6 +3964,30 @@ function renderNutritionReferenceTables() {
           <tbody>${dietAddonRows}</tbody>
         </table>
       </div>
+      <h3>${tr("nutritionPnReference")}</h3>
+      <div class="reference-table-wrap">
+        <table class="reference-table">
+          <thead>
+            <tr>
+              <th>Route</th>
+              <th>Product</th>
+              <th>Volume (mL)</th>
+              <th>Energy (kcal)</th>
+              <th>Osmole</th>
+              <th>Glucose (g)</th>
+              <th>Amino A (g)</th>
+              <th>Lipid (g)</th>
+              <th>Na</th>
+              <th>K</th>
+              <th>Mg</th>
+              <th>Ca</th>
+              <th>PO4</th>
+              <th>Cl</th>
+            </tr>
+          </thead>
+          <tbody>${pnRows}</tbody>
+        </table>
+      </div>
       <h3>${tr("nutritionSupplementReference")}</h3>
       <div class="reference-table-wrap">
         <table class="reference-table">
@@ -3541,6 +4032,7 @@ function calculateNutrition(event) {
   const isCritical = document.getElementById("nutrition-critical").checked;
   const riskRefeeding = document.getElementById("nutrition-refeeding").checked;
   const isEnteral = document.getElementById("nutrition-enteral").checked;
+  const isPnOrder = document.getElementById("nutrition-pn-enabled").checked;
 
   if (!weight || !height) {
     nutritionResult.innerHTML = `
@@ -3563,10 +4055,11 @@ function calculateNutrition(event) {
   const calories = Math.round(weight * kcalPerKg);
   const protein = Math.round(weight * proteinPerKg);
   const fluid = Math.round(weight * fluidPerKg);
+  const pnBlock = renderNutritionPnOrder({ calories, protein, fluid, riskRefeeding });
 
   let formulaBlock = "";
   let supplementRecommendation = "";
-  if (isEnteral) {
+  if (isEnteral && !isPnOrder) {
     const feedsPerDay = 4;
     const formulaKcalMl = 1.5;
     const totalFormulaMl = roundUpToStep(calories / formulaKcalMl, 50);
@@ -3597,6 +4090,7 @@ function calculateNutrition(event) {
   }
 
   nutritionResult.innerHTML = `
+    ${pnBlock}
     ${formulaBlock}
     ${supplementRecommendation}
     ${renderCopyResult(tr("nutritionBmi"), bmi.toFixed(1), { unit: "kg/m²" })}
