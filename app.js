@@ -24,6 +24,7 @@ const freeWaterPanel = document.getElementById("free-water-panel");
 const nutritionPanel = document.getElementById("nutrition-panel");
 const antibioticPanel = document.getElementById("antibiotic-panel");
 const rulesPanel = document.getElementById("rules-panel");
+const workflowChooser = document.getElementById("workflow-chooser");
 const calculatorSearch = document.getElementById("calculator-search");
 const calculatorResults = document.getElementById("calculator-results");
 const vancoSubmode = document.getElementById("vanco-submode");
@@ -2018,9 +2019,51 @@ function calculatorSearchScore(option, query) {
   return 0;
 }
 
+function isCompactSearchViewport() {
+  return window.matchMedia("(max-width: 640px)").matches;
+}
+
+function syncCalculatorSearchViewportState() {
+  const searchOpen =
+    isCompactSearchViewport() &&
+    document.activeElement === calculatorSearch &&
+    Boolean(calculatorSearch.value.trim());
+  document.body.classList.toggle("calculator-search-open", searchOpen);
+}
+
+function ensureCalculatorResultsVisible(behavior = "smooth") {
+  if (!isCompactSearchViewport()) return;
+  if (document.activeElement !== calculatorSearch) return;
+  if (!calculatorSearch.value.trim()) return;
+
+  const firstResult = calculatorResults.querySelector(".calculator-card, .empty-results");
+  if (!firstResult) return;
+
+  const viewportHeight = window.visualViewport?.height || window.innerHeight;
+  const inputRect = calculatorSearch.getBoundingClientRect();
+  const resultRect = firstResult.getBoundingClientRect();
+  const keyboardCushion = Math.max(72, Math.min(120, viewportHeight * 0.22));
+  const bottomLimit = viewportHeight - keyboardCushion;
+
+  if (inputRect.top >= 12 && resultRect.bottom <= bottomLimit) return;
+
+  const panelRect = workflowChooser.getBoundingClientRect();
+  const nextScrollTop = Math.max(0, window.scrollY + panelRect.top - 12);
+  window.scrollTo({ top: nextScrollTop, behavior });
+}
+
+function scheduleCalculatorResultsVisible(behavior = "smooth") {
+  if (!isCompactSearchViewport()) return;
+  syncCalculatorSearchViewportState();
+  requestAnimationFrame(() => ensureCalculatorResultsVisible(behavior));
+  window.setTimeout(() => ensureCalculatorResultsVisible("auto"), 140);
+  window.setTimeout(() => ensureCalculatorResultsVisible("auto"), 340);
+}
+
 function renderCalculatorResults() {
   const query = calculatorSearch.value.trim().toLowerCase();
   calculatorResults.classList.toggle("has-query", Boolean(query));
+  syncCalculatorSearchViewportState();
   if (!query) {
     calculatorResults.innerHTML = "";
     return;
@@ -2039,6 +2082,7 @@ function renderCalculatorResults() {
 
   if (!filtered.length) {
     calculatorResults.innerHTML = `<p class="empty-results">${tr("noCalculatorResults")}</p>`;
+    scheduleCalculatorResultsVisible();
     return;
   }
 
@@ -2055,6 +2099,7 @@ function renderCalculatorResults() {
       `
     )
     .join("");
+  scheduleCalculatorResultsVisible();
 }
 
 function selectCalculator(calculatorId, { persist = true, focus = true, keepWorkflow = false } = {}) {
@@ -4592,6 +4637,9 @@ function initWorkflowButtons() {
 
 function initCalculatorSearch() {
   calculatorSearch.addEventListener("input", renderCalculatorResults);
+  calculatorSearch.addEventListener("focus", () => scheduleCalculatorResultsVisible("auto"));
+  calculatorSearch.addEventListener("blur", () => document.body.classList.remove("calculator-search-open"));
+  window.visualViewport?.addEventListener("resize", () => scheduleCalculatorResultsVisible("auto"));
   calculatorResults.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;

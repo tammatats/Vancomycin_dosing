@@ -1006,6 +1006,10 @@ body.desktop-input .grid {
     padding: 0.85rem 0.7rem 10rem;
   }
 
+  body.calculator-search-open .app-shell {
+    padding-bottom: 22rem;
+  }
+
   .hero {
     border-radius: 12px;
   }
@@ -1024,6 +1028,18 @@ body.desktop-input .grid {
 
   .calculator-results {
     grid-template-columns: 1fr;
+  }
+
+  .workflow-chooser:focus-within {
+    scroll-margin-top: 0.75rem;
+  }
+
+  .workflow-chooser:focus-within .calculator-results.has-query {
+    max-height: min(34vh, 15rem);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 0.15rem;
+    -webkit-overflow-scrolling: touch;
   }
 
   .calculator-card {
