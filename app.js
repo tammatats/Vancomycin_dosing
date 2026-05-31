@@ -1055,9 +1055,6 @@ const I18N = {
     langButton: "ไทย",
     eyebrow: "Adult Protocol Helper",
     heroTitle: "Clinical Order Calculator",
-    lead: "Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM, heparin bolus/drip estimates, infusion rate conversion, warfarin adjustment, serum osmolality, free water deficit, and nutrition goals.",
-    warning:
-      "Clinical decision support only. Final prescription must be confirmed by physician/pharmacist and local hospital policy.",
     modePrompt: "Search calculator",
     searchLabel: "Search calculators",
     searchPlaceholder: "Search: vanco, heparin, antibiotic, calcium, water...",
@@ -1420,10 +1417,6 @@ const I18N = {
     langButton: "English",
     eyebrow: "ผู้ช่วยแนวทางผู้ป่วยผู้ใหญ่",
     heroTitle: "Clinical Order Calculator",
-    lead:
-      "รองรับการคำนวณ vancomycin เริ่มต้น/TDM, heparin bolus/drip, แปลงอัตราให้ยา, ปรับ warfarin, serum osmolality, free water deficit และเป้าหมายโภชนบำบัด ใช้งานได้ทั้งมือถือและเดสก์ท็อป",
-    warning:
-      "ใช้เพื่อช่วยตัดสินใจทางคลินิกเท่านั้น คำสั่งยาสุดท้ายต้องยืนยันโดยแพทย์/เภสัชกร และนโยบายของโรงพยาบาล",
     modePrompt: "ค้นหาเครื่องคำนวณ",
     searchLabel: "ค้นหาเครื่องคำนวณ",
     searchPlaceholder: "ค้นหา: vanco, heparin, antibiotic, calcium, water...",
@@ -1793,8 +1786,6 @@ let lastInfusionEdited = "";
 const staticMap = [
   ["t-eyebrow", "eyebrow"],
   ["t-hero-title", "heroTitle"],
-  ["t-lead", "lead"],
-  ["t-warning", "warning"],
   ["t-mode-prompt", "modePrompt"],
   ["t-search-label", "searchLabel"],
   ["t-vanco-subprompt", "vancoSubPrompt"],
