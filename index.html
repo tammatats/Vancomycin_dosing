@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title id="t-doc-title">Clinical Calculator Assistant</title>
-    <link rel="stylesheet" href="styles.css?v=20260524-pn-order1" />
+    <title id="t-doc-title">Clinical Order Calculator</title>
+    <link rel="stylesheet" href="styles.css?v=20260531-nutrition-builder1" />
   </head>
   <body>
     <main class="app-shell">
@@ -13,7 +13,7 @@
           <p class="eyebrow" id="t-eyebrow">Adult Protocol Helper</p>
           <button id="language-toggle" type="button">ไทย</button>
         </div>
-        <h1 id="t-hero-title">Clinical Dosing + Nutrition Calculator</h1>
+        <h1 id="t-hero-title">Clinical Order Calculator</h1>
         <p class="lead" id="t-lead">
           Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM,
           heparin bolus/drip estimates, infusion rate conversion, warfarin
@@ -434,6 +434,27 @@
             </button>
             <input type="hidden" id="nutrition-sex" value="male" />
           </label>
+          <div class="choice-field full-span">
+            <span id="t-nutrition-route-label">Nutrition order type</span>
+            <div id="nutrition-route-tabs" class="choice-options four-options">
+              <button type="button" class="choice-option active" data-nutrition-route="diet" id="t-nutrition-route-diet">Diet</button>
+              <button type="button" class="choice-option" data-nutrition-route="ons" id="t-nutrition-route-ons">ONS</button>
+              <button type="button" class="choice-option" data-nutrition-route="enteral" id="t-nutrition-route-enteral">Enteral</button>
+              <button type="button" class="choice-option" data-nutrition-route="pn" id="t-nutrition-route-pn">PN</button>
+            </div>
+            <input type="hidden" id="nutrition-route" value="diet" />
+          </div>
+          <div class="choice-field full-span">
+            <span id="t-nutrition-intake-label">Estimated current intake</span>
+            <div id="nutrition-intake-tabs" class="choice-options five-options">
+              <button type="button" class="choice-option active" data-nutrition-intake="0">0%</button>
+              <button type="button" class="choice-option" data-nutrition-intake="25">25%</button>
+              <button type="button" class="choice-option" data-nutrition-intake="50">50%</button>
+              <button type="button" class="choice-option" data-nutrition-intake="75">75%</button>
+              <button type="button" class="choice-option" data-nutrition-intake="100">100%</button>
+            </div>
+            <input type="hidden" id="nutrition-intake-percent" value="0" />
+          </div>
           <label class="checkbox">
             <input type="checkbox" id="nutrition-ckd" class="live-input" />
             <span id="t-nutrition-ckd-label">CKD</span>
@@ -450,15 +471,7 @@
             <input type="checkbox" id="nutrition-refeeding" class="live-input" />
             <span id="t-nutrition-refeeding-label">Risk refeeding</span>
           </label>
-          <label class="checkbox">
-            <input type="checkbox" id="nutrition-enteral" class="live-input" checked />
-            <span id="t-nutrition-enteral-label">Enteral/oral feeding</span>
-          </label>
-          <label class="checkbox">
-            <input type="checkbox" id="nutrition-pn-enabled" class="live-input" />
-            <span id="t-nutrition-pn-enabled-label">TPN/PPN order</span>
-          </label>
-          <label>
+          <label id="nutrition-pn-route-wrap">
             <span id="t-nutrition-pn-route-label">PN route</span>
             <select id="nutrition-pn-route" class="live-input">
               <option value="auto">Auto</option>
@@ -466,15 +479,15 @@
               <option value="tpn">TPN only</option>
             </select>
           </label>
-          <label>
+          <label id="nutrition-pn-hours-wrap">
             <span id="t-nutrition-pn-hours-label">PN infusion hours</span>
             <input class="num-input live-input" type="number" id="nutrition-pn-hours" min="1" max="24" step="1" inputmode="none" value="24" />
           </label>
-          <label>
+          <label id="nutrition-pn-fluid-wrap">
             <span id="t-nutrition-pn-fluid-label">PN fluid limit (mL/day, optional)</span>
             <input class="num-input live-input" type="number" id="nutrition-pn-fluid" min="0" max="5000" step="50" inputmode="none" />
           </label>
-          <label class="checkbox">
+          <label class="checkbox" id="nutrition-pn-additives-wrap">
             <input type="checkbox" id="nutrition-pn-additives" class="live-input" checked />
             <span id="t-nutrition-pn-additives-label">Add Soluvit/Vitalipid/Addamel</span>
           </label>
@@ -501,7 +514,34 @@
               <option value="hd">Intermittent hemodialysis</option>
             </select>
           </label>
-          <label>
+          <label id="antibiotic-crcl-method-wrap">
+            <span id="t-antibiotic-crcl-method-label">CrCl input method</span>
+            <select id="antibiotic-crcl-method" class="live-input">
+              <option value="auto">Auto Cockcroft-Gault</option>
+              <option value="manual">Manual CrCl</option>
+            </select>
+          </label>
+          <label id="antibiotic-age-wrap">
+            <span id="t-antibiotic-age-label">Age (years)</span>
+            <input class="num-input live-input" type="number" id="antibiotic-age" min="18" max="120" step="1" inputmode="none" />
+          </label>
+          <label id="antibiotic-weight-wrap">
+            <span id="t-antibiotic-weight-label">Body weight (kg)</span>
+            <input class="num-input live-input" type="number" id="antibiotic-weight" min="1" max="300" step="0.1" inputmode="none" />
+          </label>
+          <label id="antibiotic-scr-wrap">
+            <span id="t-antibiotic-scr-label">SCr (mg/dL)</span>
+            <input class="num-input live-input" type="number" id="antibiotic-scr" min="0.1" max="20" step="0.01" inputmode="none" />
+          </label>
+          <label id="antibiotic-sex-wrap" class="toggle-field">
+            <span id="t-antibiotic-sex-label">Sex</span>
+            <button type="button" id="antibiotic-sex-toggle" class="toggle-box" data-active="left">
+              <span id="antibiotic-sex-left" class="toggle-half toggle-left">Male</span>
+              <span id="antibiotic-sex-right" class="toggle-half toggle-right">Female</span>
+            </button>
+            <input type="hidden" id="antibiotic-sex" value="male" />
+          </label>
+          <label id="antibiotic-crcl-wrap">
             <span id="t-antibiotic-crcl-label">CrCl (mL/min)</span>
             <input class="num-input live-input" type="number" id="antibiotic-crcl" min="1" max="250" step="1" inputmode="none" />
           </label>
@@ -547,6 +587,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260524-pn-order1"></script>
+    <script src="app.js?v=20260531-nutrition-builder1"></script>
   </body>
 </html>

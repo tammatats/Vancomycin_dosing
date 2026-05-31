@@ -42,6 +42,14 @@ const nutritionSexInput = document.getElementById("nutrition-sex");
 const nutritionSexToggle = document.getElementById("nutrition-sex-toggle");
 const nutritionSexLeft = document.getElementById("nutrition-sex-left");
 const nutritionSexRight = document.getElementById("nutrition-sex-right");
+const nutritionRouteInput = document.getElementById("nutrition-route");
+const nutritionRouteTabs = document.getElementById("nutrition-route-tabs");
+const nutritionIntakeInput = document.getElementById("nutrition-intake-percent");
+const nutritionIntakeTabs = document.getElementById("nutrition-intake-tabs");
+const nutritionPnRouteWrap = document.getElementById("nutrition-pn-route-wrap");
+const nutritionPnHoursWrap = document.getElementById("nutrition-pn-hours-wrap");
+const nutritionPnFluidWrap = document.getElementById("nutrition-pn-fluid-wrap");
+const nutritionPnAdditivesWrap = document.getElementById("nutrition-pn-additives-wrap");
 const ageWrap = document.getElementById("age-wrap");
 const sexWrap = document.getElementById("sex-wrap");
 const scrWrap = document.getElementById("scr-wrap");
@@ -60,6 +68,17 @@ const antibioticDrugInput = document.getElementById("antibiotic-drug");
 const antibioticDrugResults = document.getElementById("antibiotic-drug-results");
 const antibioticIndicationSelect = document.getElementById("antibiotic-indication");
 const antibioticRenalModeSelect = document.getElementById("antibiotic-renal-mode");
+const antibioticCrclMethodSelect = document.getElementById("antibiotic-crcl-method");
+const antibioticCrclMethodWrap = document.getElementById("antibiotic-crcl-method-wrap");
+const antibioticAgeWrap = document.getElementById("antibiotic-age-wrap");
+const antibioticWeightWrap = document.getElementById("antibiotic-weight-wrap");
+const antibioticScrWrap = document.getElementById("antibiotic-scr-wrap");
+const antibioticSexWrap = document.getElementById("antibiotic-sex-wrap");
+const antibioticSexInput = document.getElementById("antibiotic-sex");
+const antibioticSexToggle = document.getElementById("antibiotic-sex-toggle");
+const antibioticSexLeft = document.getElementById("antibiotic-sex-left");
+const antibioticSexRight = document.getElementById("antibiotic-sex-right");
+const antibioticCrclWrap = document.getElementById("antibiotic-crcl-wrap");
 
 const numpad = document.getElementById("numpad");
 const numpadPrev = document.getElementById("numpad-prev");
@@ -201,7 +220,7 @@ const WORKFLOWS = {
   },
   antibiotic: {
     panel: antibioticPanel,
-    firstInputId: "antibiotic-crcl",
+    firstInputId: "antibiotic-age",
     form: document.getElementById("antibiotic-form"),
     calculator: "antibiotic"
   }
@@ -1031,10 +1050,10 @@ const ANTIBIOTIC_RENAL_DOSING = [
 
 const I18N = {
   en: {
-    docTitle: "Clinical Calculator Assistant",
+    docTitle: "Clinical Order Calculator",
     langButton: "ไทย",
     eyebrow: "Adult Protocol Helper",
-    heroTitle: "Clinical Dosing + Nutrition Calculator",
+    heroTitle: "Clinical Order Calculator",
     lead: "Phone-first and desktop-friendly tools for vancomycin initial dosing/TDM, heparin bolus/drip estimates, infusion rate conversion, warfarin adjustment, serum osmolality, free water deficit, and nutrition goals.",
     warning:
       "Clinical decision support only. Final prescription must be confirmed by physician/pharmacist and local hospital policy.",
@@ -1321,6 +1340,12 @@ const I18N = {
     nutritionSexLabel: "Sex for IBW",
     nutritionSexMalePill: "Male",
     nutritionSexFemalePill: "Female",
+    nutritionRouteLabel: "Nutrition order type",
+    nutritionRouteDiet: "Diet",
+    nutritionRouteOns: "ONS",
+    nutritionRouteEnteral: "Enteral",
+    nutritionRoutePn: "PN",
+    nutritionIntakeLabel: "Estimated current intake",
     nutritionCkdLabel: "CKD",
     nutritionAkiLabel: "AKI",
     nutritionCriticalLabel: "Critical illness",
@@ -1340,6 +1365,9 @@ const I18N = {
     nutritionVolume: "Estimated fluid/volume:",
     nutritionFormula: "Example enteral plan:",
     nutritionOrderReady: "Feeding Order Ready - click each line to copy",
+    nutritionDietOrderReady: "Diet Order Ready - click each line to copy",
+    nutritionOnsOrderReady: "ONS Order Ready - click each line to copy",
+    nutritionProgressNoteReady: "Nutrition Note Ready - click box to copy all",
     nutritionPnOrderReady: "PN Order Ready - click box to copy all",
     nutritionPnMonitorReady: "PN Monitoring Ready - click box to copy all",
     nutritionPnRecommendation: "Best premixed PN match:",
@@ -1354,6 +1382,7 @@ const I18N = {
     nutritionBdReference: "BD formula protein reference",
     nutritionSupplementRecommendation: "Reference match for calorie goal:",
     nutritionNoSupplementMatch: "No oral supplement reference row covers this calorie goal; use calculated BD plan or verify with dietitian.",
+    nutritionDeficitSummary: "Nutrition deficit:",
     nutritionCaution: "Use clinical judgment for fluid restriction, dialysis, electrolytes, glycemic control, and refeeding monitoring.",
     antibioticHeading: "Antibiotic renal dosing",
     antibioticDrugLabel: "Antibiotic",
@@ -1362,22 +1391,34 @@ const I18N = {
     antibioticNoDrugResults: "No matching antibiotic.",
     antibioticIndicationLabel: "Indication / regimen",
     antibioticRenalModeLabel: "Renal mode",
+    antibioticCrclMethodLabel: "CrCl input method",
+    antibioticCrclMethodAuto: "Auto Cockcroft-Gault",
+    antibioticCrclMethodManual: "Manual CrCl",
+    antibioticAgeLabel: "Age (years)",
+    antibioticWeightLabel: "Body weight (kg)",
+    antibioticScrLabel: "SCr (mg/dL)",
+    antibioticSexLabel: "Sex",
+    antibioticSexMale: "Male",
+    antibioticSexFemale: "Female",
     antibioticCrclLabel: "CrCl (mL/min)",
-    antibioticNeed: "Select antibiotic/regimen and fill CrCl.",
+    antibioticNeed: "Select antibiotic/regimen and fill CrCl data.",
+    antibioticNeedAutoCrcl: "Fill age, body weight, SCr, and sex for auto CrCl.",
     antibioticOrderReady: "Order Ready - click each line to copy",
     antibioticCopied: "Copied order line to clipboard.",
     antibioticCopyFailed: "Copy failed. Select and copy the order manually.",
     antibioticCrclUsed: "CrCl used:",
+    antibioticEstimatedCrcl: "Estimated CrCl (Cockcroft-Gault):",
+    antibioticManualCrclUsed: "Manual CrCl used:",
     antibioticRenalModeCrcl: "Non-HD: use CrCl",
     antibioticRenalModeHd: "Intermittent hemodialysis",
     antibioticHdMode: "Intermittent HD dosing used",
     antibioticSourceNote: "Based on the 2024 hospital renal antibiotic dosing table provided by the user. Confirm indication severity, allergy, cultures, dialysis/CRRT status, and ID/pharmacy when needed."
   },
   th: {
-    docTitle: "เครื่องมือคำนวณทางคลินิก",
+    docTitle: "Clinical Order Calculator",
     langButton: "English",
     eyebrow: "ผู้ช่วยแนวทางผู้ป่วยผู้ใหญ่",
-    heroTitle: "เครื่องมือคำนวณยาและโภชนบำบัด",
+    heroTitle: "Clinical Order Calculator",
     lead:
       "รองรับการคำนวณ vancomycin เริ่มต้น/TDM, heparin bolus/drip, แปลงอัตราให้ยา, ปรับ warfarin, serum osmolality, free water deficit และเป้าหมายโภชนบำบัด ใช้งานได้ทั้งมือถือและเดสก์ท็อป",
     warning:
@@ -1664,6 +1705,12 @@ const I18N = {
     nutritionSexLabel: "เพศสำหรับ IBW",
     nutritionSexMalePill: "ชาย",
     nutritionSexFemalePill: "หญิง",
+    nutritionRouteLabel: "ชนิดคำสั่งโภชนบำบัด",
+    nutritionRouteDiet: "Diet",
+    nutritionRouteOns: "ONS",
+    nutritionRouteEnteral: "Enteral",
+    nutritionRoutePn: "PN",
+    nutritionIntakeLabel: "ประเมิน intake ปัจจุบัน",
     nutritionCkdLabel: "CKD",
     nutritionAkiLabel: "AKI",
     nutritionCriticalLabel: "Critical illness",
@@ -1683,6 +1730,9 @@ const I18N = {
     nutritionVolume: "ปริมาตร/สารน้ำโดยประมาณ:",
     nutritionFormula: "ตัวอย่างสูตร enteral:",
     nutritionOrderReady: "คำสั่งอาหารพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    nutritionDietOrderReady: "คำสั่ง diet พร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    nutritionOnsOrderReady: "คำสั่ง ONS พร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
+    nutritionProgressNoteReady: "Nutrition note พร้อมใช้ - คลิกกล่องเพื่อคัดลอกทั้งหมด",
     nutritionPnOrderReady: "คำสั่ง PN พร้อมใช้ - คลิกกล่องเพื่อคัดลอกทั้งหมด",
     nutritionPnMonitorReady: "คำสั่งติดตาม PN พร้อมใช้ - คลิกกล่องเพื่อคัดลอกทั้งหมด",
     nutritionPnRecommendation: "ถุง PN premixed ที่เหมาะที่สุด:",
@@ -1697,6 +1747,7 @@ const I18N = {
     nutritionBdReference: "ตาราง protein ของสูตร BD",
     nutritionSupplementRecommendation: "รายการอ้างอิงที่ตรงกับเป้าพลังงาน:",
     nutritionNoSupplementMatch: "ไม่มีแถว oral supplement ที่ครอบคลุมเป้าพลังงานนี้ ให้ใช้แผน BD ที่คำนวณหรือยืนยันกับนักกำหนดอาหาร",
+    nutritionDeficitSummary: "Nutrition deficit:",
     nutritionCaution: "ใช้ดุลยพินิจร่วมกับข้อจำกัดสารน้ำ dialysis electrolyte glycemic control และการเฝ้าระวัง refeeding",
     antibioticHeading: "ปรับขนาด antibiotic ตามไต",
     antibioticDrugLabel: "Antibiotic",
@@ -1705,12 +1756,24 @@ const I18N = {
     antibioticNoDrugResults: "ไม่พบ antibiotic ที่ตรงกัน",
     antibioticIndicationLabel: "Indication / regimen",
     antibioticRenalModeLabel: "Renal mode",
+    antibioticCrclMethodLabel: "วิธีระบุค่า CrCl",
+    antibioticCrclMethodAuto: "คำนวณ Cockcroft-Gault",
+    antibioticCrclMethodManual: "กรอก CrCl เอง",
+    antibioticAgeLabel: "อายุ (ปี)",
+    antibioticWeightLabel: "น้ำหนักตัว (กก.)",
+    antibioticScrLabel: "SCr (mg/dL)",
+    antibioticSexLabel: "เพศ",
+    antibioticSexMale: "ชาย",
+    antibioticSexFemale: "หญิง",
     antibioticCrclLabel: "CrCl (mL/min)",
-    antibioticNeed: "เลือกยา/regimen และกรอก CrCl",
+    antibioticNeed: "เลือกยา/regimen และกรอกข้อมูล CrCl",
+    antibioticNeedAutoCrcl: "กรอกอายุ น้ำหนัก SCr และเพศ เพื่อคำนวณ CrCl อัตโนมัติ",
     antibioticOrderReady: "คำสั่งยาพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
     antibioticCopied: "คัดลอกคำสั่งยาบรรทัดนี้แล้ว",
     antibioticCopyFailed: "คัดลอกไม่สำเร็จ กรุณาเลือกและคัดลอกคำสั่งยาเอง",
     antibioticCrclUsed: "CrCl ที่ใช้:",
+    antibioticEstimatedCrcl: "CrCl ที่คำนวณได้ (Cockcroft-Gault):",
+    antibioticManualCrclUsed: "ใช้ค่า CrCl ที่กรอก:",
     antibioticRenalModeCrcl: "Non-HD: ใช้ CrCl",
     antibioticRenalModeHd: "Intermittent hemodialysis",
     antibioticHdMode: "ใช้ขนาดยาสำหรับ intermittent HD",
@@ -1808,6 +1871,12 @@ const staticMap = [
   ["t-nutrition-weight-label", "nutritionWeightLabel"],
   ["t-nutrition-height-label", "nutritionHeightLabel"],
   ["t-nutrition-sex-label", "nutritionSexLabel"],
+  ["t-nutrition-route-label", "nutritionRouteLabel"],
+  ["t-nutrition-route-diet", "nutritionRouteDiet"],
+  ["t-nutrition-route-ons", "nutritionRouteOns"],
+  ["t-nutrition-route-enteral", "nutritionRouteEnteral"],
+  ["t-nutrition-route-pn", "nutritionRoutePn"],
+  ["t-nutrition-intake-label", "nutritionIntakeLabel"],
   ["t-nutrition-ckd-label", "nutritionCkdLabel"],
   ["t-nutrition-aki-label", "nutritionAkiLabel"],
   ["t-nutrition-critical-label", "nutritionCriticalLabel"],
@@ -1823,6 +1892,11 @@ const staticMap = [
   ["t-antibiotic-picker-label", "antibioticPickerLabel"],
   ["t-antibiotic-indication-label", "antibioticIndicationLabel"],
   ["t-antibiotic-renal-mode-label", "antibioticRenalModeLabel"],
+  ["t-antibiotic-crcl-method-label", "antibioticCrclMethodLabel"],
+  ["t-antibiotic-age-label", "antibioticAgeLabel"],
+  ["t-antibiotic-weight-label", "antibioticWeightLabel"],
+  ["t-antibiotic-scr-label", "antibioticScrLabel"],
+  ["t-antibiotic-sex-label", "antibioticSexLabel"],
   ["t-antibiotic-crcl-label", "antibioticCrclLabel"],
   ["t-rules-heading", "rulesHeading"],
   ["t-rule-1", "rule1"],
@@ -2005,7 +2079,10 @@ function selectCalculator(calculatorId, { persist = true, focus = true, keepWork
   }
 
   const option = getCalculatorOptions().find((item) => item.id === calculatorId);
-  if (option?.workflow) setWorkflow(option.workflow, { persist, focus });
+  if (option?.workflow) {
+    setWorkflow(option.workflow, { persist, focus });
+    if (option.workflow === "nutrition") calculateNutrition();
+  }
 }
 
 function applyStaticTranslation() {
@@ -2018,6 +2095,9 @@ function applyStaticTranslation() {
   antibioticDrugSearch.placeholder = tr("antibioticDrugPlaceholder");
   antibioticRenalModeSelect.options[0].textContent = tr("antibioticRenalModeCrcl");
   antibioticRenalModeSelect.options[1].textContent = tr("antibioticRenalModeHd");
+  antibioticCrclMethodSelect.options[0].textContent = tr("antibioticCrclMethodAuto");
+  antibioticCrclMethodSelect.options[1].textContent = tr("antibioticCrclMethodManual");
+  syncAntibioticSexControl();
   const freeWaterTbwSelect = document.getElementById("free-water-tbw");
   const freeWaterRouteSelect = document.getElementById("free-water-route");
   if (freeWaterTbwSelect) {
@@ -2261,6 +2341,15 @@ function getCopyBlockFromEvent(event, container) {
 }
 
 async function writeClipboardText(text) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Fall back to selection-based copy below.
+  }
+
   const textarea = document.createElement("textarea");
   textarea.value = text;
   textarea.setAttribute("readonly", "");
@@ -2312,14 +2401,6 @@ async function writeClipboardText(text) {
   copyNode.remove();
   if (copied) return true;
 
-  try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch {
-    return false;
-  }
   return false;
 }
 
@@ -3776,6 +3857,23 @@ function findOralSupplementForCalories(calories) {
   return ORAL_SUPPLEMENT_REFERENCE.filter((item) => calories >= item.kcalMin && calories <= item.kcalMax);
 }
 
+function findClosestOralSupplement(calories) {
+  const target = clamp(Math.round(calories), 200, 1000);
+  const exact = findOralSupplementForCalories(target);
+  if (exact.length) return exact[0];
+  return ORAL_SUPPLEMENT_REFERENCE.reduce((best, item) => {
+    const itemMid = (item.kcalMin + item.kcalMax) / 2;
+    const bestMid = (best.kcalMin + best.kcalMax) / 2;
+    return Math.abs(itemMid - target) < Math.abs(bestMid - target) ? item : best;
+  }, ORAL_SUPPLEMENT_REFERENCE[0]);
+}
+
+function findBestHospitalDiet(calories) {
+  return HOSPITAL_DIET_REFERENCE.reduce((best, item) => {
+    return Math.abs(item.calories - calories) < Math.abs(best.calories - calories) ? item : best;
+  }, HOSPITAL_DIET_REFERENCE[0]);
+}
+
 function formatPnNumber(value) {
   if (!Number.isFinite(value)) return "";
   return Number(value.toFixed(1)).toString();
@@ -3804,16 +3902,82 @@ function getNutritionPnMatches({ routeMode, calories, protein, fluidLimit }) {
     .sort((a, b) => a.score - b.score || a.fluidExcess - b.fluidExcess || a.volume - b.volume);
 }
 
-function renderNutritionPnOrder({ calories, protein, fluid, riskRefeeding }) {
-  const pnEnabled = document.getElementById("nutrition-pn-enabled").checked;
-  if (!pnEnabled) return "";
+function renderNutritionDeficitNote({ calories, protein, fluid, intakePercent, currentKcal, deficitKcal, currentProtein, deficitProtein }) {
+  const noteLines = [
+    `Nutrition goal: ${calories} kcal/day, protein ${protein} g/day, fluid ${fluid} ml/day`,
+    `Estimated current intake: ${intakePercent}% (~${currentKcal} kcal/day, protein ~${currentProtein} g/day)`,
+    `Estimated deficit: ${deficitKcal} kcal/day, protein ${deficitProtein} g/day`
+  ];
+  return `
+    <button type="button" class="order-highlight copy-block nutrition-note-copy-order" data-copy="${encodeURIComponent(noteLines.join("\n"))}">
+      <p class="order-title">${tr("nutritionProgressNoteReady")}</p>
+      <div class="order-text">${noteLines.map((line) => `<p class="order-line copy-line-static">${line}</p>`).join("")}</div>
+    </button>
+    <p><strong>${tr("nutritionDeficitSummary")}</strong><br>${deficitKcal} kcal/day and ${deficitProtein} g protein/day after estimated intake.</p>
+  `;
+}
 
+function renderNutritionDietOrder({ calories, protein, intakePercent }) {
+  const selectedDiet = findBestHospitalDiet(calories);
+  const dietOrderLines = [
+    selectedDiet.diet,
+    "Record food intake chart",
+    intakePercent < 75 ? "If intake <75% goal, add oral nutrition supplement or consult dietitian" : "Continue diet and reassess intake"
+  ];
+  return `
+    <div class="order-highlight nutrition-diet-copy-order">
+      <p class="order-title">${tr("nutritionDietOrderReady")}</p>
+      <div class="order-text">${renderOrderLines(dietOrderLines)}</div>
+    </div>
+    <p><strong>${tr("nutritionRouteDiet")} match:</strong><br>${selectedDiet.diet}: ${selectedDiet.calories} kcal/day, C:P:F ${selectedDiet.cpf}</p>
+  `;
+}
+
+function renderNutritionOnsOrder({ deficitKcal }) {
+  const supplement = findClosestOralSupplement(deficitKcal);
+  const onsOrderLines = [
+    `${supplement.name} ${supplement.kcalMin}-${supplement.kcalMax} kcal/day (${supplement.code})`,
+    "Record food intake chart",
+    "Reassess intake and tolerance daily"
+  ];
+  return `
+    <div class="order-highlight nutrition-ons-copy-order">
+      <p class="order-title">${tr("nutritionOnsOrderReady")}</p>
+      <div class="order-text">${renderOrderLines(onsOrderLines)}</div>
+    </div>
+    <p><strong>${tr("nutritionSupplementRecommendation")}</strong><br>${supplement.name} ${supplement.kcalMin}-${supplement.kcalMax} kcal/day, ${supplement.price} บาท/day, ${supplement.code}</p>
+  `;
+}
+
+function renderNutritionEnteralOrder({ calories, protein, fluid, deficitKcal, riskRefeeding }) {
+  const feedsPerDay = 4;
+  const formulaKcalMl = 1.5;
+  const enteralCalories = Math.max(deficitKcal, Math.round(calories * 0.5));
+  const totalFormulaMl = roundUpToStep(enteralCalories / formulaKcalMl, 50);
+  const perFeedMl = roundUpToStep(totalFormulaMl / feedsPerDay, 50);
+  const actualFormulaMl = perFeedMl * feedsPerDay;
+  const actualFormulaKcal = Math.round(actualFormulaMl * formulaKcalMl);
+  const waterPerFeedMl = Math.max(0, Math.round(((fluid - actualFormulaMl) / feedsPerDay) / 10) * 10);
+  const totalVolume = actualFormulaMl + waterPerFeedMl * feedsPerDay;
+  const feedingOrderLines = [
+    `BD (1.5:1) ${perFeedMl}ml x ${feedsPerDay} feeds + น้ำตาม ${waterPerFeedMl}ml/feed (feed provides ~${actualFormulaKcal} kcal/day; target ${calories} kcal/day, TV ${totalVolume} ml/day, TP ${protein} g/day)`
+  ];
+  if (riskRefeeding) feedingOrderLines.unshift("Start enteral feeding at ~50% goal, advance as tolerated.");
+  return `
+    <div class="order-highlight nutrition-copy-order">
+      <p class="order-title">${tr("nutritionOrderReady")}</p>
+      <div class="order-text">${renderOrderLines(feedingOrderLines)}</div>
+    </div>
+  `;
+}
+
+function renderNutritionPnOrder({ calories, protein, fluid, supportCalories, supportProtein, riskRefeeding }) {
   const routeMode = document.getElementById("nutrition-pn-route").value;
   const infusionHours = clamp(Number(document.getElementById("nutrition-pn-hours").value) || 24, 1, 24);
   const fluidLimitInput = Number(document.getElementById("nutrition-pn-fluid").value);
   const fluidLimit = fluidLimitInput > 0 ? fluidLimitInput : fluid;
   const includeAdditives = document.getElementById("nutrition-pn-additives").checked;
-  const matches = getNutritionPnMatches({ routeMode, calories, protein, fluidLimit });
+  const matches = getNutritionPnMatches({ routeMode, calories: supportCalories, protein: supportProtein, fluidLimit });
   if (!matches.length) return `<p class="note">${tr("nutritionPnNoMatch")}</p>`;
 
   const selected = matches[0];
@@ -3846,7 +4010,7 @@ function renderNutritionPnOrder({ calories, protein, fluid, riskRefeeding }) {
     .slice(1, 4)
     .map(
       (item) =>
-        `${item.route === "Central PN" ? "TPN" : "PPN"} ${item.product} ${item.volume} ml: ${item.energy} kcal, AA ${item.amino} g, rate ${formatPnNumber(roundToStep(item.volume / infusionHours, 0.5))} ml/hr`
+        `${item.route === "Central PN" ? "TPN" : "PPN"} ${item.product} ${item.volume} ml: provides ${item.energy} kcal, AA ${item.amino} g, rate ${formatPnNumber(roundToStep(item.volume / infusionHours, 0.5))} ml/hr`
     )
     .join("<br>");
   const fluidWarning =
@@ -3863,14 +4027,14 @@ function renderNutritionPnOrder({ calories, protein, fluid, riskRefeeding }) {
       <p class="order-title">${tr("nutritionPnMonitorReady")}</p>
       <div class="order-text">${monitorLines.map((line) => `<p class="order-line copy-line-static">${line}</p>`).join("")}</div>
     </button>
-    <p><strong>${tr("nutritionPnRecommendation")}</strong><br>${pnType} ${selected.product} ${selected.volume} ml: ${selected.energy}/${calories} kcal, AA ${selected.amino}/${protein} g, volume ${selected.volume}/${fluidLimit} ml</p>
+    <p><strong>${tr("nutritionPnRecommendation")}</strong><br>${pnType} ${selected.product} ${selected.volume} ml: provides ${selected.energy} kcal of ${calories} target (${supportCalories} kcal support need), AA ${selected.amino} g of ${protein} target (${supportProtein} g support need), volume ${selected.volume} ml of ${fluidLimit} ml limit</p>
     ${alternatives ? `<p><strong>${tr("nutritionPnAlternatives")}</strong><br>${alternatives}</p>` : ""}
     ${fluidWarning}
     <p class="note">${tr("nutritionPnCaution")}</p>
   `;
 }
 
-function renderNutritionReferenceTables() {
+function renderNutritionReferenceTables({ open = false } = {}) {
   const dietRows = HOSPITAL_DIET_REFERENCE.map(
     (item) => `
       <tr>
@@ -3936,7 +4100,7 @@ function renderNutritionReferenceTables() {
   ).join("");
 
   return `
-    <details class="reference-panel">
+    <details class="reference-panel"${open ? " open" : ""}>
       <summary>${tr("nutritionReferenceTitle")}</summary>
       <p class="note">${tr("nutritionReferenceVerify")}</p>
       <h3>${tr("nutritionHospitalDietReference")}</h3>
@@ -4021,6 +4185,21 @@ function renderNutritionReferenceTables() {
   `;
 }
 
+function syncNutritionOrderControls() {
+  const route = nutritionRouteInput.value;
+  for (const button of nutritionRouteTabs.querySelectorAll(".choice-option")) {
+    button.classList.toggle("active", button.dataset.nutritionRoute === route);
+  }
+  for (const button of nutritionIntakeTabs.querySelectorAll(".choice-option")) {
+    button.classList.toggle("active", button.dataset.nutritionIntake === nutritionIntakeInput.value);
+  }
+  const isPn = route === "pn";
+  nutritionPnRouteWrap.classList.toggle("hidden", !isPn);
+  nutritionPnHoursWrap.classList.toggle("hidden", !isPn);
+  nutritionPnFluidWrap.classList.toggle("hidden", !isPn);
+  nutritionPnAdditivesWrap.classList.toggle("hidden", !isPn);
+}
+
 function calculateNutrition(event) {
   event?.preventDefault();
 
@@ -4031,13 +4210,14 @@ function calculateNutrition(event) {
   const hasAki = document.getElementById("nutrition-aki").checked;
   const isCritical = document.getElementById("nutrition-critical").checked;
   const riskRefeeding = document.getElementById("nutrition-refeeding").checked;
-  const isEnteral = document.getElementById("nutrition-enteral").checked;
-  const isPnOrder = document.getElementById("nutrition-pn-enabled").checked;
+  const nutritionRoute = nutritionRouteInput.value;
+  const intakePercent = Number(nutritionIntakeInput.value) || 0;
+  syncNutritionOrderControls();
 
   if (!weight || !height) {
     nutritionResult.innerHTML = `
       <p>${tr("nutritionNeed")}</p>
-      ${renderNutritionReferenceTables()}
+      ${renderNutritionReferenceTables({ open: true })}
     `;
     return;
   }
@@ -4055,44 +4235,37 @@ function calculateNutrition(event) {
   const calories = Math.round(weight * kcalPerKg);
   const protein = Math.round(weight * proteinPerKg);
   const fluid = Math.round(weight * fluidPerKg);
-  const pnBlock = renderNutritionPnOrder({ calories, protein, fluid, riskRefeeding });
+  const currentKcal = Math.round((calories * intakePercent) / 100);
+  const deficitKcal = Math.max(0, calories - currentKcal);
+  const currentProtein = Math.round((protein * intakePercent) / 100);
+  const deficitProtein = Math.max(0, protein - currentProtein);
+  const supportCalories = Math.max(deficitKcal, Math.round(calories * 0.25));
+  const supportProtein = Math.max(deficitProtein, Math.round(protein * 0.25));
 
-  let formulaBlock = "";
-  let supplementRecommendation = "";
-  if (isEnteral && !isPnOrder) {
-    const feedsPerDay = 4;
-    const formulaKcalMl = 1.5;
-    const totalFormulaMl = roundUpToStep(calories / formulaKcalMl, 50);
-    const perFeedMl = roundUpToStep(totalFormulaMl / feedsPerDay, 50);
-    const actualFormulaMl = perFeedMl * feedsPerDay;
-    const waterPerFeedMl = Math.max(0, Math.round(((fluid - actualFormulaMl) / feedsPerDay) / 10) * 10);
-    const totalVolume = actualFormulaMl + waterPerFeedMl * feedsPerDay;
-    const feedingOrderLines = [
-      `BD (1.5:1) ${perFeedMl}ml x ${feedsPerDay} feeds + น้ำตาม ${waterPerFeedMl}ml/feed (TC ${calories} TV ${totalVolume} TP ${protein})`
-    ];
-    if (riskRefeeding) feedingOrderLines.unshift("Start enteral feeding at ~50% goal, advance as tolerated.");
-    formulaBlock = `
-      <div class="order-highlight nutrition-copy-order">
-        <p class="order-title">${tr("nutritionOrderReady")}</p>
-        <div class="order-text">${renderOrderLines(feedingOrderLines)}</div>
-      </div>
-    `;
-
-    const matchingSupplements = findOralSupplementForCalories(calories);
-    if (matchingSupplements.length) {
-      const supplementLines = matchingSupplements
-        .map((item) => `${item.name} ${item.kcalMin}-${item.kcalMax} kcal/day, ${item.price} บาท/day, ${item.code}`)
-        .join("<br>");
-      supplementRecommendation = `<p><strong>${tr("nutritionSupplementRecommendation")}</strong><br>${supplementLines}</p>`;
-    } else {
-      supplementRecommendation = `<p class="note">${tr("nutritionNoSupplementMatch")}</p>`;
-    }
+  const noteBlock = renderNutritionDeficitNote({
+    calories,
+    protein,
+    fluid,
+    intakePercent,
+    currentKcal,
+    deficitKcal,
+    currentProtein,
+    deficitProtein
+  });
+  let orderBlock = "";
+  if (nutritionRoute === "diet") {
+    orderBlock = renderNutritionDietOrder({ calories, protein, intakePercent });
+  } else if (nutritionRoute === "ons") {
+    orderBlock = renderNutritionOnsOrder({ deficitKcal: supportCalories });
+  } else if (nutritionRoute === "enteral") {
+    orderBlock = renderNutritionEnteralOrder({ calories, protein, fluid, deficitKcal: supportCalories, riskRefeeding });
+  } else if (nutritionRoute === "pn") {
+    orderBlock = renderNutritionPnOrder({ calories, protein, fluid, supportCalories, supportProtein, riskRefeeding });
   }
 
   nutritionResult.innerHTML = `
-    ${pnBlock}
-    ${formulaBlock}
-    ${supplementRecommendation}
+    ${orderBlock}
+    ${noteBlock}
     ${renderCopyResult(tr("nutritionBmi"), bmi.toFixed(1), { unit: "kg/m²" })}
     ${renderCopyResult(tr("nutritionIbw"), ibw.toFixed(1), { unit: "kg" })}
     ${renderCopyResult(tr("nutritionAdjustedBw"), adjustedBw.toFixed(1), { unit: "kg" })}
@@ -4160,16 +4333,64 @@ function getAntibioticDoseBand(indication, crcl) {
   return indication.bands.find((band) => crcl >= (band.min || 0) && (band.max === undefined || crcl <= band.max));
 }
 
+function syncAntibioticSexControl() {
+  const isMale = antibioticSexInput.value === "male";
+  antibioticSexToggle.dataset.active = isMale ? "left" : "right";
+  antibioticSexLeft.textContent = tr("antibioticSexMale");
+  antibioticSexRight.textContent = tr("antibioticSexFemale");
+}
+
+function syncAntibioticRenalControls() {
+  const usesCrcl = antibioticRenalModeSelect.value === "crcl";
+  const autoCrcl = antibioticCrclMethodSelect.value === "auto";
+  syncAntibioticSexControl();
+  antibioticCrclMethodWrap.classList.toggle("hidden", !usesCrcl);
+  antibioticAgeWrap.classList.toggle("hidden", !usesCrcl || !autoCrcl);
+  antibioticWeightWrap.classList.toggle("hidden", !usesCrcl || !autoCrcl);
+  antibioticScrWrap.classList.toggle("hidden", !usesCrcl || !autoCrcl);
+  antibioticSexWrap.classList.toggle("hidden", !usesCrcl || !autoCrcl);
+  antibioticCrclWrap.classList.toggle("hidden", !usesCrcl || autoCrcl);
+
+  if (activeInput && !isVisible(activeInput)) {
+    const nextInput = autoCrcl ? document.getElementById("antibiotic-age") : document.getElementById("antibiotic-crcl");
+    setActiveInput(nextInput);
+  }
+}
+
+function getAntibioticCrcl() {
+  const crclMethod = antibioticCrclMethodSelect.value;
+  if (crclMethod === "manual") {
+    const manualCrcl = Number(document.getElementById("antibiotic-crcl").value);
+    if (!manualCrcl) return { error: tr("enterManualCrcl") };
+    return { crcl: manualCrcl, label: tr("antibioticManualCrclUsed") };
+  }
+
+  const age = Number(document.getElementById("antibiotic-age").value);
+  const weight = Number(document.getElementById("antibiotic-weight").value);
+  const scr = Number(document.getElementById("antibiotic-scr").value);
+  const sex = antibioticSexInput.value;
+  if (!age || !weight || !scr) return { error: tr("antibioticNeedAutoCrcl") };
+
+  const crcl = calculateCrClCockcroftGault({ age, weight, scr, sex });
+  if (!Number.isFinite(crcl) || crcl <= 0) return { error: tr("badCrcl") };
+  return { crcl, label: tr("antibioticEstimatedCrcl") };
+}
+
 function calculateAntibiotic(event) {
   event?.preventDefault();
+  syncAntibioticRenalControls();
 
   const drug = getSelectedAntibiotic();
   const indication = drug.indications[Number(antibioticIndicationSelect.value)] || drug.indications[0];
   const renalMode = antibioticRenalModeSelect.value;
-  const crcl = Number(document.getElementById("antibiotic-crcl").value);
+  const crclResult = renalMode === "crcl" ? getAntibioticCrcl() : null;
 
-  if (!drug || !indication || (renalMode === "crcl" && !crcl)) {
+  if (!drug || !indication) {
     antibioticResult.innerHTML = `<p>${tr("antibioticNeed")}</p>`;
+    return;
+  }
+  if (crclResult?.error) {
+    antibioticResult.innerHTML = `<p>${crclResult.error}</p>`;
     return;
   }
 
@@ -4179,6 +4400,7 @@ function calculateAntibiotic(event) {
   if (renalMode === "hd") {
     orderLines = indication.hdOrderLines || (indication.hdOrder ? [indication.hdOrder] : null);
   } else {
+    const crcl = crclResult.crcl;
     const band = getAntibioticDoseBand(indication, crcl);
     if (!band) {
       antibioticResult.innerHTML = `<p>${tr("antibioticNeed")}</p>`;
@@ -4201,7 +4423,7 @@ function calculateAntibiotic(event) {
     ${
       renalMode === "hd"
         ? `<p><strong>${tr("antibioticHdMode")}</strong></p>`
-        : renderCopyResult(tr("antibioticCrclUsed"), crcl.toFixed(0), { unit: "mL/min" })
+        : renderCopyResult(crclResult.label || tr("antibioticCrclUsed"), crclResult.crcl.toFixed(1), { unit: "mL/min" })
     }
     ${note ? `<p class="note">${note}</p>` : ""}
     <p class="note">${tr("antibioticSourceNote")}</p>
@@ -4379,9 +4601,32 @@ function initCalculatorSearch() {
   });
 }
 
+function initNutritionOrderBuilder() {
+  syncNutritionOrderControls();
+  nutritionRouteTabs.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const button = target.closest(".choice-option");
+    if (!button) return;
+    nutritionRouteInput.value = button.dataset.nutritionRoute;
+    syncNutritionOrderControls();
+    calculateNutrition();
+  });
+  nutritionIntakeTabs.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const button = target.closest(".choice-option");
+    if (!button) return;
+    nutritionIntakeInput.value = button.dataset.nutritionIntake;
+    syncNutritionOrderControls();
+    calculateNutrition();
+  });
+}
+
 function initAntibioticDosing() {
   selectAntibioticDrug(ANTIBIOTIC_RENAL_DOSING[0].id);
   populateAntibioticIndications();
+  syncAntibioticRenalControls();
   antibioticDrugSearch.addEventListener("input", () => {
     renderAntibioticDrugResults();
     const firstMatch = ANTIBIOTIC_RENAL_DOSING.find((drug) =>
@@ -4400,7 +4645,19 @@ function initAntibioticDosing() {
     if (!option) return;
     selectAntibioticDrug(option.dataset.drug);
   });
-  antibioticRenalModeSelect.addEventListener("change", calculateAntibiotic);
+  antibioticRenalModeSelect.addEventListener("change", () => {
+    syncAntibioticRenalControls();
+    calculateAntibiotic();
+  });
+  antibioticCrclMethodSelect.addEventListener("change", () => {
+    syncAntibioticRenalControls();
+    calculateAntibiotic();
+  });
+  antibioticSexToggle.addEventListener("click", () => {
+    antibioticSexInput.value = antibioticSexInput.value === "male" ? "female" : "male";
+    syncAntibioticSexControl();
+    calculateAntibiotic();
+  });
   antibioticIndicationSelect.addEventListener("change", calculateAntibiotic);
   bindCopyInteractions(antibioticResult, copyAntibioticOrder);
 }
@@ -4477,7 +4734,8 @@ function bindCopyInteractions(container, handler) {
   let skipNextClick = false;
   container.addEventListener("pointerup", (event) => {
     const target = getCopyLineFromEvent(event, container);
-    if (!target?.classList?.contains("copy-result-value")) return;
+    const block = target ? null : getCopyBlockFromEvent(event, container);
+    if (!target && !block) return;
     skipNextClick = true;
     event.preventDefault();
     event.stopPropagation();
@@ -4534,6 +4792,7 @@ bindCopyInteractions(freeWaterResult, copyFreeWaterOrder);
 initHeparinDosing();
 initRenalCalculator();
 initAntibioticDosing();
+initNutritionOrderBuilder();
 initWarfarinTablets();
 initNumpad();
 initModeButtons();

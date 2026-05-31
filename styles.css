@@ -362,6 +362,14 @@ h1 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.choice-options.four-options {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.choice-options.five-options {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .tablet-option,
 .choice-option {
   align-self: stretch;
@@ -551,6 +559,26 @@ button:hover {
 }
 
 #sex-toggle[data-active="right"] .toggle-right {
+  background: #ffe0ea;
+  color: #8f1540;
+}
+
+#nutrition-sex-toggle[data-active="left"] .toggle-left {
+  background: #dbeaff;
+  color: #11408e;
+}
+
+#nutrition-sex-toggle[data-active="right"] .toggle-right {
+  background: #ffe0ea;
+  color: #8f1540;
+}
+
+#antibiotic-sex-toggle[data-active="left"] .toggle-left {
+  background: #dbeaff;
+  color: #11408e;
+}
+
+#antibiotic-sex-toggle[data-active="right"] .toggle-right {
   background: #ffe0ea;
   color: #8f1540;
 }
