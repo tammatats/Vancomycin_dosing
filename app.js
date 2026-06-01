@@ -1348,8 +1348,6 @@ const I18N = {
     nutritionAkiLabel: "AKI",
     nutritionCriticalLabel: "Critical illness",
     nutritionRefeedingLabel: "Risk refeeding",
-    nutritionEnteralLabel: "Enteral/oral feeding",
-    nutritionPnEnabledLabel: "TPN/PPN order",
     nutritionPnRouteLabel: "PN route",
     nutritionPnHoursLabel: "PN infusion hours",
     nutritionPnFluidLabel: "PN fluid limit (mL/day, optional)",
@@ -1709,8 +1707,6 @@ const I18N = {
     nutritionAkiLabel: "AKI",
     nutritionCriticalLabel: "Critical illness",
     nutritionRefeedingLabel: "เสี่ยง refeeding",
-    nutritionEnteralLabel: "ให้อาหาร enteral/oral",
-    nutritionPnEnabledLabel: "คำสั่ง TPN/PPN",
     nutritionPnRouteLabel: "เส้นทาง PN",
     nutritionPnHoursLabel: "ชั่วโมงให้ PN",
     nutritionPnFluidLabel: "จำกัดปริมาตร PN (mL/day, optional)",
@@ -1873,8 +1869,6 @@ const staticMap = [
   ["t-nutrition-aki-label", "nutritionAkiLabel"],
   ["t-nutrition-critical-label", "nutritionCriticalLabel"],
   ["t-nutrition-refeeding-label", "nutritionRefeedingLabel"],
-  ["t-nutrition-enteral-label", "nutritionEnteralLabel"],
-  ["t-nutrition-pn-enabled-label", "nutritionPnEnabledLabel"],
   ["t-nutrition-pn-route-label", "nutritionPnRouteLabel"],
   ["t-nutrition-pn-hours-label", "nutritionPnHoursLabel"],
   ["t-nutrition-pn-fluid-label", "nutritionPnFluidLabel"],
@@ -3806,12 +3800,13 @@ function calculateCalcium(event) {
     status = tr("calciumHigh");
     statusClass = "status-high";
   }
+  const correctedCalciumText = formatNumberForInput(correctedCalcium, 1);
 
   calciumResult.innerHTML = `
-    ${renderCopyResult(tr("calciumResult"), correctedCalcium.toFixed(1), {
+    ${renderCopyResult(tr("calciumResult"), correctedCalciumText, {
       unit: "mg/dL",
-      copyValue: correctedCalcium.toFixed(1),
-      copyFull: `cCa = ${correctedCalcium.toFixed(1)}`
+      copyValue: correctedCalciumText,
+      copyFull: `cCa = ${correctedCalciumText}`
     })}
     <p><strong>${tr("statusLabel")}</strong> <span class="${statusClass}">${status}</span></p>
     <p class="note">${tr("calciumFormula")}</p>
