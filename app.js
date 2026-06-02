@@ -8,6 +8,7 @@ const heparinResult = document.getElementById("heparin-result");
 const renalResult = document.getElementById("renal-result");
 const osmoResult = document.getElementById("osmo-result");
 const calciumResult = document.getElementById("calcium-result");
+const fibrosisResult = document.getElementById("fibrosis-result");
 const freeWaterResult = document.getElementById("free-water-result");
 const nutritionResult = document.getElementById("nutrition-result");
 const antibioticResult = document.getElementById("antibiotic-result");
@@ -20,6 +21,7 @@ const heparinPanel = document.getElementById("heparin-panel");
 const renalPanel = document.getElementById("renal-panel");
 const osmoPanel = document.getElementById("osmo-panel");
 const calciumPanel = document.getElementById("calcium-panel");
+const fibrosisPanel = document.getElementById("fibrosis-panel");
 const freeWaterPanel = document.getElementById("free-water-panel");
 const nutritionPanel = document.getElementById("nutrition-panel");
 const antibioticPanel = document.getElementById("antibiotic-panel");
@@ -206,6 +208,12 @@ const WORKFLOWS = {
     firstInputId: "calcium-measured",
     form: document.getElementById("calcium-form"),
     calculator: "calcium"
+  },
+  fibrosis: {
+    panel: fibrosisPanel,
+    firstInputId: "fibrosis-age",
+    form: document.getElementById("fibrosis-form"),
+    calculator: "fibrosis"
   },
   freeWater: {
     panel: freeWaterPanel,
@@ -1074,6 +1082,8 @@ const I18N = {
     osmoCalcDesc: "Calculate serum osmolality from sodium, glucose, and BUN.",
     calciumCalcName: "Corrected calcium",
     calciumCalcDesc: "Correct total calcium for low albumin using the standard albumin correction.",
+    fibrosisCalcName: "FIB-4 / APRI",
+    fibrosisCalcDesc: "Calculate liver fibrosis screening scores from age, AST/ALT, platelets, and AST ULN.",
     freeWaterCalcName: "Free water deficit",
     freeWaterCalcDesc: "Estimate hypernatremia free-water deficit and generate a copy-ready replacement order.",
     nutritionCalcName: "Nutrition goals",
@@ -1303,6 +1313,29 @@ const I18N = {
     calciumNormal: "Corrected calcium within usual reference range.",
     calciumHigh: "High corrected calcium.",
     calciumFormula: "Formula: corrected Ca = measured Ca + 0.8 x (4 - albumin). Usual reference range shown here: 8.5-10.5 mg/dL.",
+    fibrosisHeading: "FIB-4 / APRI",
+    fibrosisAgeLabel: "Age (years)",
+    fibrosisAstLabel: "AST (U/L)",
+    fibrosisAltLabel: "ALT (U/L)",
+    fibrosisPlateletsLabel: "Platelets (10^9/L)",
+    fibrosisAstUlnLabel: "AST upper limit normal (U/L)",
+    fibrosisNeed: "Fill age, AST, ALT, platelets, and AST ULN.",
+    fibrosisFib4Result: "FIB-4:",
+    fibrosisApriResult: "APRI:",
+    fibrosisFib4Interpretation: "FIB-4 interpretation:",
+    fibrosisApriInterpretation: "APRI interpretation:",
+    fibrosisFib4Low: "Low probability of advanced fibrosis by original HCV-derived cutoff (<1.45).",
+    fibrosisFib4Indeterminate: "Indeterminate by original cutoff (1.45-3.25); consider clinical context and elastography if needed.",
+    fibrosisFib4High: "High probability of advanced fibrosis by original HCV-derived cutoff (>3.25).",
+    fibrosisFib4MasldNote: "MASLD/AASLD primary-risk thresholds differ: <1.3 low risk, >2.67 higher risk; age >=65 often uses <2.0 as the lower-risk threshold.",
+    fibrosisApriLow: "Low APRI (<0.5); better for ruling out cirrhosis than ruling out all significant disease.",
+    fibrosisApriIndeterminate: "Intermediate APRI (0.5-1.5); less clinically decisive.",
+    fibrosisApriHigh: "High APRI (>1.5); higher probability of cirrhosis/significant disease.",
+    fibrosisApriCirrhosis: "APRI >=2.0 is a more specific cirrhosis threshold in HCV data.",
+    fibrosisFib4Formula: "FIB-4 = age x AST / (platelets x sqrt(ALT)). Platelets use 10^9/L.",
+    fibrosisApriFormula: "APRI = ((AST / AST ULN) / platelets) x 100. Use local AST ULN if known; 40 U/L is commonly used.",
+    fibrosisCaution: "Screening estimate only. Acute hepatitis, cholestasis, alcohol use, thrombocytopenia causes, age extremes, and non-HCV/MASLD populations can shift interpretation.",
+    fibrosisSourceNote: "References: Hepatitis C Online FIB-4/APRI calculators and AASLD MASLD noninvasive assessment guidance.",
     freeWaterHeading: "Free water deficit",
     freeWaterWeightLabel: "Body weight (kg)",
     freeWaterNaLabel: "Current Na (mEq/L)",
@@ -1354,11 +1387,28 @@ const I18N = {
     nutritionPnAdditivesLabel: "Add Soluvit/Vitalipid/Addamel",
     nutritionNeed: "Fill body weight and height.",
     nutritionBmi: "BMI:",
-    nutritionIbw: "IBW:",
-    nutritionAdjustedBw: "Adjusted BW:",
+    nutritionIbw: "IBW (Devine):",
+    nutritionBmi25Weight: "BMI 25 weight:",
+    nutritionAdjustedBw: "Adjusted BW (nutrition):",
+    nutritionWeightBasis: "Weight basis:",
+    nutritionBasisActual: "actual BW",
+    nutritionBasisIbw: "IBW",
+    nutritionBasisAdjusted: "adjusted BW",
     nutritionEnergy: "Total calories:",
     nutritionProtein: "Total protein:",
     nutritionVolume: "Estimated fluid/volume:",
+    nutritionStandardWeightRule: "Weight basis: actual BW for non-obese adult estimate.",
+    nutritionNoncriticalObesityRule:
+      "Weight basis: obesity/non-ICU uses adjusted BW = BMI25 weight + 0.33 x (actual BW - BMI25 weight), consistent with ESPEN hospital nutrition guidance.",
+    nutritionCriticalObesityRule:
+      "Weight basis: critical obesity uses ASPEN-style hypocaloric high-protein targets; BMI 30-50 uses 11-14 kcal/kg actual BW, BMI >50 uses 22-25 kcal/kg IBW, protein uses 2.0-2.5 g/kg IBW.",
+    nutritionUnderweightRule:
+      "Weight basis: underweight uses actual BW. Goal is 30 kcal/kg actual BW and at least 1.2 g/kg actual BW protein, reached cautiously because refeeding risk is higher.",
+    nutritionUnderweightCriticalRule:
+      "Weight basis: underweight critical illness uses actual BW with cautious early feeding and refeeding monitoring.",
+    nutritionSevereUnderweightRule:
+      "BMI <16 is high refeeding risk by NICE criteria, so the app starts energy at 10 kcal/kg actual BW. Extreme risk such as BMI <14 or negligible intake >15 days may require 5 kcal/kg/day.",
+    nutritionRefeedingWeightRule: "Refeeding risk: starts energy at 10 kcal/kg using the selected energy weight; advance after electrolyte stability.",
     nutritionFormula: "Example enteral plan:",
     nutritionOrderReady: "Feeding Order Ready - click each line to copy",
     nutritionDietOrderReady: "Diet Order Ready - click each line to copy",
@@ -1434,6 +1484,8 @@ const I18N = {
     osmoCalcDesc: "คำนวณ serum osmolality จาก sodium, glucose และ BUN",
     calciumCalcName: "Corrected calcium",
     calciumCalcDesc: "ปรับค่า total calcium ตาม albumin",
+    fibrosisCalcName: "FIB-4 / APRI",
+    fibrosisCalcDesc: "คำนวณคะแนนคัดกรอง liver fibrosis จากอายุ AST/ALT platelet และ AST ULN",
     freeWaterCalcName: "Free water deficit",
     freeWaterCalcDesc: "คำนวณ water deficit ใน hypernatremia และสร้างคำสั่งให้สารน้ำพร้อมคัดลอก",
     nutritionCalcName: "เป้าหมายโภชนบำบัด",
@@ -1662,6 +1714,29 @@ const I18N = {
     calciumNormal: "Corrected calcium อยู่ในช่วงอ้างอิงทั่วไป",
     calciumHigh: "Corrected calcium สูง",
     calciumFormula: "สูตร: corrected Ca = measured Ca + 0.8 x (4 - albumin). ช่วงอ้างอิงทั่วไปที่ใช้แสดง: 8.5-10.5 mg/dL",
+    fibrosisHeading: "FIB-4 / APRI",
+    fibrosisAgeLabel: "อายุ (ปี)",
+    fibrosisAstLabel: "AST (U/L)",
+    fibrosisAltLabel: "ALT (U/L)",
+    fibrosisPlateletsLabel: "Platelets (10^9/L)",
+    fibrosisAstUlnLabel: "AST upper limit normal (U/L)",
+    fibrosisNeed: "กรอกอายุ AST, ALT, platelets และ AST ULN",
+    fibrosisFib4Result: "FIB-4:",
+    fibrosisApriResult: "APRI:",
+    fibrosisFib4Interpretation: "แปลผล FIB-4:",
+    fibrosisApriInterpretation: "แปลผล APRI:",
+    fibrosisFib4Low: "โอกาส advanced fibrosis ต่ำตาม cutoff เดิมจาก HCV (<1.45)",
+    fibrosisFib4Indeterminate: "อยู่ในช่วง indeterminate ตาม cutoff เดิม (1.45-3.25) ควรดูบริบทและพิจารณา elastography หากจำเป็น",
+    fibrosisFib4High: "โอกาส advanced fibrosis สูงตาม cutoff เดิมจาก HCV (>3.25)",
+    fibrosisFib4MasldNote: "กรณี MASLD/AASLD ใช้ threshold ต่างกัน: <1.3 เสี่ยงต่ำ, >2.67 เสี่ยงสูงกว่า; อายุ >=65 มักใช้ <2.0 เป็น lower-risk threshold",
+    fibrosisApriLow: "APRI ต่ำ (<0.5); ช่วย rule out cirrhosis ได้ดีกว่า rule out significant disease ทั้งหมด",
+    fibrosisApriIndeterminate: "APRI อยู่ช่วงกลาง (0.5-1.5); แปลผลชี้ขาดได้น้อย",
+    fibrosisApriHigh: "APRI สูง (>1.5); โอกาส cirrhosis/significant disease สูงขึ้น",
+    fibrosisApriCirrhosis: "APRI >=2.0 เป็น cutoff ที่จำเพาะขึ้นสำหรับ cirrhosis ในข้อมูล HCV",
+    fibrosisFib4Formula: "FIB-4 = age x AST / (platelets x sqrt(ALT)). Platelets ใช้หน่วย 10^9/L",
+    fibrosisApriFormula: "APRI = ((AST / AST ULN) / platelets) x 100. หากทราบ AST ULN ของ lab ให้ใช้ค่านั้น; 40 U/L ใช้บ่อย",
+    fibrosisCaution: "เป็นคะแนนคัดกรองเท่านั้น acute hepatitis, cholestasis, alcohol use, สาเหตุ thrombocytopenia, อายุสุดขั้ว และ population ที่ไม่ใช่ HCV/MASLD อาจทำให้แปลผลคลาดเคลื่อน",
+    fibrosisSourceNote: "อ้างอิง: Hepatitis C Online FIB-4/APRI calculators และ AASLD MASLD noninvasive assessment guidance",
     freeWaterHeading: "Free water deficit",
     freeWaterWeightLabel: "น้ำหนักตัว (กก.)",
     freeWaterNaLabel: "Na ปัจจุบัน (mEq/L)",
@@ -1713,11 +1788,28 @@ const I18N = {
     nutritionPnAdditivesLabel: "ใส่ Soluvit/Vitalipid/Addamel",
     nutritionNeed: "กรอกน้ำหนักและส่วนสูง",
     nutritionBmi: "BMI:",
-    nutritionIbw: "IBW:",
-    nutritionAdjustedBw: "Adjusted BW:",
+    nutritionIbw: "IBW (Devine):",
+    nutritionBmi25Weight: "น้ำหนักที่ BMI 25:",
+    nutritionAdjustedBw: "Adjusted BW สำหรับ nutrition:",
+    nutritionWeightBasis: "Weight basis:",
+    nutritionBasisActual: "actual BW",
+    nutritionBasisIbw: "IBW",
+    nutritionBasisAdjusted: "adjusted BW",
     nutritionEnergy: "พลังงานรวม:",
     nutritionProtein: "โปรตีนรวม:",
     nutritionVolume: "ปริมาตร/สารน้ำโดยประมาณ:",
+    nutritionStandardWeightRule: "Weight basis: ใช้ actual BW สำหรับผู้ใหญ่ที่ไม่ obese",
+    nutritionNoncriticalObesityRule:
+      "Weight basis: obesity/non-ICU ใช้ adjusted BW = น้ำหนักที่ BMI25 + 0.33 x (actual BW - น้ำหนักที่ BMI25) ตาม ESPEN hospital nutrition guidance",
+    nutritionCriticalObesityRule:
+      "Weight basis: critical obesity ใช้เป้าหมาย hypocaloric high-protein แบบ ASPEN; BMI 30-50 ใช้ 11-14 kcal/kg actual BW, BMI >50 ใช้ 22-25 kcal/kg IBW, protein ใช้ 2.0-2.5 g/kg IBW",
+    nutritionUnderweightRule:
+      "Weight basis: underweight ใช้ actual BW. เป้าหมาย 30 kcal/kg actual BW และ protein อย่างน้อย 1.2 g/kg actual BW โดยค่อย ๆ เพิ่มเพราะเสี่ยง refeeding มากขึ้น",
+    nutritionUnderweightCriticalRule:
+      "Weight basis: underweight ใน critical illness ใช้ actual BW พร้อมเริ่ม feeding อย่างระวังและ monitor refeeding",
+    nutritionSevereUnderweightRule:
+      "BMI <16 เป็น high refeeding risk ตาม NICE criteria จึงเริ่ม energy ที่ 10 kcal/kg actual BW ในแอปนี้; extreme risk เช่น BMI <14 หรือแทบไม่ได้กิน >15 วัน อาจต้องเริ่ม 5 kcal/kg/day",
+    nutritionRefeedingWeightRule: "เสี่ยง refeeding: เริ่ม energy 10 kcal/kg โดยใช้ weight basis ที่เลือก แล้ว advance หลัง electrolyte stable",
     nutritionFormula: "ตัวอย่างสูตร enteral:",
     nutritionOrderReady: "คำสั่งอาหารพร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
     nutritionDietOrderReady: "คำสั่ง diet พร้อมใช้ - คลิกแต่ละบรรทัดเพื่อคัดลอก",
@@ -1848,6 +1940,12 @@ const staticMap = [
   ["t-calcium-heading", "calciumHeading"],
   ["t-calcium-measured-label", "calciumMeasuredLabel"],
   ["t-calcium-albumin-label", "calciumAlbuminLabel"],
+  ["t-fibrosis-heading", "fibrosisHeading"],
+  ["t-fibrosis-age-label", "fibrosisAgeLabel"],
+  ["t-fibrosis-ast-label", "fibrosisAstLabel"],
+  ["t-fibrosis-alt-label", "fibrosisAltLabel"],
+  ["t-fibrosis-platelets-label", "fibrosisPlateletsLabel"],
+  ["t-fibrosis-ast-uln-label", "fibrosisAstUlnLabel"],
   ["t-free-water-heading", "freeWaterHeading"],
   ["t-free-water-weight-label", "freeWaterWeightLabel"],
   ["t-free-water-na-label", "freeWaterNaLabel"],
@@ -1950,6 +2048,14 @@ function getCalculatorOptions() {
       name: tr("calciumCalcName"),
       description: tr("calciumCalcDesc"),
       keywords: "calcium corrected calcium albumin ca hypocalcemia hypercalcemia"
+    },
+    {
+      id: "fibrosis",
+      workflow: "fibrosis",
+      name: tr("fibrosisCalcName"),
+      description: tr("fibrosisCalcDesc"),
+      keywords:
+        "fib4 fib-4 apri fibrosis cirrhosis liver hepatitis hcv nafld masld mash ast alt platelet platelets thrombocytopenia"
     },
     {
       id: "freeWater",
@@ -2270,9 +2376,117 @@ function calculateIdealBodyWeight({ heightCm, sex }) {
   return Math.max(0, baseWeight + 2.3 * inchesFromFiveFeet);
 }
 
-function calculateAdjustedBodyWeight({ actualWeight, idealWeight }) {
+function calculateAdjustedBodyWeight({ actualWeight, idealWeight, factor = 0.4 }) {
   if (actualWeight <= idealWeight) return actualWeight;
-  return idealWeight + 0.4 * (actualWeight - idealWeight);
+  return idealWeight + factor * (actualWeight - idealWeight);
+}
+
+function calculateBmiTargetWeight({ heightCm, targetBmi }) {
+  const heightM = heightCm / 100;
+  return targetBmi * heightM * heightM;
+}
+
+function formatWeightBasis(label, weight) {
+  return `${label} ${formatNumberForInput(weight, 1)} kg`;
+}
+
+function getNutritionTargetPlan({ weight, height, sex, hasCkd, hasAki, isCritical, riskRefeeding }) {
+  const heightM = height / 100;
+  const bmi = weight / (heightM * heightM);
+  const ibw = calculateIdealBodyWeight({ heightCm: height, sex });
+  const bmi25Weight = calculateBmiTargetWeight({ heightCm: height, targetBmi: 25 });
+  const adjustedBw = calculateAdjustedBodyWeight({ actualWeight: weight, idealWeight: bmi25Weight, factor: 0.33 });
+  const isUnderweight = bmi < 18.5;
+  const isSeverelyUnderweight = bmi < 16;
+  const isObese = bmi >= 30;
+  const refeedingStart = riskRefeeding || isSeverelyUnderweight;
+
+  let energyWeight = weight;
+  let energyBasis = tr("nutritionBasisActual");
+  let proteinWeight = weight;
+  let proteinBasis = tr("nutritionBasisActual");
+  let fluidWeight = weight;
+  let fluidBasis = tr("nutritionBasisActual");
+  let kcalPerKg = isCritical ? 25 : 25;
+  let proteinPerKg = 1;
+  let rule = tr("nutritionStandardWeightRule");
+
+  if (hasCkd && !hasAki && !isCritical) proteinPerKg = 0.8;
+  if (hasAki || isCritical) proteinPerKg = 1.3;
+
+  if (isUnderweight) {
+    energyWeight = weight;
+    energyBasis = tr("nutritionBasisActual");
+    proteinWeight = weight;
+    proteinBasis = tr("nutritionBasisActual");
+    fluidWeight = weight;
+    fluidBasis = tr("nutritionBasisActual");
+    if (isCritical) {
+      rule = tr("nutritionUnderweightCriticalRule");
+    } else {
+      kcalPerKg = 30;
+      if (!(hasCkd && !hasAki)) proteinPerKg = Math.max(proteinPerKg, 1.2);
+      rule = tr("nutritionUnderweightRule");
+    }
+    if (isSeverelyUnderweight) {
+      rule = `${tr("nutritionSevereUnderweightRule")} ${rule}`;
+    }
+  } else if (isObese && isCritical) {
+    if (bmi > 50) {
+      kcalPerKg = 23.5;
+      energyWeight = ibw;
+      energyBasis = tr("nutritionBasisIbw");
+    } else {
+      kcalPerKg = 12.5;
+      energyWeight = weight;
+      energyBasis = tr("nutritionBasisActual");
+    }
+    proteinPerKg = bmi >= 40 ? 2.5 : 2;
+    proteinWeight = ibw;
+    proteinBasis = tr("nutritionBasisIbw");
+    fluidWeight = adjustedBw;
+    fluidBasis = tr("nutritionBasisAdjusted");
+    rule = tr("nutritionCriticalObesityRule");
+  } else if (isObese) {
+    energyWeight = adjustedBw;
+    energyBasis = tr("nutritionBasisAdjusted");
+    proteinWeight = adjustedBw;
+    proteinBasis = tr("nutritionBasisAdjusted");
+    fluidWeight = adjustedBw;
+    fluidBasis = tr("nutritionBasisAdjusted");
+    rule = tr("nutritionNoncriticalObesityRule");
+  }
+
+  if (refeedingStart) {
+    kcalPerKg = 10;
+    if (!isSeverelyUnderweight) rule = `${rule} ${tr("nutritionRefeedingWeightRule")}`;
+  }
+
+  const fluidPerKg = hasCkd || hasAki ? 25 : 30;
+  const calories = Math.round(energyWeight * kcalPerKg);
+  const protein = Math.round(proteinWeight * proteinPerKg);
+  const fluid = Math.round(fluidWeight * fluidPerKg);
+
+  return {
+    bmi,
+    ibw,
+    bmi25Weight,
+    adjustedBw,
+    calories,
+    protein,
+    fluid,
+    kcalPerKg,
+    proteinPerKg,
+    fluidPerKg,
+    energyWeight,
+    proteinWeight,
+    fluidWeight,
+    energyBasis,
+    proteinBasis,
+    fluidBasis,
+    rule,
+    refeedingStart
+  };
 }
 
 function intervalPlanFromCrCl(crcl) {
@@ -3813,6 +4027,74 @@ function calculateCalcium(event) {
   `;
 }
 
+function getFib4Interpretation(score) {
+  if (score < 1.45) {
+    return { text: tr("fibrosisFib4Low"), className: "status-ok" };
+  }
+  if (score > 3.25) {
+    return { text: tr("fibrosisFib4High"), className: "status-high" };
+  }
+  return { text: tr("fibrosisFib4Indeterminate"), className: "status-caution" };
+}
+
+function getApriInterpretation(score) {
+  if (score < 0.5) {
+    return { text: tr("fibrosisApriLow"), className: "status-ok" };
+  }
+  if (score > 1.5) {
+    return { text: tr("fibrosisApriHigh"), className: "status-high" };
+  }
+  return { text: tr("fibrosisApriIndeterminate"), className: "status-caution" };
+}
+
+function calculateFibrosis(event) {
+  event?.preventDefault();
+
+  const age = Number(document.getElementById("fibrosis-age").value);
+  const ast = Number(document.getElementById("fibrosis-ast").value);
+  const alt = Number(document.getElementById("fibrosis-alt").value);
+  const platelets = Number(document.getElementById("fibrosis-platelets").value);
+  const astUln = Number(document.getElementById("fibrosis-ast-uln").value);
+  const values = [age, ast, alt, platelets, astUln];
+
+  if (values.some((value) => !Number.isFinite(value) || value <= 0)) {
+    fibrosisResult.innerHTML = `<p>${tr("fibrosisNeed")}</p>`;
+    return;
+  }
+
+  const fib4 = (age * ast) / (platelets * Math.sqrt(alt));
+  const apri = ((ast / astUln) / platelets) * 100;
+  const fib4Text = formatNumberForInput(fib4, 2);
+  const apriText = formatNumberForInput(apri, 2);
+  const fib4Interpretation = getFib4Interpretation(fib4);
+  const apriInterpretation = getApriInterpretation(apri);
+  const apriCirrhosisNote =
+    apri >= 2 ? `<p class="note"><strong>${tr("statusLabel")}</strong> ${tr("fibrosisApriCirrhosis")}</p>` : "";
+
+  fibrosisResult.innerHTML = `
+    ${renderCopyResult(tr("fibrosisFib4Result"), fib4Text, {
+      copyValue: fib4Text,
+      copyFull: `FIB-4 = ${fib4Text}`
+    })}
+    ${renderCopyResult(tr("fibrosisApriResult"), apriText, {
+      copyValue: apriText,
+      copyFull: `APRI = ${apriText}`
+    })}
+    <p><strong>${tr("fibrosisFib4Interpretation")}</strong> <span class="${
+      fib4Interpretation.className
+    }">${fib4Interpretation.text}</span></p>
+    <p><strong>${tr("fibrosisApriInterpretation")}</strong> <span class="${
+      apriInterpretation.className
+    }">${apriInterpretation.text}</span></p>
+    ${apriCirrhosisNote}
+    <p class="note">${tr("fibrosisFib4MasldNote")}</p>
+    <p class="note">${tr("fibrosisFib4Formula")}</p>
+    <p class="note">${tr("fibrosisApriFormula")}</p>
+    <p class="note">${tr("fibrosisCaution")}</p>
+    <p class="note">${tr("fibrosisSourceNote")}</p>
+  `;
+}
+
 function calculateFreeWater(event) {
   event?.preventDefault();
 
@@ -3933,9 +4215,20 @@ function getNutritionPnMatches({ routeMode, calories, protein, fluidLimit }) {
     .sort((a, b) => a.score - b.score || a.fluidExcess - b.fluidExcess || a.volume - b.volume);
 }
 
-function renderNutritionDeficitNote({ calories, protein, fluid, intakePercent, currentKcal, deficitKcal, currentProtein, deficitProtein }) {
+function renderNutritionDeficitNote({
+  calories,
+  protein,
+  fluid,
+  intakePercent,
+  currentKcal,
+  deficitKcal,
+  currentProtein,
+  deficitProtein,
+  basisLine
+}) {
   const noteLines = [
     `Nutrition goal: ${calories} kcal/day, protein ${protein} g/day, fluid ${fluid} ml/day`,
+    basisLine,
     `Estimated current intake: ${intakePercent}% (~${currentKcal} kcal/day, protein ~${currentProtein} g/day)`,
     `Estimated deficit: ${deficitKcal} kcal/day, protein ${deficitProtein} g/day`
   ];
@@ -4253,19 +4546,40 @@ function calculateNutrition(event) {
     return;
   }
 
-  const heightM = height / 100;
-  const bmi = weight / (heightM * heightM);
-  const ibw = calculateIdealBodyWeight({ heightCm: height, sex: nutritionSex });
-  const adjustedBw = calculateAdjustedBodyWeight({ actualWeight: weight, idealWeight: ibw });
-  const kcalPerKg = riskRefeeding ? 10 : isCritical ? 25 : 25;
-  let proteinPerKg = 1;
-  if (hasCkd && !hasAki && !isCritical) proteinPerKg = 0.8;
-  if (hasAki || isCritical) proteinPerKg = 1.3;
-  const fluidPerKg = hasCkd || hasAki ? 25 : 30;
-
-  const calories = Math.round(weight * kcalPerKg);
-  const protein = Math.round(weight * proteinPerKg);
-  const fluid = Math.round(weight * fluidPerKg);
+  const nutritionPlan = getNutritionTargetPlan({
+    weight,
+    height,
+    sex: nutritionSex,
+    hasCkd,
+    hasAki,
+    isCritical,
+    riskRefeeding
+  });
+  const {
+    bmi,
+    ibw,
+    bmi25Weight,
+    adjustedBw,
+    calories,
+    protein,
+    fluid,
+    kcalPerKg,
+    proteinPerKg,
+    fluidPerKg,
+    energyWeight,
+    proteinWeight,
+    fluidWeight,
+    energyBasis,
+    proteinBasis,
+    fluidBasis,
+    rule,
+    refeedingStart
+  } = nutritionPlan;
+  const energyBasisText = formatWeightBasis(energyBasis, energyWeight);
+  const proteinBasisText = formatWeightBasis(proteinBasis, proteinWeight);
+  const fluidBasisText = formatWeightBasis(fluidBasis, fluidWeight);
+  const basisSummary = `energy ${energyBasisText}; protein ${proteinBasisText}; fluid ${fluidBasisText}`;
+  const basisLine = `${tr("nutritionWeightBasis")} ${basisSummary}`;
   const currentKcal = Math.round((calories * intakePercent) / 100);
   const deficitKcal = Math.max(0, calories - currentKcal);
   const currentProtein = Math.round((protein * intakePercent) / 100);
@@ -4281,7 +4595,8 @@ function calculateNutrition(event) {
     currentKcal,
     deficitKcal,
     currentProtein,
-    deficitProtein
+    deficitProtein,
+    basisLine
   });
   let orderBlock = "";
   if (nutritionRoute === "diet") {
@@ -4289,9 +4604,9 @@ function calculateNutrition(event) {
   } else if (nutritionRoute === "ons") {
     orderBlock = renderNutritionOnsOrder({ deficitKcal: supportCalories });
   } else if (nutritionRoute === "enteral") {
-    orderBlock = renderNutritionEnteralOrder({ calories, protein, fluid, deficitKcal: supportCalories, riskRefeeding });
+    orderBlock = renderNutritionEnteralOrder({ calories, protein, fluid, deficitKcal: supportCalories, riskRefeeding: refeedingStart });
   } else if (nutritionRoute === "pn") {
-    orderBlock = renderNutritionPnOrder({ calories, protein, fluid, supportCalories, supportProtein, riskRefeeding });
+    orderBlock = renderNutritionPnOrder({ calories, protein, fluid, supportCalories, supportProtein, riskRefeeding: refeedingStart });
   }
 
   nutritionResult.innerHTML = `
@@ -4299,10 +4614,19 @@ function calculateNutrition(event) {
     ${noteBlock}
     ${renderCopyResult(tr("nutritionBmi"), bmi.toFixed(1), { unit: "kg/m²" })}
     ${renderCopyResult(tr("nutritionIbw"), ibw.toFixed(1), { unit: "kg" })}
+    ${renderCopyResult(tr("nutritionBmi25Weight"), bmi25Weight.toFixed(1), { unit: "kg" })}
     ${renderCopyResult(tr("nutritionAdjustedBw"), adjustedBw.toFixed(1), { unit: "kg" })}
-    ${renderCopyResult(tr("nutritionEnergy"), calories, { unit: `kcal/day (${kcalPerKg} kcal/kg/day)` })}
-    ${renderCopyResult(tr("nutritionProtein"), protein, { unit: `g/day (${proteinPerKg.toFixed(1)} g/kg/day)` })}
-    ${renderCopyResult(tr("nutritionVolume"), fluid, { unit: `mL/day (${fluidPerKg} mL/kg/day)` })}
+    <p><strong>${tr("nutritionWeightBasis")}</strong><br>${basisSummary}</p>
+    ${renderCopyResult(tr("nutritionEnergy"), calories, {
+      unit: `kcal/day (${formatNumberForInput(kcalPerKg, 1)} kcal/kg/day x ${energyBasisText})`
+    })}
+    ${renderCopyResult(tr("nutritionProtein"), protein, {
+      unit: `g/day (${formatNumberForInput(proteinPerKg, 1)} g/kg/day x ${proteinBasisText})`
+    })}
+    ${renderCopyResult(tr("nutritionVolume"), fluid, {
+      unit: `mL/day (${fluidPerKg} mL/kg/day x ${fluidBasisText})`
+    })}
+    <p class="note">${rule}</p>
     <p class="note">${tr("nutritionCaution")}</p>
     ${renderNutritionReferenceTables()}
   `;
@@ -4474,6 +4798,7 @@ function runCalculatorForMode(mode) {
   if (mode === "renal") calculateRenal();
   if (mode === "osmo") calculateOsmo();
   if (mode === "calcium") calculateCalcium();
+  if (mode === "fibrosis") calculateFibrosis();
   if (mode === "freeWater") calculateFreeWater();
   if (mode === "nutrition") calculateNutrition();
   if (mode === "antibiotic") calculateAntibiotic();
@@ -4488,6 +4813,7 @@ function recalcIfResultsShown() {
   if (renalResult.innerHTML.trim()) calculateRenal();
   if (osmoResult.innerHTML.trim()) calculateOsmo();
   if (calciumResult.innerHTML.trim()) calculateCalcium();
+  if (fibrosisResult.innerHTML.trim()) calculateFibrosis();
   if (freeWaterResult.innerHTML.trim()) calculateFreeWater();
   if (nutritionResult.innerHTML.trim()) calculateNutrition();
   if (antibioticResult.innerHTML.trim()) calculateAntibiotic();
@@ -4809,6 +5135,7 @@ bindLiveCalculation(document.getElementById("heparin-form"), calculateHeparin);
 bindLiveCalculation(document.getElementById("renal-form"), calculateRenal);
 bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
+bindLiveCalculation(document.getElementById("fibrosis-form"), calculateFibrosis);
 bindLiveCalculation(document.getElementById("free-water-form"), calculateFreeWater);
 bindLiveCalculation(document.getElementById("nutrition-form"), calculateNutrition);
 bindLiveCalculation(document.getElementById("antibiotic-form"), calculateAntibiotic);
@@ -4817,6 +5144,7 @@ bindResultCopy(infusionResult);
 bindResultCopy(renalResult);
 bindResultCopy(osmoResult);
 bindResultCopy(calciumResult);
+bindResultCopy(fibrosisResult);
 
 bindCopyInteractions(initialResult, copyVancoOrder);
 bindCopyInteractions(adjustResult, copyVancoAdjustOrder);

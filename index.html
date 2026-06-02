@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title id="t-doc-title">Clinical Order Calculator</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b7a75'/%3E%3Cpath d='M16 34h32v6H16zm13-18h6v32h-6z' fill='white'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css?v=20260601-bugfix1" />
+    <link rel="stylesheet" href="styles.css?v=20260602-nutrition-weight1" />
   </head>
   <body>
     <main class="app-shell">
@@ -348,6 +348,43 @@
         <div id="calcium-result" class="result"></div>
       </section>
 
+      <section class="panel hidden" id="fibrosis-panel">
+        <h2 id="t-fibrosis-heading">FIB-4 / APRI</h2>
+        <form id="fibrosis-form" class="grid">
+          <label>
+            <span id="t-fibrosis-age-label">Age (years)</span>
+            <input class="num-input live-input" type="number" id="fibrosis-age" min="18" max="120" step="1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-fibrosis-ast-label">AST (U/L)</span>
+            <input class="num-input live-input" type="number" id="fibrosis-ast" min="1" max="10000" step="1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-fibrosis-alt-label">ALT (U/L)</span>
+            <input class="num-input live-input" type="number" id="fibrosis-alt" min="1" max="10000" step="1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-fibrosis-platelets-label">Platelets (10^9/L)</span>
+            <input class="num-input live-input" type="number" id="fibrosis-platelets" min="1" max="2000" step="1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-fibrosis-ast-uln-label">AST upper limit normal (U/L)</span>
+            <input
+              class="num-input live-input preset-input"
+              type="number"
+              id="fibrosis-ast-uln"
+              min="1"
+              max="500"
+              step="1"
+              value="40"
+              inputmode="none"
+              data-skip-nav="true"
+            />
+          </label>
+        </form>
+        <div id="fibrosis-result" class="result"></div>
+      </section>
+
       <section class="panel hidden" id="free-water-panel">
         <h2 id="t-free-water-heading">Free water deficit</h2>
         <form id="free-water-form" class="grid">
@@ -579,6 +616,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260601-bugfix1"></script>
+    <script src="app.js?v=20260602-nutrition-weight1"></script>
   </body>
 </html>
