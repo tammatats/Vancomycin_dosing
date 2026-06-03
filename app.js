@@ -93,6 +93,7 @@ const isiOSDevice =
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const isMobileTouchDevice = isiOSDevice || /Android|Mobile/i.test(navigator.userAgent);
 const isDesktopInput = !isMobileTouchDevice;
+const VIEWPORT_SETTLE_MS = 360;
 const WARFARIN_TABLET_STRENGTHS = [1, 2, 3, 5];
 const THAI_WEEKDAYS = ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"];
 const WARFARIN_TABLET_STORAGE_KEY = "warfarin-available-tablets";
@@ -1870,6 +1871,7 @@ let currentHeparinProtocol = "acute-thrombosis";
 let activeInput = null;
 let activeActionButton = null;
 let lastInfusionEdited = "";
+let viewportAutoScrollSuppressedUntil = 0;
 
 const staticMap = [
   ["t-eyebrow", "eyebrow"],
@@ -2114,6 +2116,25 @@ function isCompactSearchViewport() {
   return window.matchMedia("(max-width: 640px)").matches;
 }
 
+function getViewportHeight() {
+  return window.visualViewport?.height || window.innerHeight;
+}
+
+function suppressViewportAutoScroll(duration = VIEWPORT_SETTLE_MS) {
+  viewportAutoScrollSuppressedUntil = Date.now() + duration;
+}
+
+function isViewportAutoScrollSuppressed() {
+  return Date.now() < viewportAutoScrollSuppressedUntil;
+}
+
+function blurFocusedControl() {
+  const focused = document.activeElement;
+  if (!(focused instanceof HTMLElement)) return;
+  if (!focused.matches("input, textarea, select, button")) return;
+  focused.blur();
+}
+
 function syncCalculatorSearchViewportState() {
   const searchOpen =
     isCompactSearchViewport() &&
@@ -2124,13 +2145,14 @@ function syncCalculatorSearchViewportState() {
 
 function ensureCalculatorResultsVisible(behavior = "smooth") {
   if (!isCompactSearchViewport()) return;
+  if (isViewportAutoScrollSuppressed()) return;
   if (document.activeElement !== calculatorSearch) return;
   if (!calculatorSearch.value.trim()) return;
 
   const firstResult = calculatorResults.querySelector(".calculator-card, .empty-results");
   if (!firstResult) return;
 
-  const viewportHeight = window.visualViewport?.height || window.innerHeight;
+  const viewportHeight = getViewportHeight();
   const inputRect = calculatorSearch.getBoundingClientRect();
   const resultRect = firstResult.getBoundingClientRect();
   const keyboardCushion = Math.max(72, Math.min(120, viewportHeight * 0.22));
@@ -2145,6 +2167,10 @@ function ensureCalculatorResultsVisible(behavior = "smooth") {
 
 function scheduleCalculatorResultsVisible(behavior = "smooth") {
   if (!isCompactSearchViewport()) return;
+  if (isViewportAutoScrollSuppressed()) {
+    document.body.classList.remove("calculator-search-open");
+    return;
+  }
   syncCalculatorSearchViewportState();
   requestAnimationFrame(() => ensureCalculatorResultsVisible(behavior));
   window.setTimeout(() => ensureCalculatorResultsVisible("auto"), 140);
@@ -2764,18 +2790,20 @@ function getNumpadHeight() {
 
 function ensureInputVisible(input, behavior = "smooth") {
   if (!input || !isVisible(input)) return;
+  if (isViewportAutoScrollSuppressed()) return;
 
   const rect = input.getBoundingClientRect();
-  const usableHeight = window.innerHeight - getNumpadHeight();
+  const usableHeight = getViewportHeight() - getNumpadHeight();
   const preferredTop = Math.max(14, usableHeight * 0.34);
   const preferredBottom = Math.max(preferredTop + 44, usableHeight * 0.62);
+  const scrollThreshold = 3;
 
-  if (rect.bottom > preferredBottom) {
-    window.scrollBy({ top: rect.bottom - preferredBottom, behavior });
+  if (rect.bottom - preferredBottom > scrollThreshold) {
+    window.scrollBy({ top: Math.round(rect.bottom - preferredBottom), behavior });
     return;
   }
-  if (rect.top < preferredTop) {
-    window.scrollBy({ top: rect.top - preferredTop, behavior });
+  if (preferredTop - rect.top > scrollThreshold) {
+    window.scrollBy({ top: Math.round(rect.top - preferredTop), behavior });
   }
 }
 
@@ -4875,12 +4903,15 @@ function initNumpad() {
     if (action === "done") {
       if (activeActionButton) {
         activeActionButton.click();
+        suppressViewportAutoScroll();
         hideNumpad();
+        blurFocusedControl();
         clearActiveTarget();
         return;
       }
+      suppressViewportAutoScroll();
       hideNumpad();
-      if (activeInput) activeInput.blur();
+      blurFocusedControl();
       clearActiveTarget();
     }
   });
@@ -4891,17 +4922,24 @@ function initNumpad() {
     if (
       target.closest(".num-input") ||
       target.closest("#numpad") ||
+      target.closest("#calculator-search") ||
+      target.closest("#calculator-results") ||
       target.closest("#sex-toggle") ||
       target.closest("#nutrition-sex-toggle") ||
       target.closest("#crcl-mode-toggle") ||
       target.closest('button[type="submit"]')
     )
       return;
+    if (activeInput || activeActionButton || document.activeElement === calculatorSearch) {
+      suppressViewportAutoScroll();
+      blurFocusedControl();
+    }
     hideNumpad();
     clearActiveTarget();
   });
 
   window.addEventListener("resize", () => {
+    if (isViewportAutoScrollSuppressed()) return;
     if (activeInput) ensureInputVisible(activeInput, "auto");
     if (activeActionButton) ensureInputVisible(activeActionButton, "auto");
   });
@@ -4950,7 +4988,10 @@ function initWorkflowButtons() {
 function initCalculatorSearch() {
   calculatorSearch.addEventListener("input", renderCalculatorResults);
   calculatorSearch.addEventListener("focus", () => scheduleCalculatorResultsVisible("auto"));
-  calculatorSearch.addEventListener("blur", () => document.body.classList.remove("calculator-search-open"));
+  calculatorSearch.addEventListener("blur", () => {
+    suppressViewportAutoScroll();
+    document.body.classList.remove("calculator-search-open");
+  });
   window.visualViewport?.addEventListener("resize", () => scheduleCalculatorResultsVisible("auto"));
   calculatorResults.addEventListener("click", (event) => {
     const target = event.target;
