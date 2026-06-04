@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title id="t-doc-title">Clinical Order Calculator</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b7a75'/%3E%3Cpath d='M16 34h32v6H16zm13-18h6v32h-6z' fill='white'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css?v=20260603-ios-scroll1" />
+    <link rel="stylesheet" href="styles.css?v=20260604-maddrey1" />
   </head>
   <body>
     <main class="app-shell">
@@ -385,6 +385,35 @@
         <div id="fibrosis-result" class="result"></div>
       </section>
 
+      <section class="panel hidden" id="maddrey-panel">
+        <h2 id="t-maddrey-heading">Maddrey DF</h2>
+        <form id="maddrey-form" class="grid">
+          <label>
+            <span id="t-maddrey-pt-label">Patient PT (seconds)</span>
+            <input class="num-input live-input" type="number" id="maddrey-pt" min="1" max="200" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-maddrey-control-pt-label">Control / normal PT (seconds)</span>
+            <input
+              class="num-input live-input preset-input"
+              type="number"
+              id="maddrey-control-pt"
+              min="1"
+              max="200"
+              step="0.1"
+              value="13"
+              inputmode="none"
+              data-skip-nav="true"
+            />
+          </label>
+          <label>
+            <span id="t-maddrey-bilirubin-label">Total bilirubin (mg/dL)</span>
+            <input class="num-input live-input" type="number" id="maddrey-bilirubin" min="0" max="100" step="0.1" inputmode="none" />
+          </label>
+        </form>
+        <div id="maddrey-result" class="result"></div>
+      </section>
+
       <section class="panel hidden" id="free-water-panel">
         <h2 id="t-free-water-heading">Free water deficit</h2>
         <form id="free-water-form" class="grid">
@@ -616,6 +645,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260603-ios-scroll1"></script>
+    <script src="app.js?v=20260604-maddrey1"></script>
   </body>
 </html>

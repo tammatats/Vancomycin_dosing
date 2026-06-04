@@ -9,6 +9,7 @@ const renalResult = document.getElementById("renal-result");
 const osmoResult = document.getElementById("osmo-result");
 const calciumResult = document.getElementById("calcium-result");
 const fibrosisResult = document.getElementById("fibrosis-result");
+const maddreyResult = document.getElementById("maddrey-result");
 const freeWaterResult = document.getElementById("free-water-result");
 const nutritionResult = document.getElementById("nutrition-result");
 const antibioticResult = document.getElementById("antibiotic-result");
@@ -22,6 +23,7 @@ const renalPanel = document.getElementById("renal-panel");
 const osmoPanel = document.getElementById("osmo-panel");
 const calciumPanel = document.getElementById("calcium-panel");
 const fibrosisPanel = document.getElementById("fibrosis-panel");
+const maddreyPanel = document.getElementById("maddrey-panel");
 const freeWaterPanel = document.getElementById("free-water-panel");
 const nutritionPanel = document.getElementById("nutrition-panel");
 const antibioticPanel = document.getElementById("antibiotic-panel");
@@ -215,6 +217,12 @@ const WORKFLOWS = {
     firstInputId: "fibrosis-age",
     form: document.getElementById("fibrosis-form"),
     calculator: "fibrosis"
+  },
+  maddrey: {
+    panel: maddreyPanel,
+    firstInputId: "maddrey-pt",
+    form: document.getElementById("maddrey-form"),
+    calculator: "maddrey"
   },
   freeWater: {
     panel: freeWaterPanel,
@@ -1085,6 +1093,8 @@ const I18N = {
     calciumCalcDesc: "Correct total calcium for low albumin using the standard albumin correction.",
     fibrosisCalcName: "FIB-4 / APRI",
     fibrosisCalcDesc: "Calculate liver fibrosis screening scores from age, AST/ALT, platelets, and AST ULN.",
+    maddreyCalcName: "Maddrey DF",
+    maddreyCalcDesc: "Calculate Maddrey discriminant function for alcoholic hepatitis from PT and bilirubin.",
     freeWaterCalcName: "Free water deficit",
     freeWaterCalcDesc: "Estimate hypernatremia free-water deficit and generate a copy-ready replacement order.",
     nutritionCalcName: "Nutrition goals",
@@ -1337,6 +1347,17 @@ const I18N = {
     fibrosisApriFormula: "APRI = ((AST / AST ULN) / platelets) x 100. Use local AST ULN if known; 40 U/L is commonly used.",
     fibrosisCaution: "Screening estimate only. Acute hepatitis, cholestasis, alcohol use, thrombocytopenia causes, age extremes, and non-HCV/MASLD populations can shift interpretation.",
     fibrosisSourceNote: "References: Hepatitis C Online FIB-4/APRI calculators and AASLD MASLD noninvasive assessment guidance.",
+    maddreyHeading: "Maddrey DF",
+    maddreyPtLabel: "Patient PT (seconds)",
+    maddreyControlPtLabel: "Control / normal PT (seconds)",
+    maddreyBilirubinLabel: "Total bilirubin (mg/dL)",
+    maddreyNeed: "Fill patient PT, control PT, and total bilirubin.",
+    maddreyResult: "mDF:",
+    maddreySevere: "Severe alcoholic hepatitis by mDF >=32. Assess for infection, GI bleed, renal failure, contraindications, MELD, and corticosteroid eligibility.",
+    maddreyNonSevere: "mDF <32; not severe by Maddrey threshold. Continue full clinical assessment and consider MELD/other causes.",
+    maddreyFormula: "Formula: mDF = 4.6 x (patient PT - control PT) + total bilirubin (mg/dL). Use PT seconds, not INR.",
+    maddreyHospitalPtNote: "TUH PT reference range from your report: 10.6-13.0 sec. Default control PT here is 13.0 sec.",
+    maddreySourceNote: "References: AASLD alcohol-associated hepatitis review and ACG Alcoholic Liver Disease guideline.",
     freeWaterHeading: "Free water deficit",
     freeWaterWeightLabel: "Body weight (kg)",
     freeWaterNaLabel: "Current Na (mEq/L)",
@@ -1487,6 +1508,8 @@ const I18N = {
     calciumCalcDesc: "ปรับค่า total calcium ตาม albumin",
     fibrosisCalcName: "FIB-4 / APRI",
     fibrosisCalcDesc: "คำนวณคะแนนคัดกรอง liver fibrosis จากอายุ AST/ALT platelet และ AST ULN",
+    maddreyCalcName: "Maddrey DF",
+    maddreyCalcDesc: "คำนวณ Maddrey discriminant function สำหรับ alcoholic hepatitis จาก PT และ bilirubin",
     freeWaterCalcName: "Free water deficit",
     freeWaterCalcDesc: "คำนวณ water deficit ใน hypernatremia และสร้างคำสั่งให้สารน้ำพร้อมคัดลอก",
     nutritionCalcName: "เป้าหมายโภชนบำบัด",
@@ -1738,6 +1761,17 @@ const I18N = {
     fibrosisApriFormula: "APRI = ((AST / AST ULN) / platelets) x 100. หากทราบ AST ULN ของ lab ให้ใช้ค่านั้น; 40 U/L ใช้บ่อย",
     fibrosisCaution: "เป็นคะแนนคัดกรองเท่านั้น acute hepatitis, cholestasis, alcohol use, สาเหตุ thrombocytopenia, อายุสุดขั้ว และ population ที่ไม่ใช่ HCV/MASLD อาจทำให้แปลผลคลาดเคลื่อน",
     fibrosisSourceNote: "อ้างอิง: Hepatitis C Online FIB-4/APRI calculators และ AASLD MASLD noninvasive assessment guidance",
+    maddreyHeading: "Maddrey DF",
+    maddreyPtLabel: "Patient PT (seconds)",
+    maddreyControlPtLabel: "Control / normal PT (seconds)",
+    maddreyBilirubinLabel: "Total bilirubin (mg/dL)",
+    maddreyNeed: "กรอก patient PT, control PT และ total bilirubin",
+    maddreyResult: "mDF:",
+    maddreySevere: "Severe alcoholic hepatitis ตาม mDF >=32 ควรประเมิน infection, GI bleed, renal failure, contraindications, MELD และความเหมาะสมของ corticosteroid",
+    maddreyNonSevere: "mDF <32 ยังไม่เข้า severe ตาม Maddrey threshold ต้องประเมินทางคลินิกและพิจารณา MELD/สาเหตุอื่นร่วมด้วย",
+    maddreyFormula: "สูตร: mDF = 4.6 x (patient PT - control PT) + total bilirubin (mg/dL). ใช้ PT seconds ไม่ใช่ INR",
+    maddreyHospitalPtNote: "ช่วงอ้างอิง PT ของ TUH จาก report: 10.6-13.0 sec. ค่า default control PT ในแอปคือ 13.0 sec",
+    maddreySourceNote: "อ้างอิง: AASLD alcohol-associated hepatitis review และ ACG Alcoholic Liver Disease guideline",
     freeWaterHeading: "Free water deficit",
     freeWaterWeightLabel: "น้ำหนักตัว (กก.)",
     freeWaterNaLabel: "Na ปัจจุบัน (mEq/L)",
@@ -1948,6 +1982,10 @@ const staticMap = [
   ["t-fibrosis-alt-label", "fibrosisAltLabel"],
   ["t-fibrosis-platelets-label", "fibrosisPlateletsLabel"],
   ["t-fibrosis-ast-uln-label", "fibrosisAstUlnLabel"],
+  ["t-maddrey-heading", "maddreyHeading"],
+  ["t-maddrey-pt-label", "maddreyPtLabel"],
+  ["t-maddrey-control-pt-label", "maddreyControlPtLabel"],
+  ["t-maddrey-bilirubin-label", "maddreyBilirubinLabel"],
   ["t-free-water-heading", "freeWaterHeading"],
   ["t-free-water-weight-label", "freeWaterWeightLabel"],
   ["t-free-water-na-label", "freeWaterNaLabel"],
@@ -2058,6 +2096,14 @@ function getCalculatorOptions() {
       description: tr("fibrosisCalcDesc"),
       keywords:
         "fib4 fib-4 apri fibrosis cirrhosis liver hepatitis hcv nafld masld mash ast alt platelet platelets thrombocytopenia"
+    },
+    {
+      id: "maddrey",
+      workflow: "maddrey",
+      name: tr("maddreyCalcName"),
+      description: tr("maddreyCalcDesc"),
+      keywords:
+        "maddrey mdf discriminant function alcoholic hepatitis alcohol associated hepatitis ah liver bilirubin prothrombin time pt steroid corticosteroid"
     },
     {
       id: "freeWater",
@@ -4123,6 +4169,43 @@ function calculateFibrosis(event) {
   `;
 }
 
+function calculateMaddrey(event) {
+  event?.preventDefault();
+
+  const patientPt = Number(document.getElementById("maddrey-pt").value);
+  const controlPt = Number(document.getElementById("maddrey-control-pt").value);
+  const bilirubin = Number(document.getElementById("maddrey-bilirubin").value);
+
+  if (![patientPt, controlPt, bilirubin].every((value) => Number.isFinite(value) && value > 0)) {
+    maddreyResult.innerHTML = `<p>${tr("maddreyNeed")}</p>`;
+    return;
+  }
+
+  const ptDifference = patientPt - controlPt;
+  const maddreyScore = 4.6 * ptDifference + bilirubin;
+  const maddreyText = formatNumberForInput(maddreyScore, 1);
+  const ptDifferenceText = formatNumberForInput(ptDifference, 1);
+  const isSevere = maddreyScore >= 32;
+  const statusClass = isSevere ? "status-high" : "status-ok";
+  const statusText = isSevere ? tr("maddreySevere") : tr("maddreyNonSevere");
+
+  maddreyResult.innerHTML = `
+    ${renderCopyResult(tr("maddreyResult"), maddreyText, {
+      copyValue: maddreyText,
+      copyFull: `mDF = ${maddreyText}`
+    })}
+    ${renderCopyResult("PT difference", ptDifferenceText, {
+      unit: "sec",
+      copyValue: ptDifferenceText,
+      copyFull: `PT difference = ${ptDifferenceText} sec`
+    })}
+    <p><strong>${tr("statusLabel")}</strong> <span class="${statusClass}">${statusText}</span></p>
+    <p class="note">${tr("maddreyHospitalPtNote")}</p>
+    <p class="note">${tr("maddreyFormula")}</p>
+    <p class="note">${tr("maddreySourceNote")}</p>
+  `;
+}
+
 function calculateFreeWater(event) {
   event?.preventDefault();
 
@@ -4827,6 +4910,7 @@ function runCalculatorForMode(mode) {
   if (mode === "osmo") calculateOsmo();
   if (mode === "calcium") calculateCalcium();
   if (mode === "fibrosis") calculateFibrosis();
+  if (mode === "maddrey") calculateMaddrey();
   if (mode === "freeWater") calculateFreeWater();
   if (mode === "nutrition") calculateNutrition();
   if (mode === "antibiotic") calculateAntibiotic();
@@ -4842,6 +4926,7 @@ function recalcIfResultsShown() {
   if (osmoResult.innerHTML.trim()) calculateOsmo();
   if (calciumResult.innerHTML.trim()) calculateCalcium();
   if (fibrosisResult.innerHTML.trim()) calculateFibrosis();
+  if (maddreyResult.innerHTML.trim()) calculateMaddrey();
   if (freeWaterResult.innerHTML.trim()) calculateFreeWater();
   if (nutritionResult.innerHTML.trim()) calculateNutrition();
   if (antibioticResult.innerHTML.trim()) calculateAntibiotic();
@@ -5177,6 +5262,7 @@ bindLiveCalculation(document.getElementById("renal-form"), calculateRenal);
 bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
 bindLiveCalculation(document.getElementById("fibrosis-form"), calculateFibrosis);
+bindLiveCalculation(document.getElementById("maddrey-form"), calculateMaddrey);
 bindLiveCalculation(document.getElementById("free-water-form"), calculateFreeWater);
 bindLiveCalculation(document.getElementById("nutrition-form"), calculateNutrition);
 bindLiveCalculation(document.getElementById("antibiotic-form"), calculateAntibiotic);
@@ -5186,6 +5272,7 @@ bindResultCopy(renalResult);
 bindResultCopy(osmoResult);
 bindResultCopy(calciumResult);
 bindResultCopy(fibrosisResult);
+bindResultCopy(maddreyResult);
 
 bindCopyInteractions(initialResult, copyVancoOrder);
 bindCopyInteractions(adjustResult, copyVancoAdjustOrder);
