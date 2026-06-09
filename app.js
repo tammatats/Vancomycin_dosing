@@ -10,6 +10,7 @@ const osmoResult = document.getElementById("osmo-result");
 const calciumResult = document.getElementById("calcium-result");
 const fibrosisResult = document.getElementById("fibrosis-result");
 const maddreyResult = document.getElementById("maddrey-result");
+const cryoResult = document.getElementById("cryo-result");
 const freeWaterResult = document.getElementById("free-water-result");
 const nutritionResult = document.getElementById("nutrition-result");
 const antibioticResult = document.getElementById("antibiotic-result");
@@ -24,6 +25,7 @@ const osmoPanel = document.getElementById("osmo-panel");
 const calciumPanel = document.getElementById("calcium-panel");
 const fibrosisPanel = document.getElementById("fibrosis-panel");
 const maddreyPanel = document.getElementById("maddrey-panel");
+const cryoPanel = document.getElementById("cryo-panel");
 const freeWaterPanel = document.getElementById("free-water-panel");
 const nutritionPanel = document.getElementById("nutrition-panel");
 const antibioticPanel = document.getElementById("antibiotic-panel");
@@ -165,7 +167,7 @@ const WORKFLOWS = {
   initial: {
     panel: initialPanel,
     button: modeInitialBtn,
-    firstInputId: "weight",
+    firstInputId: "age",
     form: document.getElementById("initial-form"),
     calculator: "vancomycin"
   },
@@ -223,6 +225,12 @@ const WORKFLOWS = {
     firstInputId: "maddrey-pt",
     form: document.getElementById("maddrey-form"),
     calculator: "maddrey"
+  },
+  cryo: {
+    panel: cryoPanel,
+    firstInputId: "cryo-weight",
+    form: document.getElementById("cryo-form"),
+    calculator: "cryo"
   },
   freeWater: {
     panel: freeWaterPanel,
@@ -1095,6 +1103,8 @@ const I18N = {
     fibrosisCalcDesc: "Calculate liver fibrosis screening scores from age, AST/ALT, platelets, and AST ULN.",
     maddreyCalcName: "Maddrey DF",
     maddreyCalcDesc: "Calculate Maddrey discriminant function for alcoholic hepatitis from PT and bilirubin.",
+    cryoCalcName: "Cryoprecipitate dose",
+    cryoCalcDesc: "Estimate adult cryoprecipitate units/pools for hypofibrinogenemia from fibrinogen gap and plasma volume.",
     freeWaterCalcName: "Free water deficit",
     freeWaterCalcDesc: "Estimate hypernatremia free-water deficit and generate a copy-ready replacement order.",
     nutritionCalcName: "Nutrition goals",
@@ -1162,7 +1172,7 @@ const I18N = {
     intervalDaily: "q24h",
     intervalTdm: "One dose, then TDM-guided redosing",
     pleaseComplete: "Please complete all required values.",
-    enterAgeScr: "Please enter age and serum creatinine for auto CrCl calculation.",
+    enterAgeScr: "Please enter age, body weight, and serum creatinine for auto CrCl calculation.",
     badCrcl: "Could not estimate CrCl. Please check the age/SCr values.",
     enterManualCrcl: "Please enter manual CrCl value.",
     enterMaintAbove30: "Please enter maintenance mg/kg for CrCl 30 mL/min and above.",
@@ -1292,7 +1302,7 @@ const I18N = {
     renalSexMale: "Male",
     renalSexFemale: "Female",
     renalNeedGfr: "Fill age, SCr, and sex to calculate GFR.",
-    renalNeedCrcl: "Fill age, SCr, weight, and sex to calculate CrCl.",
+    renalNeedCrcl: "Fill age, body weight, SCr, and sex to calculate CrCl.",
     renalGfrResult: "eGFR:",
     renalCrclResult: "CrCl:",
     renalGfrFormula: "GFR uses the 2021 CKD-EPI creatinine equation without race coefficient.",
@@ -1358,6 +1368,36 @@ const I18N = {
     maddreyFormula: "Formula: mDF = 4.6 x (patient PT - control PT) + total bilirubin (mg/dL). Use PT seconds, not INR.",
     maddreyHospitalPtNote: "TUH PT reference range from your report: 10.6-13.0 sec. Default control PT here is 13.0 sec.",
     maddreySourceNote: "References: AASLD alcohol-associated hepatitis review and ACG Alcoholic Liver Disease guideline.",
+    cryoHeading: "Cryoprecipitate dose",
+    cryoWeightLabel: "Body weight (kg)",
+    cryoCurrentLabel: "Current fibrinogen (mg/dL)",
+    cryoTargetLabel: "Target fibrinogen (mg/dL)",
+    cryoHematocritLabel: "Hematocrit (%)",
+    cryoBloodVolumeLabel: "Blood volume estimate",
+    cryoPoolSizeLabel: "Units per pool",
+    cryoNeed: "Fill body weight, current fibrinogen, target fibrinogen, hematocrit, and pool size.",
+    cryoTargetError: "Target fibrinogen must be higher than current fibrinogen to calculate a replacement dose.",
+    cryoTargetMet: "Current fibrinogen is already at or above the selected target. Reassess bleeding/procedure risk before ordering cryoprecipitate.",
+    cryoOrderReady: "Order Ready - click box to copy all",
+    cryoOrderLine: "Cryoprecipitate {units} units ({pools} pools) IV transfuse now",
+    cryoMonitorLine:
+      "Follow fibrinogen level 30-60 min after transfusion; repeat cryoprecipitate if fibrinogen < {target} mg/dL or ongoing bleeding",
+    cryoDoseResult: "Recommended cryoprecipitate dose:",
+    cryoGapResult: "Fibrinogen gap:",
+    cryoCalculatedUnitsResult: "Calculated need before rounding:",
+    cryoEstimatedRiseResult: "Estimated fibrinogen rise:",
+    cryoEstimatedPostResult: "Estimated post-dose fibrinogen:",
+    cryoPlasmaVolumeResult: "Estimated plasma volume:",
+    cryoThresholdNote:
+      "Typical adult trigger: clinically significant bleeding with fibrinogen <150 mg/dL; procedure prophylaxis may be considered if <100 mg/dL; obstetric or massive bleeding protocols often target at least 150-200 mg/dL.",
+    cryoFormula:
+      "Formula: TBV = weight x blood-volume estimate; plasma volume = TBV x (1 - hematocrit); calculated units = plasma volume (dL) x fibrinogen gap / 250 mg per unit.",
+    cryoRoundingNote:
+      "Rounded up to the nearest pool of {poolSize} units; if replacement is indicated, this app uses 10 units as the usual adult first dose minimum.",
+    cryoCaution:
+      "Adult estimate only. Confirm active bleeding/procedure indication, fibrinogen assay timing, DIC or ongoing consumption, transfusion reactions, volume status, and local blood bank product/pool size.",
+    cryoSourceNote:
+      "References: NICE NG24 cryoprecipitate thresholds/adult dose; American Red Cross Compendium plasma-volume dosing; Versiti adult cryoprecipitate utilization guideline.",
     freeWaterHeading: "Free water deficit",
     freeWaterWeightLabel: "Body weight (kg)",
     freeWaterNaLabel: "Current Na (mEq/L)",
@@ -1510,6 +1550,8 @@ const I18N = {
     fibrosisCalcDesc: "คำนวณคะแนนคัดกรอง liver fibrosis จากอายุ AST/ALT platelet และ AST ULN",
     maddreyCalcName: "Maddrey DF",
     maddreyCalcDesc: "คำนวณ Maddrey discriminant function สำหรับ alcoholic hepatitis จาก PT และ bilirubin",
+    cryoCalcName: "Cryoprecipitate dose",
+    cryoCalcDesc: "คำนวณ cryoprecipitate units/pools ในผู้ใหญ่สำหรับ hypofibrinogenemia จาก fibrinogen gap และ plasma volume",
     freeWaterCalcName: "Free water deficit",
     freeWaterCalcDesc: "คำนวณ water deficit ใน hypernatremia และสร้างคำสั่งให้สารน้ำพร้อมคัดลอก",
     nutritionCalcName: "เป้าหมายโภชนบำบัด",
@@ -1576,7 +1618,7 @@ const I18N = {
     intervalDaily: "q24h",
     intervalTdm: "ให้ครั้งเดียว แล้วปรับตาม TDM",
     pleaseComplete: "กรุณากรอกข้อมูลที่จำเป็นให้ครบ",
-    enterAgeScr: "กรุณากรอกอายุและค่า serum creatinine เพื่อคำนวณ CrCl อัตโนมัติ",
+    enterAgeScr: "กรุณากรอกอายุ น้ำหนัก และค่า serum creatinine เพื่อคำนวณ CrCl อัตโนมัติ",
     badCrcl: "ไม่สามารถคำนวณ CrCl ได้ กรุณาตรวจสอบค่าอายุ/SCr",
     enterManualCrcl: "กรุณากรอกค่า CrCl",
     enterMaintAbove30: "กรุณากรอกขนาด maintenance mg/kg สำหรับ CrCl ตั้งแต่ 30 mL/min ขึ้นไป",
@@ -1706,7 +1748,7 @@ const I18N = {
     renalSexMale: "ชาย",
     renalSexFemale: "หญิง",
     renalNeedGfr: "กรอกอายุ SCr และเพศ เพื่อคำนวณ GFR",
-    renalNeedCrcl: "กรอกอายุ SCr น้ำหนัก และเพศ เพื่อคำนวณ CrCl",
+    renalNeedCrcl: "กรอกอายุ น้ำหนัก SCr และเพศ เพื่อคำนวณ CrCl",
     renalGfrResult: "eGFR:",
     renalCrclResult: "CrCl:",
     renalGfrFormula: "GFR ใช้สมการ 2021 CKD-EPI creatinine โดยไม่มี race coefficient",
@@ -1772,6 +1814,36 @@ const I18N = {
     maddreyFormula: "สูตร: mDF = 4.6 x (patient PT - control PT) + total bilirubin (mg/dL). ใช้ PT seconds ไม่ใช่ INR",
     maddreyHospitalPtNote: "ช่วงอ้างอิง PT ของ TUH จาก report: 10.6-13.0 sec. ค่า default control PT ในแอปคือ 13.0 sec",
     maddreySourceNote: "อ้างอิง: AASLD alcohol-associated hepatitis review และ ACG Alcoholic Liver Disease guideline",
+    cryoHeading: "Cryoprecipitate dose",
+    cryoWeightLabel: "น้ำหนักตัว (กก.)",
+    cryoCurrentLabel: "Fibrinogen ปัจจุบัน (mg/dL)",
+    cryoTargetLabel: "Fibrinogen เป้าหมาย (mg/dL)",
+    cryoHematocritLabel: "Hematocrit (%)",
+    cryoBloodVolumeLabel: "Blood volume estimate",
+    cryoPoolSizeLabel: "จำนวน units ต่อ pool",
+    cryoNeed: "กรอกน้ำหนัก fibrinogen ปัจจุบัน fibrinogen เป้าหมาย hematocrit และจำนวน units ต่อ pool",
+    cryoTargetError: "ค่า fibrinogen เป้าหมายต้องสูงกว่าค่าปัจจุบันเพื่อคำนวณ replacement dose",
+    cryoTargetMet: "ค่า fibrinogen ปัจจุบันถึงหรือสูงกว่าเป้าหมายที่เลือกแล้ว ควรประเมิน bleeding/procedure risk ก่อนสั่ง cryoprecipitate",
+    cryoOrderReady: "คำสั่งพร้อมใช้ - คลิกกล่องเพื่อคัดลอกทั้งหมด",
+    cryoOrderLine: "Cryoprecipitate {units} units ({pools} pools) IV transfuse now",
+    cryoMonitorLine:
+      "Follow fibrinogen level 30-60 min after transfusion; repeat cryoprecipitate if fibrinogen < {target} mg/dL or ongoing bleeding",
+    cryoDoseResult: "ขนาด cryoprecipitate ที่แนะนำ:",
+    cryoGapResult: "Fibrinogen gap:",
+    cryoCalculatedUnitsResult: "จำนวน units ที่คำนวณได้ก่อนปัด:",
+    cryoEstimatedRiseResult: "Fibrinogen ที่คาดว่าจะเพิ่ม:",
+    cryoEstimatedPostResult: "Fibrinogen หลังให้โดยประมาณ:",
+    cryoPlasmaVolumeResult: "Plasma volume โดยประมาณ:",
+    cryoThresholdNote:
+      "Trigger ที่ใช้บ่อยในผู้ใหญ่: clinically significant bleeding และ fibrinogen <150 mg/dL; prophylaxis ก่อน procedure อาจพิจารณาถ้า <100 mg/dL; obstetric/massive bleeding protocol มักตั้งเป้าอย่างน้อย 150-200 mg/dL",
+    cryoFormula:
+      "สูตร: TBV = weight x blood-volume estimate; plasma volume = TBV x (1 - hematocrit); calculated units = plasma volume (dL) x fibrinogen gap / 250 mg per unit",
+    cryoRoundingNote:
+      "ปัดขึ้นเป็น pool ใกล้สุดตาม {poolSize} units ต่อ pool; หากมีข้อบ่งชี้ให้ replacement แอปนี้ใช้ minimum adult first dose 10 units",
+    cryoCaution:
+      "เป็นค่าประมาณสำหรับผู้ใหญ่ ต้องยืนยัน indication จาก active bleeding/procedure, เวลาเจาะ fibrinogen, DIC/ongoing consumption, transfusion reaction, volume status และ product/pool size ของ blood bank",
+    cryoSourceNote:
+      "อ้างอิง: NICE NG24 threshold/adult dose ของ cryoprecipitate; American Red Cross Compendium plasma-volume dosing; Versiti adult cryoprecipitate utilization guideline",
     freeWaterHeading: "Free water deficit",
     freeWaterWeightLabel: "น้ำหนักตัว (กก.)",
     freeWaterNaLabel: "Na ปัจจุบัน (mEq/L)",
@@ -1986,6 +2058,13 @@ const staticMap = [
   ["t-maddrey-pt-label", "maddreyPtLabel"],
   ["t-maddrey-control-pt-label", "maddreyControlPtLabel"],
   ["t-maddrey-bilirubin-label", "maddreyBilirubinLabel"],
+  ["t-cryo-heading", "cryoHeading"],
+  ["t-cryo-weight-label", "cryoWeightLabel"],
+  ["t-cryo-current-label", "cryoCurrentLabel"],
+  ["t-cryo-target-label", "cryoTargetLabel"],
+  ["t-cryo-hematocrit-label", "cryoHematocritLabel"],
+  ["t-cryo-blood-volume-label", "cryoBloodVolumeLabel"],
+  ["t-cryo-pool-size-label", "cryoPoolSizeLabel"],
   ["t-free-water-heading", "freeWaterHeading"],
   ["t-free-water-weight-label", "freeWaterWeightLabel"],
   ["t-free-water-na-label", "freeWaterNaLabel"],
@@ -2104,6 +2183,14 @@ function getCalculatorOptions() {
       description: tr("maddreyCalcDesc"),
       keywords:
         "maddrey mdf discriminant function alcoholic hepatitis alcohol associated hepatitis ah liver bilirubin prothrombin time pt steroid corticosteroid"
+    },
+    {
+      id: "cryo",
+      workflow: "cryo",
+      name: tr("cryoCalcName"),
+      description: tr("cryoCalcDesc"),
+      keywords:
+        "cryo cryoprecipitate fibrinogen hypofibrinogenemia hypofibrinogenaemia bleeding transfusion dic hemorrhage haemorrhage obstetric procedure blood product"
     },
     {
       id: "freeWater",
@@ -4206,6 +4293,111 @@ function calculateMaddrey(event) {
   `;
 }
 
+function calculateCryoprecipitate(event) {
+  event?.preventDefault();
+
+  const weightValue = document.getElementById("cryo-weight").value.trim();
+  const currentValue = document.getElementById("cryo-current").value.trim();
+  const targetValue = document.getElementById("cryo-target").value.trim();
+  const hematocritValue = document.getElementById("cryo-hematocrit").value.trim();
+  const bloodVolumeValue = document.getElementById("cryo-blood-volume").value.trim();
+  const poolSizeValue = document.getElementById("cryo-pool-size").value.trim();
+  const weight = Number(weightValue);
+  const currentFibrinogen = Number(currentValue);
+  const targetFibrinogen = Number(targetValue);
+  const hematocritPercent = Number(hematocritValue);
+  const bloodVolumeMlKg = Number(bloodVolumeValue);
+  const poolSize = Math.max(1, Math.round(Number(poolSizeValue)));
+
+  const hasRequiredValues =
+    [weightValue, currentValue, targetValue, hematocritValue, bloodVolumeValue, poolSizeValue].every(Boolean) &&
+    [weight, targetFibrinogen, hematocritPercent, bloodVolumeMlKg, poolSize].every(
+      (value) => Number.isFinite(value) && value > 0
+    ) &&
+    Number.isFinite(currentFibrinogen) &&
+    currentFibrinogen >= 0 &&
+    hematocritPercent < 100;
+
+  if (!hasRequiredValues) {
+    cryoResult.innerHTML = `<p>${tr("cryoNeed")}</p>`;
+    return;
+  }
+
+  const fibrinogenGap = targetFibrinogen - currentFibrinogen;
+  if (fibrinogenGap <= 0) {
+    cryoResult.innerHTML = `
+      ${renderCopyResult(tr("cryoGapResult"), "0", {
+        unit: "mg/dL",
+        copyValue: "0",
+        copyFull: "Fibrinogen gap = 0"
+      })}
+      <p><strong>${tr("statusLabel")}</strong> <span class="status-ok">${tr("cryoTargetMet")}</span></p>
+      <p class="note">${tr("cryoThresholdNote")}</p>
+      <p class="note">${tr("cryoCaution")}</p>
+      <p class="note">${tr("cryoSourceNote")}</p>
+    `;
+    return;
+  }
+
+  const totalBloodVolumeMl = weight * bloodVolumeMlKg;
+  const plasmaVolumeMl = totalBloodVolumeMl * (1 - hematocritPercent / 100);
+  const plasmaVolumeDl = plasmaVolumeMl * 0.01;
+  const fibrinogenRequiredMg = plasmaVolumeDl * fibrinogenGap;
+  const calculatedUnits = fibrinogenRequiredMg / 250;
+  const practicalUnits = roundUpToStep(Math.max(calculatedUnits, 10), poolSize);
+  const pools = practicalUnits / poolSize;
+  const poolText = formatNumberForInput(pools, 1);
+  const estimatedRise = (practicalUnits * 250) / plasmaVolumeDl;
+  const estimatedPost = currentFibrinogen + estimatedRise;
+  const calculatedUnitsText = formatNumberForInput(calculatedUnits, 1);
+  const estimatedRiseText = formatNumberForInput(estimatedRise, 0);
+  const estimatedPostText = formatNumberForInput(estimatedPost, 0);
+  const plasmaVolumeText = formatNumberForInput(plasmaVolumeMl / 1000, 1);
+  const doseText = `${practicalUnits} units (${poolText} pools)`;
+  const orderLines = [
+    tr("cryoOrderLine", { units: practicalUnits, pools: poolText }),
+    tr("cryoMonitorLine", { target: targetFibrinogen })
+  ];
+
+  cryoResult.innerHTML = `
+    <button type="button" class="order-highlight copy-block cryo-copy-order" data-copy="${encodeURIComponent(
+      orderLines.join("\n")
+    )}">
+      <p class="order-title">${tr("cryoOrderReady")}</p>
+      <div class="order-text">${orderLines.map((line) => `<p class="order-line copy-line-static">${line}</p>`).join("")}</div>
+    </button>
+    ${renderCopyResult(tr("cryoDoseResult"), doseText, {
+      copyValue: String(practicalUnits),
+      copyFull: `Cryoprecipitate dose = ${doseText}`
+    })}
+    ${renderCopyResult(tr("cryoCalculatedUnitsResult"), calculatedUnitsText, {
+      unit: "units",
+      copyValue: calculatedUnitsText
+    })}
+    ${renderCopyResult(tr("cryoEstimatedRiseResult"), estimatedRiseText, {
+      unit: "mg/dL",
+      copyValue: estimatedRiseText
+    })}
+    ${renderCopyResult(tr("cryoEstimatedPostResult"), estimatedPostText, {
+      unit: "mg/dL",
+      copyValue: estimatedPostText
+    })}
+    ${renderCopyResult(tr("cryoPlasmaVolumeResult"), plasmaVolumeText, {
+      unit: "L",
+      copyValue: plasmaVolumeText
+    })}
+    <p class="note">${tr("cryoThresholdNote")}</p>
+    <p class="note">${tr("cryoFormula")}</p>
+    <p class="note">${tr("cryoRoundingNote", { poolSize })}</p>
+    <p class="note">${tr("cryoCaution")}</p>
+    <p class="note">${tr("cryoSourceNote")}</p>
+  `;
+}
+
+async function copyCryoprecipitateOrder(event) {
+  copyOrderLine(event, cryoResult);
+}
+
 function calculateFreeWater(event) {
   event?.preventDefault();
 
@@ -4911,6 +5103,7 @@ function runCalculatorForMode(mode) {
   if (mode === "calcium") calculateCalcium();
   if (mode === "fibrosis") calculateFibrosis();
   if (mode === "maddrey") calculateMaddrey();
+  if (mode === "cryo") calculateCryoprecipitate();
   if (mode === "freeWater") calculateFreeWater();
   if (mode === "nutrition") calculateNutrition();
   if (mode === "antibiotic") calculateAntibiotic();
@@ -4927,6 +5120,7 @@ function recalcIfResultsShown() {
   if (calciumResult.innerHTML.trim()) calculateCalcium();
   if (fibrosisResult.innerHTML.trim()) calculateFibrosis();
   if (maddreyResult.innerHTML.trim()) calculateMaddrey();
+  if (cryoResult.innerHTML.trim()) calculateCryoprecipitate();
   if (freeWaterResult.innerHTML.trim()) calculateFreeWater();
   if (nutritionResult.innerHTML.trim()) calculateNutrition();
   if (antibioticResult.innerHTML.trim()) calculateAntibiotic();
@@ -5263,6 +5457,7 @@ bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
 bindLiveCalculation(document.getElementById("fibrosis-form"), calculateFibrosis);
 bindLiveCalculation(document.getElementById("maddrey-form"), calculateMaddrey);
+bindLiveCalculation(document.getElementById("cryo-form"), calculateCryoprecipitate);
 bindLiveCalculation(document.getElementById("free-water-form"), calculateFreeWater);
 bindLiveCalculation(document.getElementById("nutrition-form"), calculateNutrition);
 bindLiveCalculation(document.getElementById("antibiotic-form"), calculateAntibiotic);
@@ -5273,6 +5468,7 @@ bindResultCopy(osmoResult);
 bindResultCopy(calciumResult);
 bindResultCopy(fibrosisResult);
 bindResultCopy(maddreyResult);
+bindCopyInteractions(cryoResult, copyCryoprecipitateOrder);
 
 bindCopyInteractions(initialResult, copyVancoOrder);
 bindCopyInteractions(adjustResult, copyVancoAdjustOrder);

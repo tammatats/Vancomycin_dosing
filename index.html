@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title id="t-doc-title">Clinical Order Calculator</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b7a75'/%3E%3Cpath d='M16 34h32v6H16zm13-18h6v32h-6z' fill='white'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css?v=20260604-maddrey1" />
+    <link rel="stylesheet" href="styles.css?v=20260608-cryo1" />
   </head>
   <body>
     <main class="app-shell">
@@ -40,10 +40,6 @@
       <section class="panel hidden" id="initial-panel">
         <h2 id="t-initial-heading">1) Initial Dosing</h2>
         <form id="initial-form" class="grid">
-          <label>
-            <span id="t-weight-label">Actual body weight (kg)</span>
-            <input class="num-input" type="number" id="weight" min="20" max="300" step="0.1" inputmode="none" required />
-          </label>
           <label class="toggle-field">
             <span id="t-crcl-mode-label">CrCl input method</span>
             <button type="button" id="crcl-mode-toggle" class="toggle-box" data-active="left">
@@ -56,6 +52,14 @@
             <span id="t-age-label">Patient age (years)</span>
             <input class="num-input" type="number" id="age" min="18" max="120" step="1" inputmode="none" />
           </label>
+          <label>
+            <span id="t-weight-label">Actual body weight (kg)</span>
+            <input class="num-input" type="number" id="weight" min="20" max="300" step="0.1" inputmode="none" required />
+          </label>
+          <label id="scr-wrap">
+            <span id="t-scr-label">Serum creatinine, SCr (mg/dL)</span>
+            <input class="num-input" type="number" id="scr" min="0.1" max="20" step="0.01" inputmode="none" />
+          </label>
           <label id="sex-wrap" class="toggle-field">
             <span id="t-sex-label">Sex for Cockcroft-Gault</span>
             <button type="button" id="sex-toggle" class="toggle-box" data-active="left">
@@ -63,10 +67,6 @@
               <span id="sex-right" class="toggle-half toggle-right">Female x0.85</span>
             </button>
             <input type="hidden" id="sex" value="male" />
-          </label>
-          <label id="scr-wrap">
-            <span id="t-scr-label">Serum creatinine, SCr (mg/dL)</span>
-            <input class="num-input" type="number" id="scr" min="0.1" max="20" step="0.01" inputmode="none" />
           </label>
           <label id="manual-crcl-wrap" class="hidden">
             <span id="t-manual-crcl-label">Manual CrCl (mL/min)</span>
@@ -290,13 +290,13 @@
             <span id="t-renal-age-label">Age (years)</span>
             <input class="num-input live-input" type="number" id="renal-age" min="18" max="120" step="1" inputmode="none" />
           </label>
-          <label>
-            <span id="t-renal-scr-label">Serum creatinine, SCr (mg/dL)</span>
-            <input class="num-input live-input" type="number" id="renal-scr" min="0.1" max="20" step="0.01" inputmode="none" />
-          </label>
           <label id="renal-weight-wrap">
             <span id="t-renal-weight-label">Body weight (kg)</span>
             <input class="num-input live-input" type="number" id="renal-weight" min="1" max="300" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-renal-scr-label">Serum creatinine, SCr (mg/dL)</span>
+            <input class="num-input live-input" type="number" id="renal-scr" min="0.1" max="20" step="0.01" inputmode="none" />
           </label>
           <div class="choice-field full-span">
             <span id="t-renal-sex-label">Sex</span>
@@ -412,6 +412,70 @@
           </label>
         </form>
         <div id="maddrey-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="cryo-panel">
+        <h2 id="t-cryo-heading">Cryoprecipitate dose</h2>
+        <form id="cryo-form" class="grid">
+          <label>
+            <span id="t-cryo-weight-label">Body weight (kg)</span>
+            <input class="num-input live-input" type="number" id="cryo-weight" min="1" max="300" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-cryo-current-label">Current fibrinogen (mg/dL)</span>
+            <input class="num-input live-input" type="number" id="cryo-current" min="0" max="1000" step="1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-cryo-target-label">Target fibrinogen (mg/dL)</span>
+            <input
+              class="num-input live-input preset-input"
+              type="number"
+              id="cryo-target"
+              min="50"
+              max="500"
+              step="1"
+              value="150"
+              inputmode="none"
+              data-skip-nav="true"
+            />
+          </label>
+          <label>
+            <span id="t-cryo-hematocrit-label">Hematocrit (%)</span>
+            <input
+              class="num-input live-input preset-input"
+              type="number"
+              id="cryo-hematocrit"
+              min="5"
+              max="70"
+              step="1"
+              value="30"
+              inputmode="none"
+              data-skip-nav="true"
+            />
+          </label>
+          <label>
+            <span id="t-cryo-blood-volume-label">Blood volume estimate</span>
+            <select id="cryo-blood-volume" class="live-input">
+              <option value="70">Adult male / average 70 mL/kg</option>
+              <option value="65">Adult female 65 mL/kg</option>
+            </select>
+          </label>
+          <label>
+            <span id="t-cryo-pool-size-label">Units per pool</span>
+            <input
+              class="num-input live-input preset-input"
+              type="number"
+              id="cryo-pool-size"
+              min="1"
+              max="10"
+              step="1"
+              value="5"
+              inputmode="none"
+              data-skip-nav="true"
+            />
+          </label>
+        </form>
+        <div id="cryo-result" class="result"></div>
       </section>
 
       <section class="panel hidden" id="free-water-panel">
@@ -645,6 +709,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260604-maddrey1"></script>
+    <script src="app.js?v=20260608-cryo1"></script>
   </body>
 </html>
