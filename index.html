@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title id="t-doc-title">Clinical Order Calculator</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b7a75'/%3E%3Cpath d='M16 34h32v6H16zm13-18h6v32h-6z' fill='white'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css?v=20260608-cryo1" />
+    <link rel="stylesheet" href="styles.css?v=20260615-urinekcr1" />
   </head>
   <body>
     <main class="app-shell">
@@ -346,6 +346,32 @@
           </label>
         </form>
         <div id="calcium-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="urine-kcr-panel">
+        <h2 id="t-urine-kcr-heading">Urine K/Cr ratio</h2>
+        <form id="urine-kcr-form" class="grid">
+          <label>
+            <span id="t-urine-kcr-serum-k-label">Serum K (mEq/L, optional)</span>
+            <input class="num-input live-input" type="number" id="urine-kcr-serum-k" min="0" max="10" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-urine-kcr-urine-k-label">Urine potassium, K (mEq/L)</span>
+            <input class="num-input live-input" type="number" id="urine-kcr-urine-k" min="0" max="500" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-urine-kcr-urine-cr-label">Urine creatinine</span>
+            <input class="num-input live-input" type="number" id="urine-kcr-urine-cr" min="0" max="1000" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-urine-kcr-cr-unit-label">Urine creatinine unit</span>
+            <select id="urine-kcr-cr-unit" class="live-input">
+              <option value="mgdl">mg/dL</option>
+              <option value="mmoll">mmol/L</option>
+            </select>
+          </label>
+        </form>
+        <div id="urine-kcr-result" class="result"></div>
       </section>
 
       <section class="panel hidden" id="fibrosis-panel">
@@ -709,6 +735,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260608-cryo1"></script>
+    <script src="app.js?v=20260615-urinekcr1"></script>
   </body>
 </html>

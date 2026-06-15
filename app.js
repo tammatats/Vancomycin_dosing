@@ -8,6 +8,7 @@ const heparinResult = document.getElementById("heparin-result");
 const renalResult = document.getElementById("renal-result");
 const osmoResult = document.getElementById("osmo-result");
 const calciumResult = document.getElementById("calcium-result");
+const urineKcrResult = document.getElementById("urine-kcr-result");
 const fibrosisResult = document.getElementById("fibrosis-result");
 const maddreyResult = document.getElementById("maddrey-result");
 const cryoResult = document.getElementById("cryo-result");
@@ -23,6 +24,7 @@ const heparinPanel = document.getElementById("heparin-panel");
 const renalPanel = document.getElementById("renal-panel");
 const osmoPanel = document.getElementById("osmo-panel");
 const calciumPanel = document.getElementById("calcium-panel");
+const urineKcrPanel = document.getElementById("urine-kcr-panel");
 const fibrosisPanel = document.getElementById("fibrosis-panel");
 const maddreyPanel = document.getElementById("maddrey-panel");
 const cryoPanel = document.getElementById("cryo-panel");
@@ -213,6 +215,12 @@ const WORKFLOWS = {
     firstInputId: "calcium-measured",
     form: document.getElementById("calcium-form"),
     calculator: "calcium"
+  },
+  urineKcr: {
+    panel: urineKcrPanel,
+    firstInputId: "urine-kcr-urine-k",
+    form: document.getElementById("urine-kcr-form"),
+    calculator: "urineKcr"
   },
   fibrosis: {
     panel: fibrosisPanel,
@@ -1099,6 +1107,8 @@ const I18N = {
     osmoCalcDesc: "Calculate serum osmolality from sodium, glucose, and BUN.",
     calciumCalcName: "Corrected calcium",
     calciumCalcDesc: "Correct total calcium for low albumin using the standard albumin correction.",
+    urineKcrCalcName: "Urine K/Cr ratio",
+    urineKcrCalcDesc: "Calculate spot urine potassium-to-creatinine ratio and classify renal vs non-renal potassium loss in hypokalemia.",
     fibrosisCalcName: "FIB-4 / APRI",
     fibrosisCalcDesc: "Calculate liver fibrosis screening scores from age, AST/ALT, platelets, and AST ULN.",
     maddreyCalcName: "Maddrey DF",
@@ -1334,6 +1344,31 @@ const I18N = {
     calciumNormal: "Corrected calcium within usual reference range.",
     calciumHigh: "High corrected calcium.",
     calciumFormula: "Formula: corrected Ca = measured Ca + 0.8 x (4 - albumin). Usual reference range shown here: 8.5-10.5 mg/dL.",
+    urineKcrHeading: "Urine K/Cr ratio",
+    urineKcrSerumKLabel: "Serum K (mEq/L, optional)",
+    urineKcrUrineKLabel: "Urine potassium, K (mEq/L)",
+    urineKcrUrineCrLabel: "Urine creatinine",
+    urineKcrCrUnitLabel: "Urine creatinine unit",
+    urineKcrNeed: "Fill urine potassium and urine creatinine.",
+    urineKcrBadCreatinine: "Urine creatinine must be greater than zero.",
+    urineKcrRatioMegResult: "Urine K/Cr:",
+    urineKcrRatioMmolResult: "Urine K/Cr:",
+    urineKcrPatternResult: "K loss pattern:",
+    urineKcrRenalLoss: "renal K wasting likely",
+    urineKcrNonRenalLoss: "non-renal K loss / transcellular shift / low intake more likely",
+    urineKcrRenalStatus:
+      "Spot urine K/Cr is above 13 mEq/g Cr (about 1.5 mmol/mmol), suggesting inappropriate renal potassium loss if the patient is hypokalemic.",
+    urineKcrNonRenalStatus:
+      "Spot urine K/Cr is not above 13 mEq/g Cr, supporting non-renal loss, transcellular shift, low intake, or remote diuretic effect if the patient is hypokalemic.",
+    urineKcrSerumKNotLow:
+      "Serum K is not in the hypokalemia range. This renal/non-renal K loss cutoff is intended for evaluation of hypokalemia.",
+    urineKcrSerumKMissing: "Use this interpretation only with confirmed hypokalemia; serum K was not entered.",
+    urineKcrFormula:
+      "Formula: if urine Cr is mg/dL, K/Cr = urine K x 100 / urine Cr = mEq/g Cr. If urine Cr is mmol/L, K/Cr = urine K / urine Cr = mmol/mmol.",
+    urineKcrCaution:
+      "Spot urine K/Cr is a practical screen but varies within patients and has limited specificity. A 24-hour urine K collection is more accurate when feasible.",
+    urineKcrSourceNote:
+      "References: AAFP potassium disorders review and Hypokalemia: a clinical update; common cutoff >13 mEq/g Cr or >1.5 mmol/mmol suggests renal potassium wasting.",
     fibrosisHeading: "FIB-4 / APRI",
     fibrosisAgeLabel: "Age (years)",
     fibrosisAstLabel: "AST (U/L)",
@@ -1546,6 +1581,8 @@ const I18N = {
     osmoCalcDesc: "คำนวณ serum osmolality จาก sodium, glucose และ BUN",
     calciumCalcName: "Corrected calcium",
     calciumCalcDesc: "ปรับค่า total calcium ตาม albumin",
+    urineKcrCalcName: "Urine K/Cr ratio",
+    urineKcrCalcDesc: "คำนวณ spot urine potassium-to-creatinine ratio และช่วยแยก renal/non-renal potassium loss ใน hypokalemia",
     fibrosisCalcName: "FIB-4 / APRI",
     fibrosisCalcDesc: "คำนวณคะแนนคัดกรอง liver fibrosis จากอายุ AST/ALT platelet และ AST ULN",
     maddreyCalcName: "Maddrey DF",
@@ -1780,6 +1817,31 @@ const I18N = {
     calciumNormal: "Corrected calcium อยู่ในช่วงอ้างอิงทั่วไป",
     calciumHigh: "Corrected calcium สูง",
     calciumFormula: "สูตร: corrected Ca = measured Ca + 0.8 x (4 - albumin). ช่วงอ้างอิงทั่วไปที่ใช้แสดง: 8.5-10.5 mg/dL",
+    urineKcrHeading: "Urine K/Cr ratio",
+    urineKcrSerumKLabel: "Serum K (mEq/L, optional)",
+    urineKcrUrineKLabel: "Urine potassium, K (mEq/L)",
+    urineKcrUrineCrLabel: "Urine creatinine",
+    urineKcrCrUnitLabel: "หน่วย urine creatinine",
+    urineKcrNeed: "กรอก urine potassium และ urine creatinine",
+    urineKcrBadCreatinine: "ค่า urine creatinine ต้องมากกว่า 0",
+    urineKcrRatioMegResult: "Urine K/Cr:",
+    urineKcrRatioMmolResult: "Urine K/Cr:",
+    urineKcrPatternResult: "รูปแบบ K loss:",
+    urineKcrRenalLoss: "เข้าได้กับ renal K wasting",
+    urineKcrNonRenalLoss: "เข้าได้กับ non-renal K loss / transcellular shift / low intake",
+    urineKcrRenalStatus:
+      "Spot urine K/Cr สูงกว่า 13 mEq/g Cr (ประมาณ 1.5 mmol/mmol) บ่งชี้ inappropriate renal potassium loss หากผู้ป่วยมี hypokalemia",
+    urineKcrNonRenalStatus:
+      "Spot urine K/Cr ไม่สูงกว่า 13 mEq/g Cr สนับสนุน non-renal loss, transcellular shift, low intake หรือ remote diuretic effect หากผู้ป่วยมี hypokalemia",
+    urineKcrSerumKNotLow:
+      "Serum K ไม่อยู่ในช่วง hypokalemia cutoff นี้ใช้สำหรับประเมิน renal/non-renal K loss ในผู้ป่วย hypokalemia",
+    urineKcrSerumKMissing: "ควรใช้การแปลผลนี้เมื่อยืนยัน hypokalemia แล้ว; ยังไม่ได้กรอก serum K",
+    urineKcrFormula:
+      "สูตร: หาก urine Cr เป็น mg/dL, K/Cr = urine K x 100 / urine Cr = mEq/g Cr. หาก urine Cr เป็น mmol/L, K/Cr = urine K / urine Cr = mmol/mmol",
+    urineKcrCaution:
+      "Spot urine K/Cr ใช้คัดกรองได้สะดวกแต่มี intraindividual variability และ specificity จำกัด หากทำได้ 24-hour urine K จะแม่นยำกว่า",
+    urineKcrSourceNote:
+      "อ้างอิง: AAFP potassium disorders review และ Hypokalemia: a clinical update; cutoff ที่ใช้บ่อยคือ >13 mEq/g Cr หรือ >1.5 mmol/mmol บ่งชี้ renal potassium wasting",
     fibrosisHeading: "FIB-4 / APRI",
     fibrosisAgeLabel: "อายุ (ปี)",
     fibrosisAstLabel: "AST (U/L)",
@@ -2048,6 +2110,11 @@ const staticMap = [
   ["t-calcium-heading", "calciumHeading"],
   ["t-calcium-measured-label", "calciumMeasuredLabel"],
   ["t-calcium-albumin-label", "calciumAlbuminLabel"],
+  ["t-urine-kcr-heading", "urineKcrHeading"],
+  ["t-urine-kcr-serum-k-label", "urineKcrSerumKLabel"],
+  ["t-urine-kcr-urine-k-label", "urineKcrUrineKLabel"],
+  ["t-urine-kcr-urine-cr-label", "urineKcrUrineCrLabel"],
+  ["t-urine-kcr-cr-unit-label", "urineKcrCrUnitLabel"],
   ["t-fibrosis-heading", "fibrosisHeading"],
   ["t-fibrosis-age-label", "fibrosisAgeLabel"],
   ["t-fibrosis-ast-label", "fibrosisAstLabel"],
@@ -2167,6 +2234,14 @@ function getCalculatorOptions() {
       name: tr("calciumCalcName"),
       description: tr("calciumCalcDesc"),
       keywords: "calcium corrected calcium albumin ca hypocalcemia hypercalcemia"
+    },
+    {
+      id: "urineKcr",
+      workflow: "urineKcr",
+      name: tr("urineKcrCalcName"),
+      description: tr("urineKcrCalcDesc"),
+      keywords:
+        "urine k cr potassium creatinine ratio hypokalemia hypokalaemia renal potassium wasting non renal loss gastrointestinal gi diarrhea diuretic transcellular shift"
     },
     {
       id: "fibrosis",
@@ -4188,6 +4263,73 @@ function calculateCalcium(event) {
   `;
 }
 
+function calculateUrineKcr(event) {
+  event?.preventDefault();
+
+  const serumKValue = document.getElementById("urine-kcr-serum-k").value.trim();
+  const urineKValue = document.getElementById("urine-kcr-urine-k").value.trim();
+  const urineCrValue = document.getElementById("urine-kcr-urine-cr").value.trim();
+  const crUnit = document.getElementById("urine-kcr-cr-unit").value;
+  const serumK = Number(serumKValue);
+  const urineK = Number(urineKValue);
+  const urineCr = Number(urineCrValue);
+  const hasSerumK = serumKValue !== "" && Number.isFinite(serumK);
+
+  if (
+    urineKValue === "" ||
+    urineCrValue === "" ||
+    !Number.isFinite(urineK) ||
+    !Number.isFinite(urineCr) ||
+    urineK < 0
+  ) {
+    urineKcrResult.innerHTML = `<p>${tr("urineKcrNeed")}</p>`;
+    return;
+  }
+
+  if (urineCr <= 0) {
+    urineKcrResult.innerHTML = `<p>${tr("urineKcrBadCreatinine")}</p>`;
+    return;
+  }
+
+  const creatinineMmolL = crUnit === "mgdl" ? urineCr * 0.0884 : urineCr;
+  const creatinineGPerL = crUnit === "mgdl" ? urineCr * 0.01 : urineCr * 0.11312;
+  const ratioMmolMmol = urineK / creatinineMmolL;
+  const ratioMeqG = urineK / creatinineGPerL;
+  const ratioMeqGText = formatNumberForInput(ratioMeqG, 1);
+  const ratioMmolText = formatNumberForInput(ratioMmolMmol, 2);
+  const isRenalLoss = ratioMeqG > 13;
+  const patternText = isRenalLoss ? tr("urineKcrRenalLoss") : tr("urineKcrNonRenalLoss");
+  const ratioStatusText = isRenalLoss ? tr("urineKcrRenalStatus") : tr("urineKcrNonRenalStatus");
+  const ratioStatusClass = isRenalLoss ? "status-high" : "status-caution";
+  const serumKNote = hasSerumK
+    ? serumK >= 3.5
+      ? `<p><strong>${tr("statusLabel")}</strong> <span class="status-caution">${tr("urineKcrSerumKNotLow")}</span></p>`
+      : ""
+    : `<p class="note">${tr("urineKcrSerumKMissing")}</p>`;
+
+  urineKcrResult.innerHTML = `
+    ${renderCopyResult(tr("urineKcrRatioMegResult"), ratioMeqGText, {
+      unit: "mEq/g Cr",
+      copyValue: ratioMeqGText,
+      copyFull: `Urine K/Cr = ${ratioMeqGText} mEq/g Cr`
+    })}
+    ${renderCopyResult(tr("urineKcrRatioMmolResult"), ratioMmolText, {
+      unit: "mmol/mmol",
+      copyValue: ratioMmolText,
+      copyFull: `Urine K/Cr = ${ratioMmolText} mmol/mmol`
+    })}
+    ${renderCopyResult(tr("urineKcrPatternResult"), patternText, {
+      copyValue: patternText,
+      copyFull: `K loss pattern = ${patternText}`
+    })}
+    <p><strong>${tr("statusLabel")}</strong> <span class="${ratioStatusClass}">${ratioStatusText}</span></p>
+    ${serumKNote}
+    <p class="note">${tr("urineKcrFormula")}</p>
+    <p class="note">${tr("urineKcrCaution")}</p>
+    <p class="note">${tr("urineKcrSourceNote")}</p>
+  `;
+}
+
 function getFib4Interpretation(score) {
   if (score < 1.45) {
     return { text: tr("fibrosisFib4Low"), className: "status-ok" };
@@ -5101,6 +5243,7 @@ function runCalculatorForMode(mode) {
   if (mode === "renal") calculateRenal();
   if (mode === "osmo") calculateOsmo();
   if (mode === "calcium") calculateCalcium();
+  if (mode === "urineKcr") calculateUrineKcr();
   if (mode === "fibrosis") calculateFibrosis();
   if (mode === "maddrey") calculateMaddrey();
   if (mode === "cryo") calculateCryoprecipitate();
@@ -5118,6 +5261,7 @@ function recalcIfResultsShown() {
   if (renalResult.innerHTML.trim()) calculateRenal();
   if (osmoResult.innerHTML.trim()) calculateOsmo();
   if (calciumResult.innerHTML.trim()) calculateCalcium();
+  if (urineKcrResult.innerHTML.trim()) calculateUrineKcr();
   if (fibrosisResult.innerHTML.trim()) calculateFibrosis();
   if (maddreyResult.innerHTML.trim()) calculateMaddrey();
   if (cryoResult.innerHTML.trim()) calculateCryoprecipitate();
@@ -5455,6 +5599,7 @@ bindLiveCalculation(document.getElementById("heparin-form"), calculateHeparin);
 bindLiveCalculation(document.getElementById("renal-form"), calculateRenal);
 bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
+bindLiveCalculation(document.getElementById("urine-kcr-form"), calculateUrineKcr);
 bindLiveCalculation(document.getElementById("fibrosis-form"), calculateFibrosis);
 bindLiveCalculation(document.getElementById("maddrey-form"), calculateMaddrey);
 bindLiveCalculation(document.getElementById("cryo-form"), calculateCryoprecipitate);
@@ -5466,6 +5611,7 @@ bindResultCopy(infusionResult);
 bindResultCopy(renalResult);
 bindResultCopy(osmoResult);
 bindResultCopy(calciumResult);
+bindResultCopy(urineKcrResult);
 bindResultCopy(fibrosisResult);
 bindResultCopy(maddreyResult);
 bindCopyInteractions(cryoResult, copyCryoprecipitateOrder);
