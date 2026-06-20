@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title id="t-doc-title">Clinical Order Calculator</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b7a75'/%3E%3Cpath d='M16 34h32v6H16zm13-18h6v32h-6z' fill='white'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css?v=20260615-urinekcr1" />
+    <link rel="stylesheet" href="styles.css?v=20260620-bsa1" />
   </head>
   <body>
     <main class="app-shell">
@@ -346,6 +346,25 @@
           </label>
         </form>
         <div id="calcium-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="bsa-panel">
+        <h2 id="t-bsa-heading">BSA calculator</h2>
+        <form id="bsa-form" class="grid">
+          <label>
+            <span id="t-bsa-height-label">Height (cm)</span>
+            <input class="num-input live-input" type="number" id="bsa-height" min="30" max="250" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-bsa-weight-label">Body weight (kg)</span>
+            <input class="num-input live-input" type="number" id="bsa-weight" min="1" max="300" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-bsa-dose-label">Dose intensity (mg/m², optional)</span>
+            <input class="num-input live-input" type="number" id="bsa-dose" min="0" max="10000" step="0.1" inputmode="none" />
+          </label>
+        </form>
+        <div id="bsa-result" class="result"></div>
       </section>
 
       <section class="panel hidden" id="urine-kcr-panel">
@@ -735,6 +754,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260615-urinekcr1"></script>
+    <script src="app.js?v=20260620-bsa1"></script>
   </body>
 </html>

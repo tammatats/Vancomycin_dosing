@@ -8,6 +8,7 @@ const heparinResult = document.getElementById("heparin-result");
 const renalResult = document.getElementById("renal-result");
 const osmoResult = document.getElementById("osmo-result");
 const calciumResult = document.getElementById("calcium-result");
+const bsaResult = document.getElementById("bsa-result");
 const urineKcrResult = document.getElementById("urine-kcr-result");
 const fibrosisResult = document.getElementById("fibrosis-result");
 const maddreyResult = document.getElementById("maddrey-result");
@@ -24,6 +25,7 @@ const heparinPanel = document.getElementById("heparin-panel");
 const renalPanel = document.getElementById("renal-panel");
 const osmoPanel = document.getElementById("osmo-panel");
 const calciumPanel = document.getElementById("calcium-panel");
+const bsaPanel = document.getElementById("bsa-panel");
 const urineKcrPanel = document.getElementById("urine-kcr-panel");
 const fibrosisPanel = document.getElementById("fibrosis-panel");
 const maddreyPanel = document.getElementById("maddrey-panel");
@@ -215,6 +217,12 @@ const WORKFLOWS = {
     firstInputId: "calcium-measured",
     form: document.getElementById("calcium-form"),
     calculator: "calcium"
+  },
+  bsa: {
+    panel: bsaPanel,
+    firstInputId: "bsa-height",
+    form: document.getElementById("bsa-form"),
+    calculator: "bsa"
   },
   urineKcr: {
     panel: urineKcrPanel,
@@ -1107,6 +1115,8 @@ const I18N = {
     osmoCalcDesc: "Calculate serum osmolality from sodium, glucose, and BUN.",
     calciumCalcName: "Corrected calcium",
     calciumCalcDesc: "Correct total calcium for low albumin using the standard albumin correction.",
+    bsaCalcName: "BSA calculator",
+    bsaCalcDesc: "Calculate body surface area by Mosteller formula, BMI, and optional mg/m² dose.",
     urineKcrCalcName: "Urine K/Cr ratio",
     urineKcrCalcDesc: "Calculate spot urine potassium-to-creatinine ratio and classify renal vs non-renal potassium loss in hypokalemia.",
     fibrosisCalcName: "FIB-4 / APRI",
@@ -1344,6 +1354,19 @@ const I18N = {
     calciumNormal: "Corrected calcium within usual reference range.",
     calciumHigh: "High corrected calcium.",
     calciumFormula: "Formula: corrected Ca = measured Ca + 0.8 x (4 - albumin). Usual reference range shown here: 8.5-10.5 mg/dL.",
+    bsaHeading: "BSA calculator",
+    bsaHeightLabel: "Height (cm)",
+    bsaWeightLabel: "Body weight (kg)",
+    bsaDoseLabel: "Dose intensity (mg/m², optional)",
+    bsaNeed: "Fill height and body weight.",
+    bsaResult: "BSA:",
+    bsaBmiResult: "BMI:",
+    bsaDoseResult: "Calculated dose:",
+    bsaFormula: "Formula: Mosteller BSA = sqrt(height(cm) x weight(kg) / 3600).",
+    bsaDoseFormula: "Dose formula: dose = mg/m² x unrounded BSA.",
+    bsaCaution:
+      "For chemotherapy prescribing, verify regimen-specific dose caps, treatment intent, organ function, performance status, toxicity, and local oncology protocol.",
+    bsaSourceNote: "References: eviQ Body Surface Area Calculator and Mosteller RD, N Engl J Med 1987.",
     urineKcrHeading: "Urine K/Cr ratio",
     urineKcrSerumKLabel: "Serum K (mEq/L, optional)",
     urineKcrUrineKLabel: "Urine potassium, K (mEq/L)",
@@ -1581,6 +1604,8 @@ const I18N = {
     osmoCalcDesc: "คำนวณ serum osmolality จาก sodium, glucose และ BUN",
     calciumCalcName: "Corrected calcium",
     calciumCalcDesc: "ปรับค่า total calcium ตาม albumin",
+    bsaCalcName: "BSA calculator",
+    bsaCalcDesc: "คำนวณ body surface area ด้วย Mosteller formula, BMI และ dose จาก mg/m² ถ้ากรอก",
     urineKcrCalcName: "Urine K/Cr ratio",
     urineKcrCalcDesc: "คำนวณ spot urine potassium-to-creatinine ratio และช่วยแยก renal/non-renal potassium loss ใน hypokalemia",
     fibrosisCalcName: "FIB-4 / APRI",
@@ -1817,6 +1842,19 @@ const I18N = {
     calciumNormal: "Corrected calcium อยู่ในช่วงอ้างอิงทั่วไป",
     calciumHigh: "Corrected calcium สูง",
     calciumFormula: "สูตร: corrected Ca = measured Ca + 0.8 x (4 - albumin). ช่วงอ้างอิงทั่วไปที่ใช้แสดง: 8.5-10.5 mg/dL",
+    bsaHeading: "BSA calculator",
+    bsaHeightLabel: "ส่วนสูง (ซม.)",
+    bsaWeightLabel: "น้ำหนักตัว (กก.)",
+    bsaDoseLabel: "Dose intensity (mg/m², optional)",
+    bsaNeed: "กรอกส่วนสูงและน้ำหนักตัว",
+    bsaResult: "BSA:",
+    bsaBmiResult: "BMI:",
+    bsaDoseResult: "ขนาดยาที่คำนวณได้:",
+    bsaFormula: "สูตร: Mosteller BSA = sqrt(height(cm) x weight(kg) / 3600)",
+    bsaDoseFormula: "สูตร dose: dose = mg/m² x unrounded BSA",
+    bsaCaution:
+      "สำหรับการสั่ง chemotherapy ต้องตรวจ dose cap ตาม regimen, treatment intent, organ function, performance status, toxicity และ protocol oncology ของหน่วยงาน",
+    bsaSourceNote: "อ้างอิง: eviQ Body Surface Area Calculator และ Mosteller RD, N Engl J Med 1987",
     urineKcrHeading: "Urine K/Cr ratio",
     urineKcrSerumKLabel: "Serum K (mEq/L, optional)",
     urineKcrUrineKLabel: "Urine potassium, K (mEq/L)",
@@ -2110,6 +2148,10 @@ const staticMap = [
   ["t-calcium-heading", "calciumHeading"],
   ["t-calcium-measured-label", "calciumMeasuredLabel"],
   ["t-calcium-albumin-label", "calciumAlbuminLabel"],
+  ["t-bsa-heading", "bsaHeading"],
+  ["t-bsa-height-label", "bsaHeightLabel"],
+  ["t-bsa-weight-label", "bsaWeightLabel"],
+  ["t-bsa-dose-label", "bsaDoseLabel"],
   ["t-urine-kcr-heading", "urineKcrHeading"],
   ["t-urine-kcr-serum-k-label", "urineKcrSerumKLabel"],
   ["t-urine-kcr-urine-k-label", "urineKcrUrineKLabel"],
@@ -2234,6 +2276,14 @@ function getCalculatorOptions() {
       name: tr("calciumCalcName"),
       description: tr("calciumCalcDesc"),
       keywords: "calcium corrected calcium albumin ca hypocalcemia hypercalcemia"
+    },
+    {
+      id: "bsa",
+      workflow: "bsa",
+      name: tr("bsaCalcName"),
+      description: tr("bsaCalcDesc"),
+      keywords:
+        "bsa body surface area mosteller oncology chemotherapy chemo dose mg/m2 mg/m² height weight bmi cytotoxic dosing"
     },
     {
       id: "urineKcr",
@@ -4263,6 +4313,61 @@ function calculateCalcium(event) {
   `;
 }
 
+function calculateBsa(event) {
+  event?.preventDefault();
+
+  const heightValue = document.getElementById("bsa-height").value.trim();
+  const weightValue = document.getElementById("bsa-weight").value.trim();
+  const doseValue = document.getElementById("bsa-dose").value.trim();
+  const height = Number(heightValue);
+  const weight = Number(weightValue);
+  const doseIntensity = Number(doseValue);
+  const hasDoseIntensity = doseValue !== "" && Number.isFinite(doseIntensity) && doseIntensity > 0;
+
+  if (
+    heightValue === "" ||
+    weightValue === "" ||
+    !Number.isFinite(height) ||
+    !Number.isFinite(weight) ||
+    height <= 0 ||
+    weight <= 0
+  ) {
+    bsaResult.innerHTML = `<p>${tr("bsaNeed")}</p>`;
+    return;
+  }
+
+  const bsa = Math.sqrt((height * weight) / 3600);
+  const heightM = height / 100;
+  const bmi = weight / (heightM * heightM);
+  const bsaText = formatNumberForInput(bsa, 2);
+  const bmiText = formatNumberForInput(bmi, 1);
+  const doseBlock = hasDoseIntensity
+    ? renderCopyResult(tr("bsaDoseResult"), formatNumberForInput(doseIntensity * bsa, 0), {
+        unit: "mg",
+        copyValue: formatNumberForInput(doseIntensity * bsa, 0),
+        copyFull: `Dose = ${formatNumberForInput(doseIntensity * bsa, 0)} mg`
+      })
+    : "";
+
+  bsaResult.innerHTML = `
+    ${renderCopyResult(tr("bsaResult"), bsaText, {
+      unit: "m²",
+      copyValue: bsaText,
+      copyFull: `BSA = ${bsaText} m²`
+    })}
+    ${renderCopyResult(tr("bsaBmiResult"), bmiText, {
+      unit: "kg/m²",
+      copyValue: bmiText,
+      copyFull: `BMI = ${bmiText} kg/m²`
+    })}
+    ${doseBlock}
+    <p class="note">${tr("bsaFormula")}</p>
+    ${hasDoseIntensity ? `<p class="note">${tr("bsaDoseFormula")}</p>` : ""}
+    <p class="note">${tr("bsaCaution")}</p>
+    <p class="note">${tr("bsaSourceNote")}</p>
+  `;
+}
+
 function calculateUrineKcr(event) {
   event?.preventDefault();
 
@@ -5243,6 +5348,7 @@ function runCalculatorForMode(mode) {
   if (mode === "renal") calculateRenal();
   if (mode === "osmo") calculateOsmo();
   if (mode === "calcium") calculateCalcium();
+  if (mode === "bsa") calculateBsa();
   if (mode === "urineKcr") calculateUrineKcr();
   if (mode === "fibrosis") calculateFibrosis();
   if (mode === "maddrey") calculateMaddrey();
@@ -5261,6 +5367,7 @@ function recalcIfResultsShown() {
   if (renalResult.innerHTML.trim()) calculateRenal();
   if (osmoResult.innerHTML.trim()) calculateOsmo();
   if (calciumResult.innerHTML.trim()) calculateCalcium();
+  if (bsaResult.innerHTML.trim()) calculateBsa();
   if (urineKcrResult.innerHTML.trim()) calculateUrineKcr();
   if (fibrosisResult.innerHTML.trim()) calculateFibrosis();
   if (maddreyResult.innerHTML.trim()) calculateMaddrey();
@@ -5599,6 +5706,7 @@ bindLiveCalculation(document.getElementById("heparin-form"), calculateHeparin);
 bindLiveCalculation(document.getElementById("renal-form"), calculateRenal);
 bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
+bindLiveCalculation(document.getElementById("bsa-form"), calculateBsa);
 bindLiveCalculation(document.getElementById("urine-kcr-form"), calculateUrineKcr);
 bindLiveCalculation(document.getElementById("fibrosis-form"), calculateFibrosis);
 bindLiveCalculation(document.getElementById("maddrey-form"), calculateMaddrey);
@@ -5611,6 +5719,7 @@ bindResultCopy(infusionResult);
 bindResultCopy(renalResult);
 bindResultCopy(osmoResult);
 bindResultCopy(calciumResult);
+bindResultCopy(bsaResult);
 bindResultCopy(urineKcrResult);
 bindResultCopy(fibrosisResult);
 bindResultCopy(maddreyResult);
