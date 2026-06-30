@@ -3,9 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="application-name" content="Clinical Order Calculator" />
+    <meta name="theme-color" content="#0b7a75" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Clinical Calc" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title id="t-doc-title">Clinical Order Calculator</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b7a75'/%3E%3Cpath d='M16 34h32v6H16zm13-18h6v32h-6z' fill='white'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css?v=20260620-bsa1" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=20260630-pwa1" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260630-pwa1" />
+    <link rel="manifest" href="/manifest.webmanifest?v=20260630-pwa1" />
+    <link rel="stylesheet" href="styles.css?v=20260630-pwa1" />
   </head>
   <body>
     <main class="app-shell">
@@ -365,6 +374,65 @@
           </label>
         </form>
         <div id="bsa-result" class="result"></div>
+      </section>
+
+      <section class="panel hidden" id="opioid-panel">
+        <h2 id="t-opioid-heading">Opioid conversion + breakthrough</h2>
+        <form id="opioid-form" class="grid">
+          <label>
+            <span id="t-opioid-current-label">Current opioid</span>
+            <select id="opioid-current" class="live-input">
+              <option value="morphine-po">Morphine PO (mg/day)</option>
+              <option value="morphine-parenteral">Morphine IV/SC (mg/day)</option>
+              <option value="oxycodone-po">Oxycodone PO (mg/day)</option>
+              <option value="hydromorphone-po">Hydromorphone PO (mg/day)</option>
+              <option value="hydromorphone-parenteral">Hydromorphone IV/SC (mg/day)</option>
+              <option value="fentanyl-patch">Fentanyl patch (mcg/hr)</option>
+            </select>
+          </label>
+          <label>
+            <span id="t-opioid-current-dose-label">Current total dose in 24 hr</span>
+            <input class="num-input live-input" type="number" id="opioid-current-dose" min="0" max="100000" step="0.1" inputmode="none" />
+          </label>
+          <label>
+            <span id="t-opioid-target-label">New scheduled opioid</span>
+            <select id="opioid-target" class="live-input">
+              <option value="morphine-po">Morphine PO</option>
+              <option value="morphine-parenteral">Morphine IV/SC</option>
+              <option value="oxycodone-po">Oxycodone PO</option>
+              <option value="hydromorphone-po">Hydromorphone PO</option>
+              <option value="hydromorphone-parenteral">Hydromorphone IV/SC</option>
+              <option value="fentanyl-patch">Fentanyl patch</option>
+            </select>
+          </label>
+          <label>
+            <span id="t-opioid-reduction-label">Cross-tolerance reduction</span>
+            <select id="opioid-reduction" class="live-input">
+              <option value="25">25%</option>
+              <option value="50">50%</option>
+              <option value="0">0%</option>
+            </select>
+          </label>
+          <label>
+            <span id="t-opioid-breakthrough-label">Breakthrough opioid</span>
+            <select id="opioid-breakthrough" class="live-input">
+              <option value="morphine-po">Morphine IR PO</option>
+              <option value="morphine-parenteral">Morphine IV/SC</option>
+              <option value="oxycodone-po">Oxycodone IR PO</option>
+              <option value="hydromorphone-po">Hydromorphone PO</option>
+              <option value="hydromorphone-parenteral">Hydromorphone IV/SC</option>
+            </select>
+          </label>
+          <label>
+            <span id="t-opioid-breakthrough-percent-label">Breakthrough dose percent</span>
+            <select id="opioid-breakthrough-percent" class="live-input">
+              <option value="10">10%</option>
+              <option value="15">15%</option>
+              <option value="20">20%</option>
+            </select>
+          </label>
+        </form>
+        <div id="opioid-result" class="result"></div>
       </section>
 
       <section class="panel hidden" id="urine-kcr-panel">
@@ -754,6 +822,6 @@
       </div>
       <button type="button" class="numpad-backspace" data-action="backspace">⌫</button>
     </div>
-    <script src="app.js?v=20260620-bsa1"></script>
+    <script src="app.js?v=20260630-pwa1"></script>
   </body>
 </html>

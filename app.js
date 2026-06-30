@@ -9,6 +9,7 @@ const renalResult = document.getElementById("renal-result");
 const osmoResult = document.getElementById("osmo-result");
 const calciumResult = document.getElementById("calcium-result");
 const bsaResult = document.getElementById("bsa-result");
+const opioidResult = document.getElementById("opioid-result");
 const urineKcrResult = document.getElementById("urine-kcr-result");
 const fibrosisResult = document.getElementById("fibrosis-result");
 const maddreyResult = document.getElementById("maddrey-result");
@@ -26,6 +27,7 @@ const renalPanel = document.getElementById("renal-panel");
 const osmoPanel = document.getElementById("osmo-panel");
 const calciumPanel = document.getElementById("calcium-panel");
 const bsaPanel = document.getElementById("bsa-panel");
+const opioidPanel = document.getElementById("opioid-panel");
 const urineKcrPanel = document.getElementById("urine-kcr-panel");
 const fibrosisPanel = document.getElementById("fibrosis-panel");
 const maddreyPanel = document.getElementById("maddrey-panel");
@@ -166,6 +168,105 @@ const HEPARIN_PROTOCOLS = [
   }
 ];
 const HEPARIN_PRIMARY_PROTOCOL_IDS = ["acute-thrombosis", "acs"];
+const OPIOID_PRODUCTS = {
+  "morphine-po": {
+    label: "Morphine PO",
+    inputUnit: "mg/day",
+    doseUnit: "mg",
+    omeFactor: 1,
+    scheduleType: "divided",
+    scheduledName: "Morphine SR",
+    route: "PO",
+    frequency: "q12h",
+    dosesPerDay: 2,
+    scheduleStep: 5,
+    minScheduleDose: 5,
+    rescueName: "Morphine IR",
+    rescueRoute: "PO",
+    rescueInterval: "q2h PRN breakthrough pain",
+    rescueStep: 2.5,
+    minRescueDose: 2.5
+  },
+  "morphine-parenteral": {
+    label: "Morphine IV/SC",
+    inputUnit: "mg/day",
+    doseUnit: "mg",
+    omeFactor: 2.5,
+    scheduleType: "infusion",
+    scheduledName: "Morphine",
+    route: "IV/SC",
+    scheduleStep: 0.1,
+    minScheduleDose: 0.1,
+    rescueName: "Morphine",
+    rescueRoute: "IV/SC",
+    rescueInterval: "q1h PRN breakthrough pain",
+    rescueStep: 0.5,
+    minRescueDose: 0.5
+  },
+  "oxycodone-po": {
+    label: "Oxycodone PO",
+    inputUnit: "mg/day",
+    doseUnit: "mg",
+    omeFactor: 1.5,
+    scheduleType: "divided",
+    scheduledName: "Oxycodone CR",
+    route: "PO",
+    frequency: "q12h",
+    dosesPerDay: 2,
+    scheduleStep: 5,
+    minScheduleDose: 5,
+    rescueName: "Oxycodone IR",
+    rescueRoute: "PO",
+    rescueInterval: "q2h PRN breakthrough pain",
+    rescueStep: 2.5,
+    minRescueDose: 2.5
+  },
+  "hydromorphone-po": {
+    label: "Hydromorphone PO",
+    inputUnit: "mg/day",
+    doseUnit: "mg",
+    omeFactor: 5,
+    scheduleType: "divided",
+    scheduledName: "Hydromorphone",
+    route: "PO",
+    frequency: "q4h scheduled",
+    dosesPerDay: 6,
+    scheduleStep: 0.5,
+    minScheduleDose: 0.5,
+    rescueName: "Hydromorphone",
+    rescueRoute: "PO",
+    rescueInterval: "q2h PRN breakthrough pain",
+    rescueStep: 0.5,
+    minRescueDose: 0.5
+  },
+  "hydromorphone-parenteral": {
+    label: "Hydromorphone IV/SC",
+    inputUnit: "mg/day",
+    doseUnit: "mg",
+    omeFactor: 12.5,
+    scheduleType: "infusion",
+    scheduledName: "Hydromorphone",
+    route: "IV/SC",
+    scheduleStep: 0.01,
+    minScheduleDose: 0.01,
+    rescueName: "Hydromorphone",
+    rescueRoute: "IV/SC",
+    rescueInterval: "q1h PRN breakthrough pain",
+    rescueStep: 0.1,
+    minRescueDose: 0.1
+  },
+  "fentanyl-patch": {
+    label: "Fentanyl patch",
+    inputUnit: "mcg/hr",
+    doseUnit: "mcg/hr",
+    omeFactor: 2.4,
+    scheduleType: "patch",
+    scheduledName: "Fentanyl patch",
+    route: "TD",
+    frequency: "q72h"
+  }
+};
+const FENTANYL_PATCH_STRENGTHS = [12, 25, 50, 75, 100];
 
 const WORKFLOWS = {
   initial: {
@@ -223,6 +324,12 @@ const WORKFLOWS = {
     firstInputId: "bsa-height",
     form: document.getElementById("bsa-form"),
     calculator: "bsa"
+  },
+  opioid: {
+    panel: opioidPanel,
+    firstInputId: "opioid-current-dose",
+    form: document.getElementById("opioid-form"),
+    calculator: "opioid"
   },
   urineKcr: {
     panel: urineKcrPanel,
@@ -1117,6 +1224,8 @@ const I18N = {
     calciumCalcDesc: "Correct total calcium for low albumin using the standard albumin correction.",
     bsaCalcName: "BSA calculator",
     bsaCalcDesc: "Calculate body surface area by Mosteller formula, BMI, and optional mg/m² dose.",
+    opioidCalcName: "Opioid conversion",
+    opioidCalcDesc: "Convert opioid dose to oral morphine equivalent and estimate scheduled plus breakthrough doses.",
     urineKcrCalcName: "Urine K/Cr ratio",
     urineKcrCalcDesc: "Calculate spot urine potassium-to-creatinine ratio and classify renal vs non-renal potassium loss in hypokalemia.",
     fibrosisCalcName: "FIB-4 / APRI",
@@ -1367,6 +1476,34 @@ const I18N = {
     bsaCaution:
       "For chemotherapy prescribing, verify regimen-specific dose caps, treatment intent, organ function, performance status, toxicity, and local oncology protocol.",
     bsaSourceNote: "References: eviQ Body Surface Area Calculator and Mosteller RD, N Engl J Med 1987.",
+    opioidHeading: "Opioid conversion + breakthrough",
+    opioidCurrentLabel: "Current opioid",
+    opioidCurrentDoseLabel: "Current total dose in 24 hr",
+    opioidTargetLabel: "New scheduled opioid",
+    opioidReductionLabel: "Cross-tolerance reduction",
+    opioidBreakthroughLabel: "Breakthrough opioid",
+    opioidBreakthroughPercentLabel: "Breakthrough dose percent",
+    opioidNeed: "Fill current opioid dose.",
+    opioidOrderReady: "Order Ready - click box to copy all",
+    opioidOmeResult: "Oral morphine equivalent:",
+    opioidEquianalgesicResult: "Equianalgesic target before reduction:",
+    opioidReducedTargetResult: "Target after reduction:",
+    opioidScheduledResult: "Scheduled order:",
+    opioidBreakthroughResult: "Breakthrough dose:",
+    opioidActualOmeResult: "Actual scheduled OME after rounding:",
+    opioidReductionNote:
+      "When switching opioids, reduce the calculated equianalgesic dose by 25-50% for incomplete cross-tolerance, then titrate to analgesia and toxicity.",
+    opioidSameDrugNoReduction: "Same opioid/route selected; cross-tolerance reduction was not applied.",
+    opioidBreakthroughNote:
+      "Breakthrough dose uses {percent}% of the rounded scheduled 24-hr opioid exposure, converted to the selected immediate-release opioid.",
+    opioidHighDoseCaution:
+      "High opioid exposure. Confirm tolerance, sedation/respiratory risk, renal/hepatic function, bowel regimen, naloxone/monitoring plan, and pain or palliative specialist input.",
+    opioidFentanylCaution:
+      "Fentanyl patch is for opioid-tolerant patients with stable opioid needs; it is not for rapid titration, acute uncontrolled pain, or opioid-naive patients.",
+    opioidFormula:
+      "Conversion factors used: oral morphine 1, oral oxycodone 1.5, oral hydromorphone 5, IV/SC morphine 2.5, IV/SC hydromorphone 12.5, fentanyl patch mcg/hr x 2.4 = oral morphine mg/day.",
+    opioidSourceNote:
+      "References: Faculty of Pain Medicine opioid dose equivalents; Palliative Care Network of Wisconsin opioid conversion guidance; breakthrough-dose guidance commonly uses 10-20% of total daily opioid dose.",
     urineKcrHeading: "Urine K/Cr ratio",
     urineKcrSerumKLabel: "Serum K (mEq/L, optional)",
     urineKcrUrineKLabel: "Urine potassium, K (mEq/L)",
@@ -1606,6 +1743,8 @@ const I18N = {
     calciumCalcDesc: "ปรับค่า total calcium ตาม albumin",
     bsaCalcName: "BSA calculator",
     bsaCalcDesc: "คำนวณ body surface area ด้วย Mosteller formula, BMI และ dose จาก mg/m² ถ้ากรอก",
+    opioidCalcName: "Opioid conversion",
+    opioidCalcDesc: "แปลงขนาด opioid เป็น oral morphine equivalent และคำนวณขนาด scheduled กับ breakthrough",
     urineKcrCalcName: "Urine K/Cr ratio",
     urineKcrCalcDesc: "คำนวณ spot urine potassium-to-creatinine ratio และช่วยแยก renal/non-renal potassium loss ใน hypokalemia",
     fibrosisCalcName: "FIB-4 / APRI",
@@ -1855,6 +1994,34 @@ const I18N = {
     bsaCaution:
       "สำหรับการสั่ง chemotherapy ต้องตรวจ dose cap ตาม regimen, treatment intent, organ function, performance status, toxicity และ protocol oncology ของหน่วยงาน",
     bsaSourceNote: "อ้างอิง: eviQ Body Surface Area Calculator และ Mosteller RD, N Engl J Med 1987",
+    opioidHeading: "Opioid conversion + breakthrough",
+    opioidCurrentLabel: "Opioid ปัจจุบัน",
+    opioidCurrentDoseLabel: "ขนาดยารวมใน 24 ชม.",
+    opioidTargetLabel: "Opioid scheduled ใหม่",
+    opioidReductionLabel: "ลดขนาดเพราะ cross-tolerance",
+    opioidBreakthroughLabel: "Opioid สำหรับ breakthrough",
+    opioidBreakthroughPercentLabel: "เปอร์เซ็นต์ breakthrough dose",
+    opioidNeed: "กรอกขนาด opioid ปัจจุบัน",
+    opioidOrderReady: "คำสั่งพร้อมใช้ - คลิกกล่องเพื่อคัดลอกทั้งหมด",
+    opioidOmeResult: "Oral morphine equivalent:",
+    opioidEquianalgesicResult: "ขนาด equivalent ก่อนลด:",
+    opioidReducedTargetResult: "ขนาดหลังลด:",
+    opioidScheduledResult: "คำสั่ง scheduled:",
+    opioidBreakthroughResult: "ขนาด breakthrough:",
+    opioidActualOmeResult: "OME หลังปัดขนาด scheduled:",
+    opioidReductionNote:
+      "เมื่อเปลี่ยน opioid ควรลดขนาด equianalgesic ที่คำนวณได้ 25-50% เพราะ incomplete cross-tolerance แล้ว titrate ตาม analgesia/toxicity",
+    opioidSameDrugNoReduction: "เลือก opioid/route เดิม จึงไม่ลดขนาดจาก cross-tolerance",
+    opioidBreakthroughNote:
+      "ขนาด breakthrough ใช้ {percent}% ของ opioid exposure 24 ชม. หลังปัดขนาด scheduled แล้วแปลงเป็น immediate-release opioid ที่เลือก",
+    opioidHighDoseCaution:
+      "ขนาด opioid สูง ควรยืนยัน tolerance, ความเสี่ยง sedation/respiratory depression, renal/hepatic function, bowel regimen, naloxone/monitoring และพิจารณาปรึกษา pain/palliative specialist",
+    opioidFentanylCaution:
+      "Fentanyl patch ใช้ในผู้ป่วย opioid-tolerant ที่ความต้องการ opioid คงที่ ไม่เหมาะกับ rapid titration, acute uncontrolled pain หรือ opioid-naive",
+    opioidFormula:
+      "Conversion factor ที่ใช้: oral morphine 1, oral oxycodone 1.5, oral hydromorphone 5, IV/SC morphine 2.5, IV/SC hydromorphone 12.5, fentanyl patch mcg/hr x 2.4 = oral morphine mg/day",
+    opioidSourceNote:
+      "อ้างอิง: Faculty of Pain Medicine opioid dose equivalents; Palliative Care Network of Wisconsin opioid conversion guidance; breakthrough-dose guidance มักใช้ 10-20% ของ total daily opioid dose",
     urineKcrHeading: "Urine K/Cr ratio",
     urineKcrSerumKLabel: "Serum K (mEq/L, optional)",
     urineKcrUrineKLabel: "Urine potassium, K (mEq/L)",
@@ -2152,6 +2319,13 @@ const staticMap = [
   ["t-bsa-height-label", "bsaHeightLabel"],
   ["t-bsa-weight-label", "bsaWeightLabel"],
   ["t-bsa-dose-label", "bsaDoseLabel"],
+  ["t-opioid-heading", "opioidHeading"],
+  ["t-opioid-current-label", "opioidCurrentLabel"],
+  ["t-opioid-current-dose-label", "opioidCurrentDoseLabel"],
+  ["t-opioid-target-label", "opioidTargetLabel"],
+  ["t-opioid-reduction-label", "opioidReductionLabel"],
+  ["t-opioid-breakthrough-label", "opioidBreakthroughLabel"],
+  ["t-opioid-breakthrough-percent-label", "opioidBreakthroughPercentLabel"],
   ["t-urine-kcr-heading", "urineKcrHeading"],
   ["t-urine-kcr-serum-k-label", "urineKcrSerumKLabel"],
   ["t-urine-kcr-urine-k-label", "urineKcrUrineKLabel"],
@@ -2284,6 +2458,14 @@ function getCalculatorOptions() {
       description: tr("bsaCalcDesc"),
       keywords:
         "bsa body surface area mosteller oncology chemotherapy chemo dose mg/m2 mg/m² height weight bmi cytotoxic dosing"
+    },
+    {
+      id: "opioid",
+      workflow: "opioid",
+      name: tr("opioidCalcName"),
+      description: tr("opioidCalcDesc"),
+      keywords:
+        "opioid opiate conversion equianalgesic morphine oxycodone hydromorphone fentanyl patch ome mme oral morphine equivalent breakthrough rescue cancer pain oncology palliative"
     },
     {
       id: "urineKcr",
@@ -4368,6 +4550,151 @@ function calculateBsa(event) {
   `;
 }
 
+function getOpioidProduct(id) {
+  return OPIOID_PRODUCTS[id] || OPIOID_PRODUCTS["morphine-po"];
+}
+
+function formatOpioidDose(value) {
+  if (value >= 100) return formatNumberForInput(value, 0);
+  if (value >= 10) return formatNumberForInput(value, 1);
+  return formatNumberForInput(value, 2);
+}
+
+function roundOpioidDose(value, step, minDose) {
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return Math.max(minDose, roundToStep(value, step));
+}
+
+function getFentanylPatchStrength(rawMcgHr) {
+  if (!Number.isFinite(rawMcgHr) || rawMcgHr <= 0) return 0;
+  if (rawMcgHr <= FENTANYL_PATCH_STRENGTHS[0]) return FENTANYL_PATCH_STRENGTHS[0];
+  if (rawMcgHr > FENTANYL_PATCH_STRENGTHS[FENTANYL_PATCH_STRENGTHS.length - 1]) {
+    return roundToStep(rawMcgHr, 25);
+  }
+  const lowerStrength = FENTANYL_PATCH_STRENGTHS.filter((strength) => strength <= rawMcgHr).pop();
+  return lowerStrength || roundToStep(rawMcgHr, 25);
+}
+
+function getScheduledOpioidPlan(product, targetDose) {
+  if (product.scheduleType === "patch") {
+    const patchDose = getFentanylPatchStrength(targetDose);
+    const patchText = formatOpioidDose(patchDose);
+    return {
+      line: `${product.scheduledName} ${patchText} ${product.doseUnit} ${product.route} ${product.frequency}`,
+      value: `${patchText} ${product.doseUnit}`,
+      actualDose: patchDose,
+      actualOme: patchDose * product.omeFactor
+    };
+  }
+
+  if (product.scheduleType === "infusion") {
+    const hourlyDose = roundOpioidDose(targetDose / 24, product.scheduleStep, product.minScheduleDose);
+    const actualDailyDose = hourlyDose * 24;
+    const hourlyText = formatOpioidDose(hourlyDose);
+    const dailyText = formatOpioidDose(actualDailyDose);
+    return {
+      line: `${product.scheduledName} ${product.route} continuous infusion rate ${hourlyText} ${product.doseUnit}/hr`,
+      value: `${hourlyText} ${product.doseUnit}/hr (${dailyText} ${product.doseUnit}/day)`,
+      actualDose: actualDailyDose,
+      actualOme: actualDailyDose * product.omeFactor
+    };
+  }
+
+  const perDose = roundOpioidDose(targetDose / product.dosesPerDay, product.scheduleStep, product.minScheduleDose);
+  const actualDailyDose = perDose * product.dosesPerDay;
+  const perDoseText = formatOpioidDose(perDose);
+  const dailyText = formatOpioidDose(actualDailyDose);
+
+  return {
+    line: `${product.scheduledName} ${perDoseText} ${product.doseUnit} ${product.route} ${product.frequency}`,
+    value: `${perDoseText} ${product.doseUnit} ${product.frequency} (${dailyText} ${product.doseUnit}/day)`,
+    actualDose: actualDailyDose,
+    actualOme: actualDailyDose * product.omeFactor
+  };
+}
+
+function calculateOpioid(event) {
+  event?.preventDefault();
+
+  const currentId = document.getElementById("opioid-current").value;
+  const targetId = document.getElementById("opioid-target").value;
+  const breakthroughId = document.getElementById("opioid-breakthrough").value;
+  const currentDoseValue = document.getElementById("opioid-current-dose").value.trim();
+  const selectedReduction = Number(document.getElementById("opioid-reduction").value);
+  const breakthroughPercent = Number(document.getElementById("opioid-breakthrough-percent").value);
+  const currentDose = Number(currentDoseValue);
+
+  if (currentDoseValue === "" || !Number.isFinite(currentDose) || currentDose <= 0) {
+    opioidResult.innerHTML = `<p>${tr("opioidNeed")}</p>`;
+    return;
+  }
+
+  const current = getOpioidProduct(currentId);
+  const target = getOpioidProduct(targetId);
+  const breakthrough = getOpioidProduct(breakthroughId);
+  const effectiveReduction = currentId === targetId ? 0 : selectedReduction;
+  const currentOme = currentDose * current.omeFactor;
+  const equianalgesicTargetDose = currentOme / target.omeFactor;
+  const reducedTargetDose = equianalgesicTargetDose * (1 - effectiveReduction / 100);
+  const scheduledPlan = getScheduledOpioidPlan(target, reducedTargetDose);
+  const breakthroughRawDose = (scheduledPlan.actualOme / breakthrough.omeFactor) * (breakthroughPercent / 100);
+  const breakthroughDose = roundOpioidDose(breakthroughRawDose, breakthrough.rescueStep, breakthrough.minRescueDose);
+  const breakthroughDoseText = formatOpioidDose(breakthroughDose);
+  const omeText = formatOpioidDose(currentOme);
+  const targetText = formatOpioidDose(equianalgesicTargetDose);
+  const reducedTargetText = formatOpioidDose(reducedTargetDose);
+  const actualOmeText = formatOpioidDose(scheduledPlan.actualOme);
+  const breakthroughLine = `${breakthrough.rescueName} ${breakthroughDoseText} ${breakthrough.doseUnit} ${breakthrough.rescueRoute} ${breakthrough.rescueInterval}`;
+  const orderLines = [scheduledPlan.line, breakthroughLine];
+  const cautionLines = [];
+
+  if (currentId === targetId) cautionLines.push(tr("opioidSameDrugNoReduction"));
+  if (currentOme >= 300 || scheduledPlan.actualOme >= 300) cautionLines.push(tr("opioidHighDoseCaution"));
+  if (currentId === "fentanyl-patch" || targetId === "fentanyl-patch") cautionLines.push(tr("opioidFentanylCaution"));
+
+  opioidResult.innerHTML = `
+    <button type="button" class="order-highlight copy-block opioid-copy-order" data-copy="${encodeURIComponent(
+      orderLines.join("\n")
+    )}">
+      <p class="order-title">${tr("opioidOrderReady")}</p>
+      <div class="order-text">${orderLines.map((line) => `<p class="order-line copy-line-static">${line}</p>`).join("")}</div>
+    </button>
+    ${renderCopyResult(tr("opioidOmeResult"), omeText, {
+      unit: "mg/day",
+      copyValue: omeText,
+      copyFull: `OME = ${omeText} mg/day`
+    })}
+    ${renderCopyResult(tr("opioidEquianalgesicResult"), targetText, {
+      unit: target.inputUnit,
+      copyValue: targetText,
+      copyFull: `${target.label} equianalgesic dose = ${targetText} ${target.inputUnit}`
+    })}
+    ${renderCopyResult(tr("opioidReducedTargetResult"), reducedTargetText, {
+      unit: target.inputUnit,
+      copyValue: reducedTargetText,
+      copyFull: `${target.label} target after ${effectiveReduction}% reduction = ${reducedTargetText} ${target.inputUnit}`
+    })}
+    ${renderCopyResult(tr("opioidScheduledResult"), scheduledPlan.value, {
+      copyValue: scheduledPlan.value,
+      copyFull: scheduledPlan.line
+    })}
+    ${renderCopyResult(tr("opioidBreakthroughResult"), `${breakthroughDoseText} ${breakthrough.doseUnit} ${breakthrough.rescueRoute}`, {
+      copyValue: breakthroughDoseText,
+      copyFull: breakthroughLine
+    })}
+    ${renderCopyResult(tr("opioidActualOmeResult"), actualOmeText, {
+      unit: "mg/day",
+      copyValue: actualOmeText,
+      copyFull: `Rounded scheduled OME = ${actualOmeText} mg/day`
+    })}
+    ${cautionLines.map((line) => `<p class="note"><strong>${tr("statusLabel")}</strong> ${line}</p>`).join("")}
+    <p class="note">${tr("opioidReductionNote")}</p>
+    <p class="note">${tr("opioidBreakthroughNote", { percent: breakthroughPercent })}</p>
+    <p class="note">${tr("opioidFormula")}</p>
+    <p class="note">${tr("opioidSourceNote")}</p>
+  `;
+}
+
 function calculateUrineKcr(event) {
   event?.preventDefault();
 
@@ -5349,6 +5676,7 @@ function runCalculatorForMode(mode) {
   if (mode === "osmo") calculateOsmo();
   if (mode === "calcium") calculateCalcium();
   if (mode === "bsa") calculateBsa();
+  if (mode === "opioid") calculateOpioid();
   if (mode === "urineKcr") calculateUrineKcr();
   if (mode === "fibrosis") calculateFibrosis();
   if (mode === "maddrey") calculateMaddrey();
@@ -5368,6 +5696,7 @@ function recalcIfResultsShown() {
   if (osmoResult.innerHTML.trim()) calculateOsmo();
   if (calciumResult.innerHTML.trim()) calculateCalcium();
   if (bsaResult.innerHTML.trim()) calculateBsa();
+  if (opioidResult.innerHTML.trim()) calculateOpioid();
   if (urineKcrResult.innerHTML.trim()) calculateUrineKcr();
   if (fibrosisResult.innerHTML.trim()) calculateFibrosis();
   if (maddreyResult.innerHTML.trim()) calculateMaddrey();
@@ -5694,6 +6023,17 @@ function bindResultCopy(container, copiedKey = "orderLineCopied", failedKey = "o
   bindCopyInteractions(container, (event) => copyOrderLine(event, container, copiedKey, failedKey));
 }
 
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  if (!["http:", "https:"].includes(window.location.protocol)) return;
+
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js?v=20260630-pwa1").catch(() => {
+      // The app still works normally if a browser blocks service worker registration.
+    });
+  });
+}
+
 languageToggle.addEventListener("click", () => {
   setLanguage(currentLang === "en" ? "th" : "en");
 });
@@ -5707,6 +6047,7 @@ bindLiveCalculation(document.getElementById("renal-form"), calculateRenal);
 bindLiveCalculation(document.getElementById("osmo-form"), calculateOsmo);
 bindLiveCalculation(document.getElementById("calcium-form"), calculateCalcium);
 bindLiveCalculation(document.getElementById("bsa-form"), calculateBsa);
+bindLiveCalculation(document.getElementById("opioid-form"), calculateOpioid);
 bindLiveCalculation(document.getElementById("urine-kcr-form"), calculateUrineKcr);
 bindLiveCalculation(document.getElementById("fibrosis-form"), calculateFibrosis);
 bindLiveCalculation(document.getElementById("maddrey-form"), calculateMaddrey);
@@ -5720,6 +6061,7 @@ bindResultCopy(renalResult);
 bindResultCopy(osmoResult);
 bindResultCopy(calciumResult);
 bindResultCopy(bsaResult);
+bindResultCopy(opioidResult);
 bindResultCopy(urineKcrResult);
 bindResultCopy(fibrosisResult);
 bindResultCopy(maddreyResult);
@@ -5739,6 +6081,7 @@ initNumpad();
 initModeButtons();
 initWorkflowButtons();
 initCalculatorSearch();
+registerServiceWorker();
 syncCrclInputMode();
 applyStaticTranslation();
 
